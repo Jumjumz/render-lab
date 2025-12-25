@@ -23,7 +23,8 @@ int main() {
     // Camera
     auto focal_length = 1.0;
     auto viewport_height = 2.0;
-    auto viewport_width = viewport_height * (double(image_width) / image_height);
+    auto viewport_width =
+        viewport_height * (double(image_width) / double(image_height));
     auto camera_center = point3(0, 0, 0);
 
     // calculate vectors across the horizontal and down the vertical viewport
@@ -31,7 +32,7 @@ int main() {
     auto viewport_v = vec3(0, -viewport_height, 0);
 
     // calculate the horizontal and vertial delta vectors from pixel to pixel
-    auto pixel_delta_u = viewport_u / image_height;
+    auto pixel_delta_u = viewport_u / image_width;
     auto pixel_delta_v = viewport_v / image_height;
 
     // calculate the location of the upper left pixel
@@ -42,14 +43,14 @@ int main() {
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
-    for (int j = 0; j < image_width; j++) {
+    for (int j = 0; j < image_height; j++) {
         std::clog << "\nScanlines remaining: " << (image_height - j) << ' '
                   << std::flush;
 
-        for (int i = 0; i < image_height; i++) {
+        for (int i = 0; i < image_width; i++) {
             auto pixel_center =
                 pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
-            auto ray_direction = pixel_center = camera_center;
+            auto ray_direction = pixel_center - camera_center;
             ray r(camera_center, ray_direction);
 
             color pixel_color = ray_color(r);
