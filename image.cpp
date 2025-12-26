@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "color.h"
 #include "ray.h"
 #include "vec3.h"
@@ -49,13 +50,14 @@ int main() {
     auto viewport_height = 2.0;
     auto viewport_width =
         viewport_height * (double(image_width) / double(image_height));
-    auto camera_center = point3(0, 0, 0);
+    auto camera_center = point3(0, 0,
+                                0); // can simplify to point3 camera_center
 
     // calculate vectors across the horizontal and down the vertical viewport
     auto viewport_u = vec3(viewport_width, 0, 0);
     auto viewport_v = vec3(0, -viewport_height, 0);
 
-    // calculate the horizontal and vertial delta vectors from pixel to pixel
+    // calculate the horizontal and vertical delta vectors from pixel to pixel
     auto pixel_delta_u = viewport_u / image_width;
     auto pixel_delta_v = viewport_v / image_height;
 
