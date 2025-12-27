@@ -42,6 +42,10 @@ class vec3 {
     double length_squared() const {
         return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
     }
+
+    vec3 normalize() const {
+        return vec3((e[0] / length()), (e[1] / length()), (e[2] / length()));
+    }
 };
 
 // alias for vec3
