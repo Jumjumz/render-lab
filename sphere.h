@@ -31,9 +31,8 @@ class sphere : public hittable {
 
         if (root <= ray_tmin || ray_tmax <= root) {
             root = (h + sqrtd) / a;
-            if (root <= ray_tmin || ray_tmax <= root) {
-                return false;
-            }
+
+            return false;
         }
 
         rec.t = root;
