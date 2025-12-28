@@ -1,16 +1,87 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "vec3.h"
+#include "hittable.h"
 
-using camera = point3;
+class camera {
+  public:
+    double aspect_ratio = 1.0;
+    int image_width = 100;
 
-// Can add a camera class for camera manipulation
-inline const camera camera_center = camera(0, 0, 0);
+    void render(const hittable &world) {
+        initialize();
 
-inline camera camera_location(double x, double y, double focal_point) {
-    return camera(x, y, focal_point);
+        std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+
+        for (int j = 0; j < image_height; j++) {
+            std::clog << "\nScanlines remaining: " << (image_height - j) << ' '
+                      << std::flush;
+
+            for (int i = 0; i < image_width; i++) {
+                auto pixel_center =
+                    pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
+                auto ray_direction = pixel_center - center;
+                ray r(center, ray_direction);
+                color pixel_color = ray_color(r, world);
+
+                write_color(std::cout, pixel_color);
+            }
+        }
+
+        std::clog << "\nDone.\n";
+    };
+
+  private:
+    int image_height;
+    point3 center;
+    point3 pixel00_loc;
+    vec3 pixel_delta_u;
+    vec3 pixel_delta_v;
+
+    void initialize() {
+        image_height = int(image_height / aspect_ratio);
+        image_height = (image_height < 1) ? 1 : image_height;
+
+        center = point3(0, 0, 0);
+
+        // Determine viewport dimenstions
+        auto focal_length = 1.0;
+        auto viewport_height = 2.0;
+        auto viewport_width =
+            viewport_height * (double(image_width) / image_height);
+
+        // Calculate vectors across the horizontal and vertical down to the viewport edge
+        auto viewport_u = vec3(viewport_width, 0, 0);
+        auto viewport_v = vec3(0, -viewport_height, 0);
+
+        // Calculate the horizontal and vertical delta vectors from pixel to pixel
+        pixel_delta_u = viewport_u / image_width;
+        pixel_delta_v = viewport_v / image_height;
+
+        // Calculate the location of the upper left pixel
+        auto viewport_upper_left =
+            center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
+        auto pixel00_loc =
+            viewport_upper_left +
+            0.5 * (pixel_delta_u +
+                   pixel_delta_v); // This calculates the center
+                                   // of a pixel.. the 0.5
+                                   // is an offset to the actual position (0, 0) etc, of the pixel
+    };
+
+    color ray_color(const ray &r, const hittable &world) const {
+        hit_record rec;
+
+        if (world.hit(r, interval(0, infinity), rec)) {
+            return 0.5 * (rec.normal + color(1, 1, 1));
+        }
+
+        vec3 unit_direction = unit_vector(r.direction());
+        auto a = 0.5 * (unit_direction.y() + 1.0);
+
+        // color the background
+        return (1.0 - a) * color(0.5, 0.7, 1.0) + a * color(1, 1.3, 0.8);
+    };
 };
 
 #endif // !CAMERA_H
-#define CAMERA_H
