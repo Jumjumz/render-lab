@@ -99,8 +99,9 @@ class camera {
             ray scattered;
             color attenuation;
 
-            if (rec.mat->scatter(r, rec, attenuation, scattered))
+            if (rec.mat->scatter(r, rec, attenuation, scattered)) {
                 return attenuation * ray_color(scattered, depth - 1, world);
+            }
 
             return color(0, 0, 0);
         }
@@ -109,7 +110,7 @@ class camera {
         auto a = 0.5 * (unit_direction.y() + 1.0);
 
         // color the background
-        return (1.0 - a) * color(0.5, 0.7, 1.0) + a * color(1.0, 1.3, 0.8);
+        return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
     };
 };
 
