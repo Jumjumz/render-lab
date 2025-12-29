@@ -44,6 +44,14 @@ class vec3 {
         return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
     }
 
+    bool near_zero() const {
+        // Reture true if vector is clost to zero in all diminsions
+        auto s = 1e-8;
+
+        return (std::fabs(e[0]) < s) && (std::fabs(e[1]) < s) &&
+               (std::fabs(e[2]) < s);
+    }
+
     vec3 normalize() const {
         return vec3((e[0] / length()), (e[1] / length()), (e[2] / length()));
     }
