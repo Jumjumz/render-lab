@@ -1,6 +1,7 @@
 #ifndef VEC3_H
 #define VEC3_H
 
+#include "rtweekend.h"
 #include <cmath>
 #include <ostream>
 
@@ -11,9 +12,9 @@ class vec3 {
     vec3() : e{0, 0, 0} {};
     vec3(double e0, double e1, double e2) : e{e0, e1, e2} {};
 
-    double x() const { return e[0]; };
-    double y() const { return e[1]; };
-    double z() const { return e[2]; };
+    double x() const { return this->e[0]; };
+    double y() const { return this->e[1]; };
+    double z() const { return this->e[2]; };
 
     vec3 operator-() const { return vec3(-e[0], -e[1], -e[2]); };
     double operator[](int i) const { return e[i]; };
@@ -45,6 +46,15 @@ class vec3 {
 
     vec3 normalize() const {
         return vec3((e[0] / length()), (e[1] / length()), (e[2] / length()));
+    }
+
+    static vec3 random() {
+        return vec3(random_double(), random_double(), random_double());
+    }
+
+    static vec3 random(double min, double max) {
+        return vec3(random_double(min, max), random_double(min, max),
+                    random_double(min, max));
     }
 };
 
@@ -83,5 +93,27 @@ inline vec3 cross(const vec3 &u, const vec3 &v) {
 }
 
 inline vec3 unit_vector(const vec3 &v) { return v / v.length(); }
+
+inline vec3 random_unit_vector() {
+    while (true) {
+        auto p = vec3::random(-1, 1);
+        auto lensq = p.length_squared();
+
+        if (1e-160 < lensq && lensq <= 1) {
+            return p / sqrt(lensq);
+        }
+    }
+}
+
+inline vec3 random_on_hemisphere(const vec3 &normal) {
+    vec3 on_unit_shpere = random_unit_vector();
+
+    // check if the same hemisphere as the normal
+    if (dot(on_unit_shpere, normal) > 0.0) {
+        return on_unit_shpere;
+    } else {
+        return -on_unit_shpere;
+    }
+}
 
 #endif // !VEC3_H
