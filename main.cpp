@@ -56,11 +56,11 @@ int main() {
     camera cam;
 
     cam.aspect_ratio = 16.0 / 9.0;
-    cam.image_width = 600;
+    cam.image_width = 720;
     cam.samples_per_pixel = 500;
     cam.max_depth = 50;
 
-    cam.vfov = 50;
+    cam.vfov = 30;
     cam.look_from = point3(13, 2, 3);
     cam.look_at = point3(0, 0, 0);
     cam.vup = vec3(0, 1, 0);
