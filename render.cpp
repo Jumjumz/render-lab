@@ -1,13 +1,13 @@
 #include <SDL2/SDL.h>
 
 int main(int argc, char *argv[]) {
-    int window_width = 800;
-    int window_height = 600;
+    int window_width = 1280;
+    int window_height = 720;
 
     SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_Window *window = SDL_CreateWindow("Renderer", SDL_WINDOWPOS_CENTERED,
-                                          SDL_WINDOWPOS_CENTERED, window_width,
-                                          window_height, SDL_WINDOW_SHOWN);
+    SDL_Window *window = SDL_CreateWindow(
+        "Wireframe renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        window_width, window_height, SDL_WINDOW_SHOWN);
 
     SDL_Renderer *renderer =
         SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
