@@ -5,7 +5,7 @@ class screen {
   public:
     double e[2];
 
-    screen(double x, double y, int screen_width, int screen_height)
+    screen(double x, double y, int &screen_width, int &screen_height)
         : e{(x + 1) / 2 * screen_width, (y + 1) / 2 * screen_height} {};
 
     int x = e[0];
