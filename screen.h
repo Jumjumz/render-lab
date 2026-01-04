@@ -6,13 +6,13 @@ class screen {
     double e[2];
 
     screen(double x, double y, int &screen_width, int &screen_height)
-        : e{(x + 1) / 2 * screen_width, (-y + 1) / 2 * screen_height} {
-          }; // -y as the y axis in inverse
+        : e{(x + 1) / 2 * screen_width, (1 - (y + 1) / 2) * screen_height} {
+          }; // 1- as the y axis is flip and needs to inverse
 
-    int x = e[0];
-    int y = e[1];
+    const double x = e[0];
+    const double y = e[1];
 };
 
-inline int offset(int &axis, int &size) { return axis - size / 2; }
+inline int offset(double &axis, int &size) { return axis - double(size) / 2; }
 
 #endif // !SCREEN_H
