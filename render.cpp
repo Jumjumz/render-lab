@@ -1,12 +1,11 @@
-#include "SDL_rect.h"
-#include "SDL_render.h"
+#include "screen.h"
 #include <SDL2/SDL.h>
-
-SDL_Rect rectangle = {0, 0, 300, 120};
 
 int main(int argc, char *argv[]) {
     int window_width = 1280;
     int window_height = 720;
+
+    screen s(0, 0, window_width, window_height);
 
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *window = SDL_CreateWindow(
@@ -17,6 +16,9 @@ int main(int argc, char *argv[]) {
         SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     SDL_Event event;
+
+    int square_size = 20;
+    SDL_Rect rectangle = {s.x, s.y, square_size, square_size};
     bool running = true;
 
     while (running) {
