@@ -1,3 +1,4 @@
+#include "project.h"
 #include "screen.h"
 #include <SDL2/SDL.h>
 
@@ -5,7 +6,8 @@ int main(int argc, char *argv[]) {
     int window_width = 1280;
     int window_height = 720;
 
-    screen s(0.5, 0.5, window_width, window_height);
+    project p(0, 0, 1);
+    screen s(p.x, p.y, window_width, window_height);
 
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *window = SDL_CreateWindow(
