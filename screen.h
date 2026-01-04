@@ -9,10 +9,10 @@ class screen {
         : e{(x + 1) / 2 * screen_width, (1 - (y + 1) / 2) * screen_height} {
           }; // 1- as the y axis is flip and needs to inverse
 
-    const double x = e[0];
-    const double y = e[1];
+    const double x = this->e[0];
+    const double y = this->e[1];
 };
 
-inline int offset(double &axis, int &size) { return axis - double(size) / 2; }
+inline int offset(double axis, int &size) { return axis - double(size) / 2; }
 
 #endif // !SCREEN_H

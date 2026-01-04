@@ -6,7 +6,7 @@ int main(int argc, char *argv[]) {
     int window_width = 1280;
     int window_height = 720;
 
-    project p(0, 0, 1);
+    project p(0.5, 0.5, 1);
     screen s(p.x, p.y, window_width, window_height);
 
     SDL_Init(SDL_INIT_EVERYTHING);
