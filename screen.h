@@ -13,4 +13,6 @@ class screen {
     int y = e[1];
 };
 
+inline int offset(int &axis, int &size) { return axis - size / 2; }
+
 #endif // !SCREEN_H

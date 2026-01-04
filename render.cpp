@@ -5,7 +5,7 @@ int main(int argc, char *argv[]) {
     int window_width = 1280;
     int window_height = 720;
 
-    screen s(0, 0, window_width, window_height);
+    screen s(0.5, 0.5, window_width, window_height);
 
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *window = SDL_CreateWindow(
@@ -18,7 +18,8 @@ int main(int argc, char *argv[]) {
     SDL_Event event;
 
     int square_size = 20;
-    SDL_Rect rectangle = {s.x, s.y, square_size, square_size};
+    SDL_Rect rectangle = {offset(s.x, square_size), offset(s.y, square_size),
+                          square_size, square_size};
     bool running = true;
 
     while (running) {
