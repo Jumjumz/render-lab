@@ -1,14 +1,9 @@
 #include "frame.h"
-#include "screen.h"
 #include <SDL2/SDL.h>
 
 int main(int argc, char *argv[]) {
     int window_width = 1280;
     int window_height = 720;
-
-    screen s(0.5, 0.5, 1);
-    screen p = project(s.x, s.y, s.z);
-    screen d = display(p.x, p.y, window_width, window_height);
 
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *window = SDL_CreateWindow(
@@ -21,10 +16,8 @@ int main(int argc, char *argv[]) {
     SDL_Event event;
 
     int square_size = 20;
-    SDL_Rect rectangle = {offset(d.x, square_size), offset(d.y, square_size),
-                          square_size, square_size};
-    bool running = true;
     int prev_time = SDL_GetTicks();
+    bool running = true;
 
     while (running) {
         int current_time = SDL_GetTicks();
