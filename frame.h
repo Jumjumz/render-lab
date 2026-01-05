@@ -6,9 +6,8 @@
 
 inline SDL_Rect frame(float delta_time, int &window_width, int &window_height,
                       int &rec_size) {
-    int fps = 60;
     static float dz = 0.0f;
-    dz += 1 * delta_time; // speed * delta time aka velocity
+    dz += 1 * delta_time; // speed * delta time
 
     screen s(0.5, 0.5, 1 + dz);
     screen p = project(s.x, s.y, s.z);
