@@ -9,9 +9,10 @@ int main(int argc, char *argv[]) {
     int window_width = 1280;
     int window_height = 720;
 
-    screen squares[SIZE] = {{0.5, 0.5, 1},   {0.5, -0.5, 1}, {-0.5, 0.5, 1},
-                            {-0.5, -0.5, 1}, {0.5, 0.5, 2},  {0.5, -0.5, 2},
-                            {-0.5, 0.5, 2},  {-0.5, -0.5, 2}};
+    screen squares[SIZE] = {{0.25, 0.25, 0.25},   {0.25, -0.25, 0.25},
+                            {-0.25, 0.25, 0.25},  {-0.25, -0.25, 0.25},
+                            {0.25, 0.25, -0.25},  {0.25, -0.25, -0.25},
+                            {-0.25, 0.25, -0.25}, {-0.25, -0.25, -0.25}};
 
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *window = SDL_CreateWindow(
@@ -37,11 +38,11 @@ int main(int argc, char *argv[]) {
         float delta_time = (current_time - prev_time) / 1000.0f;
         prev_time = current_time;
 
-        static float dz = 0.0f;
+        static float dz = 1.0f;
         static float angle = 0;
 
-        dz += 1 * delta_time; // speed * delta time
-        angle += 2 * M_PI * delta_time;
+        // dz += 1 * delta_time; // speed * delta time
+        angle += M_PI / 4 * delta_time;
 
         // render the background and do a clear
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
