@@ -1,5 +1,5 @@
-#include "SDL_timer.h"
 #include "frame.h"
+#include "screen.h"
 #include <SDL2/SDL.h>
 
 int main(int argc, char *argv[]) {
@@ -25,7 +25,17 @@ int main(int argc, char *argv[]) {
         float delta_time = (current_time - prev_time) / 1000.0f;
         prev_time = current_time;
 
-        auto square = frame(delta_time, window_width, window_height, square_size);
+        static float dz = 0.0f;
+        dz += 1 * delta_time; // speed * delta time
+
+        auto sq_1 =
+            square({0.5, 0.5, 1 + dz}, window_width, window_height, square_size);
+        auto sq_2 = square({0.5, -0.5, 1 + dz}, window_width, window_height,
+                           square_size);
+        auto sq_3 = square({-0.5, 0.5, 1 + dz}, window_width, window_height,
+                           square_size);
+        auto sq_4 = square({-0.5, -0.5, 1 + dz}, window_width, window_height,
+                           square_size);
 
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT)
@@ -37,7 +47,10 @@ int main(int argc, char *argv[]) {
         SDL_RenderClear(renderer);
 
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-        SDL_RenderFillRect(renderer, &square);
+        SDL_RenderFillRect(renderer, &sq_1);
+        SDL_RenderFillRect(renderer, &sq_2);
+        SDL_RenderFillRect(renderer, &sq_3);
+        SDL_RenderFillRect(renderer, &sq_4);
 
         SDL_RenderPresent(renderer);
     }
