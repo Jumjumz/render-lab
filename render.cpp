@@ -2,13 +2,15 @@
 #include "screen.h"
 #include <SDL2/SDL.h>
 
+const int SIZE = 8;
+
 int main(int argc, char *argv[]) {
     int window_width = 1280;
     int window_height = 720;
 
-    const int size = 4;
-    screen squares[size] = {
-        {0.5, 0.5, 1}, {0.5, -0.5, 1}, {-0.5, 0.5, 1}, {-0.5, -0.5, 1}};
+    screen squares[SIZE] = {
+        {0.5, 0.5, 1},   {0.5, -0.5, 1},   {-0.5, 0.5, 1},   {-0.5, -0.5, 1},
+        {0.5, 0.5, 1.5}, {0.5, -0.5, 1.5}, {-0.5, 0.5, 1.5}, {-0.5, -0.5, 1.5}};
 
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *window = SDL_CreateWindow(
@@ -41,7 +43,7 @@ int main(int argc, char *argv[]) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
         SDL_RenderClear(renderer);
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < SIZE; i++) {
             auto sq = square({squares[i].x, squares[i].y, squares[i].z + dz},
                              window_width, window_height, square_size);
 
