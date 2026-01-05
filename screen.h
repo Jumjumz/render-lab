@@ -16,13 +16,11 @@ class screen {
     const double z = this->e[2];
 };
 
-inline screen project(double x, double y, double z) {
-    return screen(x / z, y / z);
-}
+inline screen project(double x, double y, double z) { return {x / z, y / z}; }
 
 inline screen display(double x, double y, int &screen_width, int &screen_height) {
-    return screen((x + 1) / 2 * screen_width,
-                  (1 - (y + 1) / 2) * screen_height); // 1- as y axis is flipped
+    return {(x + 1) / 2 * screen_width,
+            (1 - (y + 1) / 2) * screen_height}; // 1- as y axis is flipped
 }
 
 inline int offset(double axis, int &size) { return axis - double(size) / 2; }

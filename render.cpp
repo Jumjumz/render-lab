@@ -1,3 +1,4 @@
+#include "frame.h"
 #include "screen.h"
 #include <SDL2/SDL.h>
 
@@ -23,14 +24,20 @@ int main(int argc, char *argv[]) {
     SDL_Rect rectangle = {offset(d.x, square_size), offset(d.y, square_size),
                           square_size, square_size};
     bool running = true;
+    int prev_time = SDL_GetTicks();
 
     while (running) {
+        int current_time = SDL_GetTicks();
+        double delta_time = (current_time - prev_time) / 1000.0f;
+        auto square = frame(delta_time, window_width, window_height, square_size);
+
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT)
                 running = false;
         }
+
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-        SDL_RenderFillRect(renderer, &rectangle);
+        SDL_RenderFillRect(renderer, &square);
 
         SDL_RenderPresent(renderer);
     }
