@@ -4,10 +4,11 @@
 #include "SDL_rect.h"
 #include "screen.h"
 
-inline SDL_Rect frame(double delta_time, int &window_width, int &window_height,
+inline SDL_Rect frame(float delta_time, int &window_width, int &window_height,
                       int &rec_size) {
-    int dz = 0;
-    dz += 1 * delta_time;
+    int fps = 60;
+    static float dz = 0.0f;
+    dz += 1 * delta_time; // speed * delta time aka velocity
 
     screen s(0.5, 0.5, 1 + dz);
     screen p = project(s.x, s.y, s.z);

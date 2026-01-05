@@ -1,3 +1,4 @@
+#include "SDL_timer.h"
 #include "frame.h"
 #include <SDL2/SDL.h>
 
@@ -16,18 +17,24 @@ int main(int argc, char *argv[]) {
     SDL_Event event;
 
     int square_size = 20;
-    int prev_time = SDL_GetTicks();
     bool running = true;
+    int prev_time = SDL_GetTicks();
 
     while (running) {
         int current_time = SDL_GetTicks();
-        double delta_time = (current_time - prev_time) / 1000.0f;
+        float delta_time = (current_time - prev_time) / 1000.0f;
+        prev_time = current_time;
+
         auto square = frame(delta_time, window_width, window_height, square_size);
 
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT)
                 running = false;
         }
+
+        // render the background and do a clear
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+        SDL_RenderClear(renderer);
 
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
         SDL_RenderFillRect(renderer, &square);
