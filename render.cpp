@@ -6,6 +6,10 @@ int main(int argc, char *argv[]) {
     int window_width = 1280;
     int window_height = 720;
 
+    const int size = 4;
+    screen squares[size] = {
+        {0.5, 0.5, 1}, {0.5, -0.5, 1}, {-0.5, 0.5, 1}, {-0.5, -0.5, 1}};
+
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *window = SDL_CreateWindow(
         "Wireframe Renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -21,6 +25,11 @@ int main(int argc, char *argv[]) {
     int prev_time = SDL_GetTicks();
 
     while (running) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT)
+                running = false;
+        }
+
         int current_time = SDL_GetTicks();
         float delta_time = (current_time - prev_time) / 1000.0f;
         prev_time = current_time;
@@ -28,29 +37,17 @@ int main(int argc, char *argv[]) {
         static float dz = 0.0f;
         dz += 1 * delta_time; // speed * delta time
 
-        auto sq_1 =
-            square({0.5, 0.5, 1 + dz}, window_width, window_height, square_size);
-        auto sq_2 = square({0.5, -0.5, 1 + dz}, window_width, window_height,
-                           square_size);
-        auto sq_3 = square({-0.5, 0.5, 1 + dz}, window_width, window_height,
-                           square_size);
-        auto sq_4 = square({-0.5, -0.5, 1 + dz}, window_width, window_height,
-                           square_size);
-
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT)
-                running = false;
-        }
-
         // render the background and do a clear
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
         SDL_RenderClear(renderer);
 
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-        SDL_RenderFillRect(renderer, &sq_1);
-        SDL_RenderFillRect(renderer, &sq_2);
-        SDL_RenderFillRect(renderer, &sq_3);
-        SDL_RenderFillRect(renderer, &sq_4);
+        for (int i = 0; i < size; i++) {
+            auto sq = square({squares[i].x, squares[i].y, squares[i].z + dz},
+                             window_width, window_height, square_size);
+
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+            SDL_RenderFillRect(renderer, &sq);
+        }
 
         SDL_RenderPresent(renderer);
     }
