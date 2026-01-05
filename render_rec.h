@@ -1,5 +1,5 @@
-#ifndef FRAME_H
-#define FRAME_H
+#ifndef RENDER_REC_H
+#define RENDER_REC_H
 
 #include "SDL_rect.h"
 #include "screen.h"
@@ -12,4 +12,4 @@ inline SDL_Rect square(screen square, int &window_width, int &window_height,
     return {offset(d.x, rec_size), offset(d.y, rec_size), rec_size, rec_size};
 }
 
-#endif // !FRAME_H
+#endif // !RENDER_REC_H
