@@ -1,6 +1,7 @@
 #include "render_rec.h"
 #include "screen.h"
 #include <SDL2/SDL.h>
+#include <cmath>
 
 const int SIZE = 8;
 
@@ -37,15 +38,18 @@ int main(int argc, char *argv[]) {
         prev_time = current_time;
 
         static float dz = 0.0f;
+        static float angle = 0.0f;
+
         dz += 1 * delta_time; // speed * delta time
+        angle += 2 * M_PI * delta_time;
 
         // render the background and do a clear
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
         SDL_RenderClear(renderer);
 
         for (int i = 0; i < SIZE; i++) {
-            auto sq = square({squares[i].x, squares[i].y, squares[i].z + dz},
-                             window_width, window_height, square_size);
+            auto t = translate_z(rotate(squares[i], angle), dz);
+            auto sq = square(t, window_width, window_height, square_size);
 
             SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
             SDL_RenderFillRect(renderer, &sq);

@@ -1,6 +1,8 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+#include <cmath>
+
 class screen {
   public:
     double e[3];
@@ -24,5 +26,14 @@ inline screen display(double x, double y, int &screen_width, int &screen_height)
 }
 
 inline int offset(double axis, int &size) { return axis - double(size) / 2; }
+
+inline screen translate_z(screen t, float &dz) { return {t.x, t.y, t.z + dz}; }
+
+inline screen rotate(screen s, float &angle) {
+    int cos = std::cos(angle);
+    int sin = std::sin(angle);
+
+    return {s.x * cos - s.z * sin, s.y, s.x * sin + s.z * cos};
+}
 
 #endif // !SCREEN_H
