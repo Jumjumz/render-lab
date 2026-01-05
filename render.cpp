@@ -9,9 +9,9 @@ int main(int argc, char *argv[]) {
     int window_width = 1280;
     int window_height = 720;
 
-    screen squares[SIZE] = {
-        {0.5, 0.5, 1},   {0.5, -0.5, 1},   {-0.5, 0.5, 1},   {-0.5, -0.5, 1},
-        {0.5, 0.5, 1.5}, {0.5, -0.5, 1.5}, {-0.5, 0.5, 1.5}, {-0.5, -0.5, 1.5}};
+    screen squares[SIZE] = {{0.5, 0.5, 1},   {0.5, -0.5, 1}, {-0.5, 0.5, 1},
+                            {-0.5, -0.5, 1}, {0.5, 0.5, 2},  {0.5, -0.5, 2},
+                            {-0.5, 0.5, 2},  {-0.5, -0.5, 2}};
 
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *window = SDL_CreateWindow(
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
         prev_time = current_time;
 
         static float dz = 0.0f;
-        static float angle = 0.0f;
+        static float angle = 0;
 
         dz += 1 * delta_time; // speed * delta time
         angle += 2 * M_PI * delta_time;

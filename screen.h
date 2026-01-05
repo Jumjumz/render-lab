@@ -30,8 +30,8 @@ inline int offset(double axis, int &size) { return axis - double(size) / 2; }
 inline screen translate_z(screen t, float &dz) { return {t.x, t.y, t.z + dz}; }
 
 inline screen rotate(screen s, float &angle) {
-    int cos = std::cos(angle);
-    int sin = std::sin(angle);
+    float cos = std::cos(angle);
+    float sin = std::sin(angle);
 
     return {s.x * cos - s.z * sin, s.y, s.x * sin + s.z * cos};
 }
