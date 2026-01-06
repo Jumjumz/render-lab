@@ -15,7 +15,8 @@ int main(int argc, char *argv[]) {
                             {0.25, 0.25, -0.25},   {-0.25, 0.25, -0.25},
                             {-0.25, -0.25, -0.25}, {0.25, -0.25, -0.25}};
 
-    std::vector<std::vector<int>> fs = {{0, 1, 2, 3}, {4, 5, 6, 7}};
+    std::vector<std::vector<int>> fs = {{0, 1, 2, 3}, {4, 5, 6, 7}, {0, 4},
+                                        {1, 5},       {2, 6},       {3, 7}};
 
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *window = SDL_CreateWindow(
