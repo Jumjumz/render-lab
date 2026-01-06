@@ -59,8 +59,8 @@ int main(int argc, char *argv[]) {
             auto sq = square(t, window_width, window_height, square_size);
             auto pt = point(t, window_width, window_height);
 
-            SDL_RenderFillRect(renderer, &sq);
-            // SDL_RenderDrawPoints(renderer, &pt, SIZE);
+            // SDL_RenderFillRect(renderer, &sq);
+            SDL_RenderDrawPoints(renderer, &pt, 4);
             // SDL_RenderDrawLines(renderer, &pt, SIZE);
         }
 
