@@ -51,9 +51,12 @@ int main(int argc, char *argv[]) {
         for (int i = 0; i < SIZE; i++) {
             auto t = translate_z(rotate(squares[i], angle), dz);
             auto sq = square(t, window_width, window_height, square_size);
+            auto pt = point(t, window_width, window_height);
 
             SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
             SDL_RenderFillRect(renderer, &sq);
+            // SDL_RenderDrawPoint(renderer, pt.x, pt.y);
+            // SDL_RenderDrawPoints(renderer, &pt, SIZE);
         }
 
         SDL_RenderPresent(renderer);
