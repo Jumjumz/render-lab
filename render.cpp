@@ -1,7 +1,9 @@
+#include "SDL_render.h"
 #include "render_rec.h"
 #include "screen.h"
 #include <SDL2/SDL.h>
 #include <cmath>
+#include <vector>
 
 const int SIZE = 8;
 
@@ -13,6 +15,8 @@ int main(int argc, char *argv[]) {
                             {-0.25, 0.25, 0.25},  {-0.25, -0.25, 0.25},
                             {0.25, 0.25, -0.25},  {0.25, -0.25, -0.25},
                             {-0.25, 0.25, -0.25}, {-0.25, -0.25, -0.25}};
+
+    std::vector<std::vector<int>> fs = {{0, 1, 2, 3}, {4, 5, 6, 7}};
 
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *window = SDL_CreateWindow(
@@ -55,8 +59,21 @@ int main(int argc, char *argv[]) {
 
             SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
             SDL_RenderFillRect(renderer, &sq);
-            // SDL_RenderDrawPoint(renderer, pt.x, pt.y);
             // SDL_RenderDrawPoints(renderer, &pt, SIZE);
+            // SDL_RenderDrawLines(renderer, &pt, SIZE);
+        }
+
+        for (std::vector<int> f : fs) {
+            for (int j = 0; j < f.size(); j++) {
+                screen vtx1 = squares[f[j]];
+                screen vtx2 = squares[f[(j + 1) % f.size()]];
+
+                auto tv1 = translate_z(rotate(vtx1, angle), dz);
+                auto tv2 = translate_z(rotate(vtx2, angle), dz);
+
+                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                SDL_RenderDrawLine(renderer, tv1.x, tv1.y, tv2.x, tv2.y);
+            }
         }
 
         SDL_RenderPresent(renderer);
@@ -64,6 +81,7 @@ int main(int argc, char *argv[]) {
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+
     SDL_Quit();
 
     return 0;
