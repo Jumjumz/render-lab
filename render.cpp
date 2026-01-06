@@ -52,12 +52,13 @@ int main(int argc, char *argv[]) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
         SDL_RenderClear(renderer);
 
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+
         for (int i = 0; i < SIZE; i++) {
             auto t = translate_z(rotate(squares[i], angle), dz);
             auto sq = square(t, window_width, window_height, square_size);
             auto pt = point(t, window_width, window_height);
 
-            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
             SDL_RenderFillRect(renderer, &sq);
             // SDL_RenderDrawPoints(renderer, &pt, SIZE);
             // SDL_RenderDrawLines(renderer, &pt, SIZE);
@@ -71,8 +72,10 @@ int main(int argc, char *argv[]) {
                 auto tv1 = translate_z(rotate(vtx1, angle), dz);
                 auto tv2 = translate_z(rotate(vtx2, angle), dz);
 
-                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-                SDL_RenderDrawLine(renderer, tv1.x, tv1.y, tv2.x, tv2.y);
+                auto vt1 = vertex(tv1, window_width, window_height);
+                auto vt2 = vertex(tv2, window_width, window_height);
+
+                SDL_RenderDrawLine(renderer, vt1.x, vt1.y, vt2.x, vt2.y);
             }
         }
 

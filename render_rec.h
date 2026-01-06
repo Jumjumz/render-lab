@@ -19,4 +19,11 @@ inline SDL_Point point(screen point, int &window_width, int &window_height) {
     return {int(d.x), int(d.y)};
 }
 
+inline screen vertex(screen vtx, int &window_width, int &window_height) {
+    screen p = project(vtx.x, vtx.y, vtx.z);
+    screen d = display(p.x, p.y, window_width, window_height);
+
+    return {d.x, d.y, d.z};
+}
+
 #endif // !RENDER_REC_H
