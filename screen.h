@@ -29,9 +29,18 @@ inline screen translate_z(screen t, float &dz) { return {t.x, t.y, t.z + dz}; }
 
 inline screen project(double x, double y, double z) { return {x / z, y / z}; }
 
-inline screen display(double x, double y, int &screen_width, int &screen_height) {
-    return {(x + 1) / 2 * screen_width,
-            (1 - (y + 1) / 2) * screen_height}; // 1- as y axis is flipped
+inline screen display(double x, double y, float &aspect_ratio,
+                      int &screen_width, int &screen_height) {
+    return {((x / aspect_ratio) + 1) / 2 * screen_width,
+            (1 - (y + 1) / 2) *
+                screen_height}; // 1- as y axis is flipped
+                                // this can also be used return {x *
+                                // (screen_width / aspect_ratio) / 2
+                                // + double(screen_width) / 2,
+                                //             y * screen_height / 2 +
+                                //                             double(screen_height)
+                                //                             / 2}; // 1- as y
+                                //                             axis is flipped
 }
 
 inline int offset(double axis, int &size) { return axis - double(size) / 2; }

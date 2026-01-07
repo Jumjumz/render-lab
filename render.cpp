@@ -5,8 +5,9 @@
 #include <vector>
 
 int main(int argc, char *argv[]) {
-    int window_width = 720;
-    int window_height = 720;
+    float aspect_ratio = 16.0 / 9.0;
+    int window_width = 1280;
+    int window_height = int(window_width / aspect_ratio);
 
     std::vector<screen> squares = {{0.25, 0.25, 0.25},    {-0.25, 0.25, 0.25},
                                    {-0.25, -0.25, 0.25},  {0.25, -0.25, 0.25},
@@ -54,8 +55,8 @@ int main(int argc, char *argv[]) {
 
         for (int i = 0; i < squares.size(); i++) {
             auto t = translate_z(rotate(squares[i], angle), dz);
-            auto sq = square(t, window_width, window_height, square_size);
-            auto pt = point(t, window_width, window_height);
+            // auto sq = square(t, window_width, window_height, square_size);
+            auto pt = point(t, aspect_ratio, window_width, window_height);
 
             // SDL_RenderFillRect(renderer, &sq);
             SDL_RenderDrawPoints(renderer, &pt, 4);
@@ -70,8 +71,8 @@ int main(int argc, char *argv[]) {
                 auto tv1 = translate_z(rotate(vtx1, angle), dz);
                 auto tv2 = translate_z(rotate(vtx2, angle), dz);
 
-                auto vt1 = vertex(tv1, window_width, window_height);
-                auto vt2 = vertex(tv2, window_width, window_height);
+                auto vt1 = vertex(tv1, aspect_ratio, window_width, window_height);
+                auto vt2 = vertex(tv2, aspect_ratio, window_width, window_height);
 
                 SDL_RenderDrawLine(renderer, vt1.x, vt1.y, vt2.x, vt2.y);
             }
