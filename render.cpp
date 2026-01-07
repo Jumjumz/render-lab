@@ -4,16 +4,14 @@
 #include <cmath>
 #include <vector>
 
-const int SIZE = 8;
-
 int main(int argc, char *argv[]) {
     int window_width = 720;
     int window_height = 720;
 
-    screen squares[SIZE] = {{0.25, 0.25, 0.25},    {-0.25, 0.25, 0.25},
-                            {-0.25, -0.25, 0.25},  {0.25, -0.25, 0.25},
-                            {0.25, 0.25, -0.25},   {-0.25, 0.25, -0.25},
-                            {-0.25, -0.25, -0.25}, {0.25, -0.25, -0.25}};
+    std::vector<screen> squares = {{0.25, 0.25, 0.25},    {-0.25, 0.25, 0.25},
+                                   {-0.25, -0.25, 0.25},  {0.25, -0.25, 0.25},
+                                   {0.25, 0.25, -0.25},   {-0.25, 0.25, -0.25},
+                                   {-0.25, -0.25, -0.25}, {0.25, -0.25, -0.25}};
 
     std::vector<std::vector<int>> fs = {{0, 1, 2, 3}, {4, 5, 6, 7}, {0, 4},
                                         {1, 5},       {2, 6},       {3, 7}};
@@ -54,7 +52,7 @@ int main(int argc, char *argv[]) {
 
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 
-        for (int i = 0; i < SIZE; i++) {
+        for (int i = 0; i < squares.size(); i++) {
             auto t = translate_z(rotate(squares[i], angle), dz);
             auto sq = square(t, window_width, window_height, square_size);
             auto pt = point(t, window_width, window_height);
