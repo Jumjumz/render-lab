@@ -1,5 +1,4 @@
-#include "render.h"
-#include "SDL_rect.h"
+#include "screen.h"
 #include "vec.h"
 #include <SDL2/SDL.h>
 #include <cmath>
@@ -28,7 +27,6 @@ int main(int argc, char *argv[]) {
 
     SDL_Event event;
 
-    int square_size = 20;
     bool running = true;
     int prev_time = SDL_GetTicks();
 
@@ -48,6 +46,9 @@ int main(int argc, char *argv[]) {
         // dz += 1 * delta_time; // speed * delta time
         angle += M_PI / 4 * delta_time;
 
+        screen screen_display = {dz, angle, aspect_ratio, window_width,
+                                 window_height};
+
         // render the background and do a clear
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
         SDL_RenderClear(renderer);
@@ -55,8 +56,7 @@ int main(int argc, char *argv[]) {
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 
         for (int i = 0; i < squares.size(); i++) {
-            auto t = translate_z(rotate(squares[i], angle), dz);
-            auto pt = point(t, aspect_ratio, window_width, window_height);
+            auto pt = screen_display.position(squares[i]);
 
             SDL_Point p = {int(pt.x), int(pt.y)};
 
@@ -68,13 +68,10 @@ int main(int argc, char *argv[]) {
                 vec vtx1 = squares[f[j]];
                 vec vtx2 = squares[f[(j + 1) % f.size()]];
 
-                auto tv1 = translate_z(rotate(vtx1, angle), dz);
-                auto tv2 = translate_z(rotate(vtx2, angle), dz);
+                auto tv1 = screen_display.position(vtx1);
+                auto tv2 = screen_display.position(vtx2);
 
-                auto vt1 = vertex(tv1, aspect_ratio, window_width, window_height);
-                auto vt2 = vertex(tv2, aspect_ratio, window_width, window_height);
-
-                SDL_RenderDrawLine(renderer, vt1.x, vt1.y, vt2.x, vt2.y);
+                SDL_RenderDrawLine(renderer, tv1.x, tv1.y, tv2.x, tv2.y);
             }
         }
 

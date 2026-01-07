@@ -6,17 +6,22 @@
 
 class screen {
   public:
-    float focal_point;
-    float angle;
-    const float aspect_ratio;
+    const float angle;
     const int screen_width;
     const int screen_height;
+    const float focal_point;
+    const float aspect_ratio;
 
-    vec point_position(vec position) {
+    screen(float &focal_point, float &angle, float &aspect_ratio,
+           int &screen_width, int &screen_height)
+        : focal_point(focal_point), angle(angle), aspect_ratio(aspect_ratio),
+          screen_width(screen_width), screen_height(screen_height) {};
+
+    vec position(vec position) const {
         vec display = project(position);
 
         return {((display.x / aspect_ratio) + 1) / 2 * screen_width,
-                (1 - (display.y + 1) / 2 * screen_height), position.z};
+                (1 - (display.y + 1) / 2) * screen_height};
     }
 
   private:
@@ -38,12 +43,5 @@ class screen {
                 position.x * sin + position.z * cos};
     }
 };
-
-inline vec display(double x, double y, float &aspect_ratio, int &screen_width,
-                   int &screen_height) {
-    // -1.. 1 => 0..2 => 0..1 <- by dividing to 2
-    return {((x / aspect_ratio) + 1) / 2 * screen_width,
-            (1 - (y + 1) / 2) * screen_height}; // 1- as y axis is flipped
-}
 
 #endif // !SCREEN_H
