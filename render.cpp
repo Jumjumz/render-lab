@@ -9,10 +9,10 @@ int main(int argc, char *argv[]) {
     int window_width = 1440;
     int window_height = int(window_width / aspect_ratio);
 
-    std::vector<vec> squares = {{0.25, 0.25, 0.25},    {-0.25, 0.25, 0.25},
-                                {-0.25, -0.25, 0.25},  {0.25, -0.25, 0.25},
-                                {0.25, 0.25, -0.25},   {-0.25, 0.25, -0.25},
-                                {-0.25, -0.25, -0.25}, {0.25, -0.25, -0.25}};
+    std::vector<vec> positions = {{0.25, 0.25, 0.25},    {-0.25, 0.25, 0.25},
+                                  {-0.25, -0.25, 0.25},  {0.25, -0.25, 0.25},
+                                  {0.25, 0.25, -0.25},   {-0.25, 0.25, -0.25},
+                                  {-0.25, -0.25, -0.25}, {0.25, -0.25, -0.25}};
 
     std::vector<std::vector<int>> fs = {{0, 1, 2, 3}, {4, 5, 6, 7}, {0, 4},
                                         {1, 5},       {2, 6},       {3, 7}};
@@ -55,8 +55,8 @@ int main(int argc, char *argv[]) {
 
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 
-        for (int i = 0; i < squares.size(); i++) {
-            auto pt = screen_display.position(squares[i]);
+        for (int i = 0; i < positions.size(); i++) {
+            auto pt = screen_display.position(positions[i]);
 
             SDL_Point p = {int(pt.x), int(pt.y)};
 
@@ -65,8 +65,8 @@ int main(int argc, char *argv[]) {
 
         for (std::vector<int> f : fs) {
             for (int j = 0; j < f.size(); j++) {
-                vec vtx1 = squares[f[j]];
-                vec vtx2 = squares[f[(j + 1) % f.size()]];
+                vec vtx1 = positions[f[j]];
+                vec vtx2 = positions[f[(j + 1) % f.size()]];
 
                 auto tv1 = screen_display.position(vtx1);
                 auto tv2 = screen_display.position(vtx2);
