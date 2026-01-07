@@ -1,5 +1,5 @@
+#include "render.h"
 #include "SDL_rect.h"
-#include "render_point.h"
 #include "vector3.h"
 #include <SDL2/SDL.h>
 #include <cmath>
@@ -57,6 +57,7 @@ int main(int argc, char *argv[]) {
         for (int i = 0; i < squares.size(); i++) {
             auto t = translate_z(rotate(squares[i], angle), dz);
             auto pt = point(t, aspect_ratio, window_width, window_height);
+
             SDL_Point p = {int(pt.x), int(pt.y)};
 
             SDL_RenderDrawPoints(renderer, &p, 4);
