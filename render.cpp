@@ -1,4 +1,4 @@
-#include "render_rec.h"
+#include "render_point.h"
 #include "screen.h"
 #include <SDL2/SDL.h>
 #include <cmath>
@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[]) {
     float aspect_ratio = 16.0 / 9.0;
-    int window_width = 1280;
+    int window_width = 1440;
     int window_height = int(window_width / aspect_ratio);
 
     std::vector<screen> squares = {{0.25, 0.25, 0.25},    {-0.25, 0.25, 0.25},
@@ -55,12 +55,9 @@ int main(int argc, char *argv[]) {
 
         for (int i = 0; i < squares.size(); i++) {
             auto t = translate_z(rotate(squares[i], angle), dz);
-            // auto sq = square(t, window_width, window_height, square_size);
             auto pt = point(t, aspect_ratio, window_width, window_height);
 
-            // SDL_RenderFillRect(renderer, &sq);
             SDL_RenderDrawPoints(renderer, &pt, 4);
-            // SDL_RenderDrawLines(renderer, &pt, SIZE);
         }
 
         for (std::vector<int> f : fs) {
