@@ -7,7 +7,7 @@
 const int SIZE = 8;
 
 int main(int argc, char *argv[]) {
-    int window_width = 1280;
+    int window_width = 720;
     int window_height = 720;
 
     screen squares[SIZE] = {{0.25, 0.25, 0.25},    {-0.25, 0.25, 0.25},
