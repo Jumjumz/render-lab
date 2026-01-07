@@ -10,10 +10,10 @@ int main(int argc, char *argv[]) {
     int window_width = 1440;
     int window_height = int(window_width / aspect_ratio);
 
-    std::vector<vector3> squares = {
-        {0.25, 0.25, 0.25},    {-0.25, 0.25, 0.25}, {-0.25, -0.25, 0.25},
-        {0.25, -0.25, 0.25},   {0.25, 0.25, -0.25}, {-0.25, 0.25, -0.25},
-        {-0.25, -0.25, -0.25}, {0.25, -0.25, -0.25}};
+    std::vector<vec> squares = {{0.25, 0.25, 0.25},    {-0.25, 0.25, 0.25},
+                                {-0.25, -0.25, 0.25},  {0.25, -0.25, 0.25},
+                                {0.25, 0.25, -0.25},   {-0.25, 0.25, -0.25},
+                                {-0.25, -0.25, -0.25}, {0.25, -0.25, -0.25}};
 
     std::vector<std::vector<int>> fs = {{0, 1, 2, 3}, {4, 5, 6, 7}, {0, 4},
                                         {1, 5},       {2, 6},       {3, 7}};
@@ -65,8 +65,8 @@ int main(int argc, char *argv[]) {
 
         for (std::vector<int> f : fs) {
             for (int j = 0; j < f.size(); j++) {
-                vector3 vtx1 = squares[f[j]];
-                vector3 vtx2 = squares[f[(j + 1) % f.size()]];
+                vec vtx1 = squares[f[j]];
+                vec vtx2 = squares[f[(j + 1) % f.size()]];
 
                 auto tv1 = translate_z(rotate(vtx1, angle), dz);
                 auto tv2 = translate_z(rotate(vtx2, angle), dz);
