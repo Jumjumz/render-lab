@@ -1,7 +1,7 @@
 #ifndef RENDER_POINT_H
 #define RENDER_POINT_H
 
-#include "vector3.h"
+#include "vec.h"
 
 inline vector3 rotate(vector3 s, float &angle) {
     float cos = std::cos(angle);

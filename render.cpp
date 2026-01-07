@@ -1,6 +1,6 @@
 #include "render.h"
 #include "SDL_rect.h"
-#include "vector3.h"
+#include "vec.h"
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <vector>
