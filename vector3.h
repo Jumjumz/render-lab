@@ -1,36 +1,38 @@
-#ifndef SCREEN_H
-#define SCREEN_H
+#ifndef VECTOR3_H
+#define VECTOR3_H
 
 #include <cmath>
 
-class screen {
+class vector3 {
   public:
     double e[3];
 
-    screen() : e{e[0], e[1]} {};
+    vector3() : e{e[0], e[1]} {};
 
-    screen(double x, double y) : e{x, y} {};
+    vector3(double x, double y) : e{x, y} {};
 
-    screen(double x, double y, double z) : e{x, y, z} {};
+    vector3(double x, double y, double z) : e{x, y, z} {};
 
     const double x = this->e[0];
     const double y = this->e[1];
     const double z = this->e[2];
 };
 
-inline screen rotate(screen s, float &angle) {
+inline vector3 rotate(vector3 s, float &angle) {
     float cos = std::cos(angle);
     float sin = std::sin(angle);
 
     return {s.x * cos - s.z * sin, s.y, s.x * sin + s.z * cos};
 }
 
-inline screen translate_z(screen t, float &dz) { return {t.x, t.y, t.z + dz}; }
+inline vector3 translate_z(vector3 t, float &dz) {
+    return {t.x, t.y, t.z + dz};
+}
 
-inline screen project(double x, double y, double z) { return {x / z, y / z}; }
+inline vector3 project(double x, double y, double z) { return {x / z, y / z}; }
 
-inline screen display(double x, double y, float &aspect_ratio,
-                      int &screen_width, int &screen_height) {
+inline vector3 display(double x, double y, float &aspect_ratio,
+                       int &screen_width, int &screen_height) {
     // -1.. 1 => 0..2 => 0..1 <- by deviding to 2
     return {((x / aspect_ratio) + 1) / 2 * screen_width,
             (1 - (y + 1) / 2) *
@@ -46,4 +48,4 @@ inline screen display(double x, double y, float &aspect_ratio,
 
 inline int offset(double axis, int &size) { return axis - double(size) / 2; }
 
-#endif // !SCREEN_H
+#endif // !VECTOR3_H

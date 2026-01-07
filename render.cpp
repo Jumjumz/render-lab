@@ -1,5 +1,6 @@
+#include "SDL_rect.h"
 #include "render_point.h"
-#include "screen.h"
+#include "vector3.h"
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <vector>
@@ -9,10 +10,10 @@ int main(int argc, char *argv[]) {
     int window_width = 1440;
     int window_height = int(window_width / aspect_ratio);
 
-    std::vector<screen> squares = {{0.25, 0.25, 0.25},    {-0.25, 0.25, 0.25},
-                                   {-0.25, -0.25, 0.25},  {0.25, -0.25, 0.25},
-                                   {0.25, 0.25, -0.25},   {-0.25, 0.25, -0.25},
-                                   {-0.25, -0.25, -0.25}, {0.25, -0.25, -0.25}};
+    std::vector<vector3> squares = {
+        {0.25, 0.25, 0.25},    {-0.25, 0.25, 0.25}, {-0.25, -0.25, 0.25},
+        {0.25, -0.25, 0.25},   {0.25, 0.25, -0.25}, {-0.25, 0.25, -0.25},
+        {-0.25, -0.25, -0.25}, {0.25, -0.25, -0.25}};
 
     std::vector<std::vector<int>> fs = {{0, 1, 2, 3}, {4, 5, 6, 7}, {0, 4},
                                         {1, 5},       {2, 6},       {3, 7}};
@@ -56,14 +57,15 @@ int main(int argc, char *argv[]) {
         for (int i = 0; i < squares.size(); i++) {
             auto t = translate_z(rotate(squares[i], angle), dz);
             auto pt = point(t, aspect_ratio, window_width, window_height);
+            SDL_Point p = {int(pt.x), int(pt.y)};
 
-            SDL_RenderDrawPoints(renderer, &pt, 4);
+            SDL_RenderDrawPoints(renderer, &p, 4);
         }
 
         for (std::vector<int> f : fs) {
             for (int j = 0; j < f.size(); j++) {
-                screen vtx1 = squares[f[j]];
-                screen vtx2 = squares[f[(j + 1) % f.size()]];
+                vector3 vtx1 = squares[f[j]];
+                vector3 vtx2 = squares[f[(j + 1) % f.size()]];
 
                 auto tv1 = translate_z(rotate(vtx1, angle), dz);
                 auto tv2 = translate_z(rotate(vtx2, angle), dz);
