@@ -2,6 +2,7 @@
 #define SDL_RENDER_H
 
 #include "SDL.h"
+#include "SDL_render.h"
 #include "screen.h"
 #include "vect.h"
 #include <cmath>
@@ -31,26 +32,25 @@ class sdl_render {
             float delta_time = (current_time - prev_time) / 1000.0f;
             prev_time = current_time;
 
-            static float dz = 1.0f;
+            static float focal_point = 1.0f;
             static float angle = 0.0f;
 
             angle += M_PI / 4 * delta_time; // velocity (radians) * time elapsed
 
-            screen screen_display = {dz, angle, aspect_ratio, window_width,
-                                     window_height};
+            screen screen_display = {focal_point, angle, aspect_ratio,
+                                     window_width, window_height};
 
             // render the background and do a clear
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
             SDL_RenderClear(renderer);
 
-            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+            // prepare the color for what we to draw in the current frame
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 0);
 
             for (int i = 0; i < positions.size(); i++) {
                 vect2 pt = screen_display.position(positions[i]);
 
-                SDL_Point p = {int(pt.x), int(pt.y)};
-
-                SDL_RenderDrawPoints(renderer, &p, positions.size());
+                SDL_RenderDrawPoint(renderer, pt.x, pt.y);
             }
 
             for (std::vector<int> f : faces) {
