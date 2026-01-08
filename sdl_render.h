@@ -3,7 +3,7 @@
 
 #include "SDL.h"
 #include "screen.h"
-#include "vec.h"
+#include "vect.h"
 #include <cmath>
 #include <vector>
 
@@ -12,7 +12,7 @@ class sdl_render {
     int window_width = 720;
     float aspect_ratio = 1.0;
 
-    std::vector<vec> positions;
+    std::vector<vect> positions;
     std::vector<std::vector<int>> faces;
 
     void run() {
@@ -45,7 +45,7 @@ class sdl_render {
             SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 
             for (int i = 0; i < positions.size(); i++) {
-                auto pt = screen_display.position(positions[i]);
+                vect2 pt = screen_display.position(positions[i]);
 
                 SDL_Point p = {int(pt.x), int(pt.y)};
 
@@ -54,13 +54,11 @@ class sdl_render {
 
             for (std::vector<int> f : faces) {
                 for (int j = 0; j < f.size(); j++) {
-                    vec vtx1 = positions[f[j]];
-                    vec vtx2 = positions[f[(j + 1) % f.size()]];
+                    vect2 pt_a = screen_display.position(positions[f[j]]);
+                    vect2 pt_b =
+                        screen_display.position(positions[f[(j + 1) % f.size()]]);
 
-                    auto tv1 = screen_display.position(vtx1);
-                    auto tv2 = screen_display.position(vtx2);
-
-                    SDL_RenderDrawLine(renderer, tv1.x, tv1.y, tv2.x, tv2.y);
+                    SDL_RenderDrawLine(renderer, pt_a.x, pt_a.y, pt_b.x, pt_b.y);
                 }
             }
 
