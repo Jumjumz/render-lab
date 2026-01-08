@@ -5,12 +5,13 @@
 #include "screen.h"
 #include "vect.h"
 #include <cmath>
+#include <cstdint>
 #include <vector>
 
 class sdl_render {
   public:
-    int window_width = 720;
-    float aspect_ratio = 1.0;
+    uint32_t window_width = 720;
+    float aspect_ratio = 1.0f;
 
     std::vector<vect> positions;
     std::vector<std::vector<int>> faces;
@@ -18,7 +19,7 @@ class sdl_render {
     void run() {
         initialize();
 
-        int prev_time = SDL_GetTicks();
+        uint32_t prev_time = SDL_GetTicks();
 
         while (running) {
             while (SDL_PollEvent(&event)) {
@@ -26,7 +27,7 @@ class sdl_render {
                     running = false;
             }
 
-            int current_time = SDL_GetTicks();
+            uint32_t current_time = SDL_GetTicks();
             float delta_time = (current_time - prev_time) / 1000.0f;
             prev_time = current_time;
 
@@ -49,7 +50,7 @@ class sdl_render {
 
                 SDL_Point p = {int(pt.x), int(pt.y)};
 
-                SDL_RenderDrawPoints(renderer, &p, 4);
+                SDL_RenderDrawPoints(renderer, &p, positions.size());
             }
 
             for (std::vector<int> f : faces) {
@@ -74,7 +75,7 @@ class sdl_render {
     }
 
   private:
-    int window_height;
+    uint32_t window_height;
     bool running = true;
 
     SDL_Window *window;
@@ -82,7 +83,7 @@ class sdl_render {
     SDL_Event event;
 
     void initialize() {
-        window_height = int(window_width / aspect_ratio);
+        window_height = uint32_t(window_width / aspect_ratio);
 
         SDL_Init(SDL_INIT_EVERYTHING);
 

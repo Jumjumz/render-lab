@@ -5,7 +5,7 @@ class vect {
   public:
     double e[3];
 
-    vect() : e{e[0], e[1]} {};
+    vect() : e{e[0], e[1], e[2]} {};
 
     vect(double x, double y) : e{x, y} {};
 
