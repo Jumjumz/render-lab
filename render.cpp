@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     // execute functions
     render.run();
 
-    render.quit();
+    render.destroy();
 
     return 0;
 }

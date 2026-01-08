@@ -68,7 +68,7 @@ class sdl_render {
         }
     }
 
-    void quit() {
+    void destroy() {
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
 

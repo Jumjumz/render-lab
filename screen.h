@@ -6,12 +6,6 @@
 
 class screen {
   public:
-    const float angle;
-    const int screen_width;
-    const int screen_height;
-    const float focal_point;
-    const float aspect_ratio;
-
     screen(float &focal_point, float &angle, float &aspect_ratio,
            int &screen_width, int &screen_height)
         : focal_point(focal_point), angle(angle), aspect_ratio(aspect_ratio),
@@ -25,6 +19,13 @@ class screen {
     }
 
   private:
+    const int screen_width;
+    const int screen_height;
+
+    const float angle;
+    const float focal_point;
+    const float aspect_ratio;
+
     vec project(vec position) const {
         vec project = translate_zx(rotate(position));
 
