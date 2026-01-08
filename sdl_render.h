@@ -9,24 +9,15 @@
 
 class sdl_render {
   public:
-    int window_width = 100;
-    int window_height = 100;
+    int window_width = 720;
     float aspect_ratio = 1.0;
 
     std::vector<vec> positions;
     std::vector<std::vector<int>> faces;
 
-    void init() {
-        SDL_Init(SDL_INIT_EVERYTHING);
-
-        window = SDL_CreateWindow("Wireframe Render", SDL_WINDOWPOS_CENTERED,
-                                  SDL_WINDOWPOS_CENTERED, window_width,
-                                  window_height, SDL_WINDOW_SHOWN);
-
-        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    };
-
     void run() {
+        initialize();
+
         int prev_time = SDL_GetTicks();
 
         while (running) {
@@ -85,11 +76,24 @@ class sdl_render {
     }
 
   private:
+    int window_height;
+
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Event event;
 
     bool running = true;
+
+    void initialize() {
+        window_height = int(window_width / aspect_ratio);
+        SDL_Init(SDL_INIT_EVERYTHING);
+
+        window = SDL_CreateWindow("Wireframe Render", SDL_WINDOWPOS_CENTERED,
+                                  SDL_WINDOWPOS_CENTERED, window_width,
+                                  window_height, SDL_WINDOW_SHOWN);
+
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    }
 };
 
 #endif // !SDL_RENDER_H
