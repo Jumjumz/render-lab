@@ -33,7 +33,7 @@ class sdl_render {
             static float dz = 1.0f;
             static float angle = 0.0f;
 
-            angle += M_PI / 4 * delta_time;
+            angle += M_PI / 4 * delta_time; // velocity (radians) * time elapsed
 
             screen screen_display = {dz, angle, aspect_ratio, window_width,
                                      window_height};
@@ -68,7 +68,7 @@ class sdl_render {
         }
     }
 
-    void destroy() {
+    void destroy() const {
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
 
@@ -77,15 +77,15 @@ class sdl_render {
 
   private:
     int window_height;
+    bool running = true;
 
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Event event;
 
-    bool running = true;
-
     void initialize() {
         window_height = int(window_width / aspect_ratio);
+
         SDL_Init(SDL_INIT_EVERYTHING);
 
         window = SDL_CreateWindow("Wireframe Render", SDL_WINDOWPOS_CENTERED,

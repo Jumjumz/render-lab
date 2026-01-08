@@ -13,7 +13,7 @@ class screen {
 
     vec position(vec position) const {
         vec display = project(position);
-
+        // -1..1 => 0..2 => / 2 => 0..1 => x / aspect_ratio
         return {((display.x / aspect_ratio) + 1) / 2 * screen_width,
                 (1 - (display.y + 1) / 2) * screen_height};
     }
