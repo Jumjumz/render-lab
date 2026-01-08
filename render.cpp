@@ -1,87 +1,28 @@
-#include "screen.h"
-#include "vec.h"
+#include "sdl_render.h"
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <vector>
 
 int main(int argc, char *argv[]) {
-    float aspect_ratio = 16.0 / 9.0;
-    int window_width = 1440;
-    int window_height = int(window_width / aspect_ratio);
+    sdl_render render;
 
-    std::vector<vec> positions = {{0.25, 0.25, 0.25},    {-0.25, 0.25, 0.25},
-                                  {-0.25, -0.25, 0.25},  {0.25, -0.25, 0.25},
-                                  {0.25, 0.25, -0.25},   {-0.25, 0.25, -0.25},
-                                  {-0.25, -0.25, -0.25}, {0.25, -0.25, -0.25}};
+    render.aspect_ratio = 16.0 / 9.0;
+    render.window_width = 1440;
+    render.window_height = int(render.window_width / render.aspect_ratio);
 
-    std::vector<std::vector<int>> fs = {{0, 1, 2, 3}, {4, 5, 6, 7}, {0, 4},
-                                        {1, 5},       {2, 6},       {3, 7}};
+    render.positions = {{0.25, 0.25, 0.25},    {-0.25, 0.25, 0.25},
+                        {-0.25, -0.25, 0.25},  {0.25, -0.25, 0.25},
+                        {0.25, 0.25, -0.25},   {-0.25, 0.25, -0.25},
+                        {-0.25, -0.25, -0.25}, {0.25, -0.25, -0.25}};
 
-    SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_Window *window = SDL_CreateWindow(
-        "Wireframe Renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        window_width, window_height, SDL_WINDOW_SHOWN);
+    render.faces = {{0, 1, 2, 3}, {4, 5, 6, 7}, {0, 4}, {1, 5}, {2, 6}, {3, 7}};
 
-    SDL_Renderer *renderer =
-        SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    // execute functions
+    render.init();
 
-    SDL_Event event;
+    render.run();
 
-    bool running = true;
-    int prev_time = SDL_GetTicks();
-
-    while (running) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT)
-                running = false;
-        }
-
-        int current_time = SDL_GetTicks();
-        float delta_time = (current_time - prev_time) / 1000.0f;
-        prev_time = current_time;
-
-        static float dz = 1.0f;
-        static float angle = 0;
-
-        // dz += 1 * delta_time; // speed * delta time
-        angle += M_PI / 4 * delta_time;
-
-        screen screen_display = {dz, angle, aspect_ratio, window_width,
-                                 window_height};
-
-        // render the background and do a clear
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-        SDL_RenderClear(renderer);
-
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-
-        for (int i = 0; i < positions.size(); i++) {
-            auto pt = screen_display.position(positions[i]);
-
-            SDL_Point p = {int(pt.x), int(pt.y)};
-
-            SDL_RenderDrawPoints(renderer, &p, 4);
-        }
-
-        for (std::vector<int> f : fs) {
-            for (int j = 0; j < f.size(); j++) {
-                vec vtx1 = positions[f[j]];
-                vec vtx2 = positions[f[(j + 1) % f.size()]];
-
-                auto tv1 = screen_display.position(vtx1);
-                auto tv2 = screen_display.position(vtx2);
-
-                SDL_RenderDrawLine(renderer, tv1.x, tv1.y, tv2.x, tv2.y);
-            }
-        }
-
-        SDL_RenderPresent(renderer);
-    }
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-
-    SDL_Quit();
+    render.quit();
 
     return 0;
 }

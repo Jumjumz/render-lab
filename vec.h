@@ -14,6 +14,8 @@ class vec {
     const double x = this->e[0];
     const double y = this->e[1];
     const double z = this->e[2];
+
+    vec operator=(const vec &v) const { return {v.x, v.y, v.z}; };
 };
 
 #endif // !VECTOR3_H
