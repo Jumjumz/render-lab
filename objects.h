@@ -2,37 +2,50 @@
 #define OBJECTS_H
 
 #include "vect.h"
+#include <cstdint>
 #include <vector>
 
 class cube {
   public:
     double sides = 0.5;
 
-    cube(double &sides) : sides(sides) {};
-
     void get_vertices() {
         vect3 val;
 
+        // use bit & operator to identify the 1.. if bit is 1 it is value is negative
         for (int i = 0; i < num_vtx; i++) {
-            if (i % 2 == 1) {
-                for (int j = 0; j < val.size(); j++) {
-                    val.e.at(j) = sides / 2;
-                }
-                vectors.push_back(val);
-            } else {
-                for (int j = 0; j < val.size(); j++) {
-                    val.e.at(j) = -sides / 2;
-                }
-
-                vectors.push_back(val);
+            if ((i & 1) == 1) {
+                val.e[0] = -sides / 2;
             }
+
+            if ((i & 1) == 0) {
+                val.e[0] = sides / 2;
+            }
+
+            if ((i & 2) == 2) {
+                val.e[1] = -sides / 2;
+            }
+
+            if ((i & 2) == 0) {
+                val.e[1] = sides / 2;
+            }
+
+            if ((i & 4) == 4) {
+                val.e[2] = -sides / 2;
+            }
+
+            if ((i & 4) == 0) {
+                val.e[2] = sides / 2;
+            }
+
+            vectors.push_back(val);
         }
     };
 
     std::vector<vect3> vertices() const { return this->vectors; };
 
   private:
-    const int num_vtx = 8;
+    const uint32_t num_vtx = 8;
     std::vector<vect3> vectors;
 };
 

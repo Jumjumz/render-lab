@@ -13,11 +13,11 @@ class vect {
 
     vect(double x, double y, double z) : e{x, y, z} {};
 
-    double x() const { return e[0]; };
-    double y() const { return e[1]; };
-    double z() const { return e[2]; };
+    double x() const { return this->e[0]; };
+    double y() const { return this->e[1]; };
+    double z() const { return this->e[2]; };
 
-    int size() { return e.size(); };
+    int size() { return this->e.size(); };
 
     vect operator=(const vect &v) const { return {v.x(), v.y(), v.z()}; };
     double operator[](int i) const { return e[i]; };
