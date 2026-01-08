@@ -15,8 +15,8 @@ class screen {
     vect2 position(vect3 &position) const {
         vect3 display = project(position);
         // -1..1 => 0..2 => / 2 => 0..1 => x / aspect_ratio
-        return {((display.x / aspect_ratio) + 1) / 2 * screen_width,
-                (1 - (display.y + 1) / 2) * screen_height};
+        return {((display.x() / aspect_ratio) + 1) / 2 * screen_width,
+                (1 - (display.y() + 1) / 2) * screen_height};
     }
 
   private:
@@ -30,19 +30,19 @@ class screen {
     vect2 project(vect3 position) const {
         vect3 project = translate_zx(rotate(position));
 
-        return {project.x / project.z, project.y / project.z};
+        return {project.x() / project.z(), project.y() / project.z()};
     }
 
     vect3 translate_zx(vect3 position) const {
-        return {position.x, position.y, position.z + focal_point};
+        return {position.x(), position.y(), position.z() + focal_point};
     }
 
     vect3 rotate(vect3 position) const {
         float cos = std::cos(angle);
         float sin = std::sin(angle);
 
-        return {position.x * cos - position.z * sin, position.y,
-                position.x * sin + position.z * cos};
+        return {position.x() * cos - position.z() * sin, position.y(),
+                position.x() * sin + position.z() * cos};
     }
 };
 

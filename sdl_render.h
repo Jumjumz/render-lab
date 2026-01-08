@@ -3,6 +3,7 @@
 
 #include "SDL.h"
 #include "SDL_render.h"
+#include "objects.h"
 #include "screen.h"
 #include "vect.h"
 #include <cmath>
@@ -47,21 +48,33 @@ class sdl_render {
             // prepare the color for what we to draw in the current frame
             SDL_SetRenderDrawColor(renderer, 0, 255, 0, 0);
 
-            for (int i = 0; i < positions.size(); i++) {
+            /*for (int i = 0; i < positions.size(); i++) {
                 vect2 pt = screen_display.position(positions[i]);
 
-                SDL_RenderDrawPoint(renderer, pt.x, pt.y);
+                SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
+            }*/
+
+            double sd = 0.5;
+            cube c = {sd};
+
+            c.get_vertices();
+
+            for (int i = 0; i < c.vertices().size(); i++) {
+                vect2 pt = screen_display.position(c.vertices()[i]);
+
+                SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
             }
 
-            for (std::vector<int> f : faces) {
+            /*for (std::vector<int> f : faces) {
                 for (int j = 0; j < f.size(); j++) {
                     vect2 pt_a = screen_display.position(positions[f[j]]);
                     vect2 pt_b =
                         screen_display.position(positions[f[(j + 1) % f.size()]]);
 
-                    SDL_RenderDrawLine(renderer, pt_a.x, pt_a.y, pt_b.x, pt_b.y);
+                    SDL_RenderDrawLine(renderer, pt_a.x(), pt_a.y(), pt_b.x(),
+                                       pt_b.y());
                 }
-            }
+            }*/
 
             SDL_RenderPresent(renderer);
         }

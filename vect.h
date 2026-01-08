@@ -1,21 +1,26 @@
 #ifndef VECT_H
 #define VECT_H
 
+#include <vector>
+
 class vect {
   public:
-    double e[3];
+    std::vector<double> e;
 
-    vect() : e{e[0], e[1], e[2]} {};
+    vect() : e{0, 0, 0} {};
 
     vect(double x, double y) : e{x, y} {};
 
     vect(double x, double y, double z) : e{x, y, z} {};
 
-    const double x = this->e[0];
-    const double y = this->e[1];
-    const double z = this->e[2];
+    double x() const { return e[0]; };
+    double y() const { return e[1]; };
+    double z() const { return e[2]; };
 
-    vect operator=(const vect &v) const { return {v.x, v.y, v.z}; };
+    int size() { return e.size(); };
+
+    vect operator=(const vect &v) const { return {v.x(), v.y(), v.z()}; };
+    double operator[](int i) const { return e[i]; };
 };
 
 // alias for vector 2
