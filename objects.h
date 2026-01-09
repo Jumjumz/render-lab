@@ -2,6 +2,7 @@
 #define OBJECTS_H
 
 #include "vect.h"
+#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -43,17 +44,28 @@ class cube {
     };
 
     void get_edges() {
+        std::array<int, 2> edge;
         for (int i = 0; i < num_vtx; i++) {
+            for (int j = 0; j < 3; j++) {
+                int n = i ^ (1 << j);
+
+                if (i < n) {
+                    edge[0] = i;
+                    edge[1] = n;
+                }
+                faces.push_back(edge);
+            }
         }
     }
 
     std::vector<vect3> vertices() const { return this->vectors; };
-    std::vector<std::vector<int>> edges() const { return this->faces; };
+    std::vector<std::array<int, 2>> edges() const { return this->faces; };
 
   private:
     const uint32_t num_vtx = 8;
+    const uint32_t num_edg = 12;
     std::vector<vect3> vectors;
-    std::vector<std::vector<int>> faces;
+    std::vector<std::array<int, 2>> faces;
 };
 
 #endif // !OBJECTS_H
