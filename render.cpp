@@ -13,15 +13,13 @@ int main(int argc, char *argv[]) {
 
     cube cb;
     cb.sides = 0.5;
+
     cb.get_vertices();
-
     render.positions = cb.vertices();
-
-    /* render.edges = {{0, 1}, {3, 2}, {4, 5}, {7, 6}, {0, 4}, {1, 5},
-                    {2, 6}, {3, 7}, {0, 2}, {4, 6}, {1, 3}, {5, 7}}; // edges*/
 
     cb.get_edges();
     render.edges = cb.edges();
+
     // execute functions
     render.run();
 

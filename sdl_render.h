@@ -2,8 +2,6 @@
 #define SDL_RENDER_H
 
 #include "SDL.h"
-#include "SDL_rect.h"
-#include "SDL_render.h"
 #include "screen.h"
 #include "vect.h"
 #include <array>
