@@ -42,11 +42,18 @@ class cube {
         }
     };
 
+    void get_edges() {
+        for (int i = 0; i < num_vtx; i++) {
+        }
+    }
+
     std::vector<vect3> vertices() const { return this->vectors; };
+    std::vector<std::vector<int>> edges() const { return this->faces; };
 
   private:
     const uint32_t num_vtx = 8;
     std::vector<vect3> vectors;
+    std::vector<std::vector<int>> faces;
 };
 
 #endif // !OBJECTS_H

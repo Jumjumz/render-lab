@@ -16,7 +16,7 @@ class sdl_render {
     float aspect_ratio = 1.0f;
 
     std::vector<vect> positions;
-    std::vector<std::vector<int>> faces;
+    std::vector<std::vector<int>> edges;
 
     void run() {
         initialize();
@@ -55,7 +55,7 @@ class sdl_render {
                 SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
             }
 
-            for (std::vector<int> f : faces) {
+            for (std::vector<int> f : edges) {
                 for (int j = 0; j < f.size(); j++) {
                     vect2 pt_a = screen_display.position(positions[f[j]]);
                     vect2 pt_b =
