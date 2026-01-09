@@ -2,6 +2,7 @@
 #define SDL_RENDER_H
 
 #include "SDL.h"
+#include "SDL_rect.h"
 #include "SDL_render.h"
 #include "screen.h"
 #include "vect.h"
@@ -49,11 +50,12 @@ class sdl_render {
 
             for (int i = 0; i < positions.size(); i++) {
                 vect2 pt = screen_display.position(positions[i]);
+                SDL_Rect rec = {(int)pt.x(), (int)pt.y(), 20, 20};
 
                 SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
             }
 
-            /*for (std::vector<int> f : faces) {
+            for (std::vector<int> f : faces) {
                 for (int j = 0; j < f.size(); j++) {
                     vect2 pt_a = screen_display.position(positions[f[j]]);
                     vect2 pt_b =
@@ -62,7 +64,7 @@ class sdl_render {
                     SDL_RenderDrawLine(renderer, pt_a.x(), pt_a.y(), pt_b.x(),
                                        pt_b.y());
                 }
-            }*/
+            }
 
             SDL_RenderPresent(renderer);
         }
