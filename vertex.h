@@ -8,9 +8,13 @@ class vertex {
   public:
     virtual ~vertex() = default;
 
-    virtual std::vector<vect3> points() const = 0;
+    virtual std::vector<vect3> points() = 0;
 
-    virtual std::vector<std::vector<int>> lines() const = 0;
+    virtual std::vector<std::vector<int>> lines() = 0;
+
+    /*
+     * virtual std::vector<std::array<int, 2>> lines() const = 0;
+     */
 };
 
 #endif // !VERTEX_H

@@ -8,19 +8,9 @@ int main(int argc, char *argv[]) {
 
     renderer.aspect_ratio = 16.0 / 9.0;
     renderer.window_width = 1440;
-    // renderer.run(std::make_shared<cube>(0.5));
-
-    cube cb;
-    cb.sides = 0.5;
-
-    cb.get_vertices();
-    renderer.positions = cb.vertices();
-
-    cb.get_edges();
-    renderer.edges = cb.edges();
 
     // execute functions
-    renderer.run();
+    renderer.run(std::make_shared<cube>(0.5));
 
     renderer.destroy();
 

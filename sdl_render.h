@@ -4,8 +4,10 @@
 #include "SDL.h"
 #include "screen.h"
 #include "vect.h"
+#include "vertex.h"
 #include <cmath>
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 class sdl_render {
@@ -13,11 +15,11 @@ class sdl_render {
     uint32_t window_width = 720;
     float aspect_ratio = 1.0f;
 
-    std::vector<vect> positions;
-    std::vector<std::vector<int>> edges;
-
-    void run() {
+    void run(std::shared_ptr<vertex> shape) {
         initialize();
+
+        points = shape->points();
+        lines = shape->lines();
 
         uint32_t prev_time = SDL_GetTicks();
 
@@ -46,18 +48,18 @@ class sdl_render {
             // prepare the color for what we to draw in the current frame
             SDL_SetRenderDrawColor(renderer, 0, 255, 0, 0);
 
-            for (int i = 0; i < positions.size(); i++) {
-                vect2 pt = screen_display.position(positions[i]);
+            for (int i = 0; i < points.size(); i++) {
+                vect2 pt = screen_display.position(points[i]);
                 SDL_Rect rec = {(int)pt.x(), (int)pt.y(), 20, 20};
 
                 SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
             }
 
-            for (std::vector<int> f : edges) {
+            for (std::vector<int> f : lines) {
                 for (int j = 0; j < f.size(); j++) {
-                    vect2 pt_a = screen_display.position(positions[f[j]]);
+                    vect2 pt_a = screen_display.position(points[f[j]]);
                     vect2 pt_b =
-                        screen_display.position(positions[f[(j + 1) % f.size()]]);
+                        screen_display.position(points[f[(j + 1) % f.size()]]);
 
                     SDL_RenderDrawLine(renderer, pt_a.x(), pt_a.y(), pt_b.x(),
                                        pt_b.y());
@@ -78,6 +80,9 @@ class sdl_render {
   private:
     uint32_t window_height;
     bool running = true;
+
+    std::vector<vect> points;
+    std::vector<std::vector<int>> lines;
 
     SDL_Window *window;
     SDL_Renderer *renderer;

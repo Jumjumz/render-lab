@@ -2,14 +2,15 @@
 #define CUBE_H
 
 #include "vect.h"
+#include "vertex.h"
 #include <cstdint>
 #include <vector>
 
-class cube {
+class cube : public vertex {
   public:
-    double sides = 0.5;
+    cube(double sides) : sides(sides) {};
 
-    void get_vertices() {
+    std::vector<vect3> points() override {
         // use bit & operator to identify the 1.. if a bit is 1 it is value is negative
         for (int i = 0; i < num_vtx; i++) {
             for (int j = 0; j < val.size(); j++) {
@@ -24,9 +25,11 @@ class cube {
 
             vectors.push_back(val);
         }
+
+        return vectors;
     };
 
-    void get_edges() {
+    std::vector<std::vector<int>> lines() override {
         // use bit ^ (XOR) operator to flip the values and identify the num_vtx
         for (int i = 0; i < num_vtx; i++) {
             std::vector<int> edge;
@@ -41,6 +44,8 @@ class cube {
                 faces.push_back(edge);
             }
         }
+
+        return faces;
     }
 
     std::vector<vect3> vertices() const { return this->vectors; };
@@ -48,6 +53,8 @@ class cube {
 
   private:
     vect3 val;
+    double sides = 0.5;
+
     const uint32_t num_vtx = 8;
 
     std::vector<vect3> vectors;
