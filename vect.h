@@ -1,11 +1,10 @@
 #ifndef VECT_H
 #define VECT_H
 
-#include <vector>
-
+#include <array>
 class vect {
   public:
-    std::vector<double> e;
+    std::array<double, 3> e;
 
     vect() : e{0, 0, 0} {};
 

@@ -3,6 +3,7 @@
 
 #include "vect.h"
 #include "vertex.h"
+#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -23,33 +24,30 @@ class cube : public vertex {
                 }
             }
 
-            vectors.push_back(val);
+            vertices.push_back(val);
         }
 
-        return vectors;
+        return vertices;
     };
 
-    std::vector<std::vector<int>> lines() override {
+    std::vector<std::array<int, 2>> lines() override {
         // use bit ^ (XOR) operator to flip the values and identify the num_vtx
         for (int i = 0; i < num_vtx; i++) {
-            std::vector<int> edge;
+            std::array<int, 2> edge;
             for (int j = 0; j < val.size(); j++) {
                 int n = i ^ (1 << j); // i is "from" and n is "to"
 
                 if (i < n) {
-                    edge.push_back(i);
-                    edge.push_back(n);
+                    edge[0] = i;
+                    edge[1] = n;
                 }
 
-                faces.push_back(edge);
+                edges.push_back(edge);
             }
         }
 
-        return faces;
+        return edges;
     }
-
-    std::vector<vect3> vertices() const { return this->vectors; };
-    std::vector<std::vector<int>> edges() const { return this->faces; };
 
   private:
     vect3 val;
@@ -57,8 +55,8 @@ class cube : public vertex {
 
     const uint32_t num_vtx = 8;
 
-    std::vector<vect3> vectors;
-    std::vector<std::vector<int>> faces;
+    std::vector<vect3> vertices;
+    std::vector<std::array<int, 2>> edges;
 };
 
 #endif // !CUBE_H

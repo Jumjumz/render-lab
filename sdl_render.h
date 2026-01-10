@@ -5,6 +5,7 @@
 #include "screen.h"
 #include "vect.h"
 #include "vertex.h"
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -55,7 +56,7 @@ class sdl_render {
                 SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
             }
 
-            for (std::vector<int> f : lines) {
+            for (std::array<int, 2> f : lines) {
                 for (int j = 0; j < f.size(); j++) {
                     vect2 pt_a = screen_display.position(points[f[j]]);
                     vect2 pt_b =
@@ -82,7 +83,7 @@ class sdl_render {
     bool running = true;
 
     std::vector<vect> points;
-    std::vector<std::vector<int>> lines;
+    std::vector<std::array<int, 2>> lines;
 
     SDL_Window *window;
     SDL_Renderer *renderer;

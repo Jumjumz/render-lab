@@ -10,11 +10,7 @@ class vertex {
 
     virtual std::vector<vect3> points() = 0;
 
-    virtual std::vector<std::vector<int>> lines() = 0;
-
-    /*
-     * virtual std::vector<std::array<int, 2>> lines() const = 0;
-     */
+    virtual std::vector<std::array<int, 2>> lines() = 0;
 };
 
 #endif // !VERTEX_H
