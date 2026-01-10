@@ -4,24 +4,25 @@
 #include <SDL2/SDL.h>
 
 int main(int argc, char *argv[]) {
-    sdl_render render;
+    sdl_render renderer;
 
-    render.aspect_ratio = 16.0 / 9.0;
-    render.window_width = 1440;
+    renderer.aspect_ratio = 16.0 / 9.0;
+    renderer.window_width = 1440;
+    // renderer.run(std::make_shared<cube>(0.5));
 
     cube cb;
     cb.sides = 0.5;
 
     cb.get_vertices();
-    render.positions = cb.vertices();
+    renderer.positions = cb.vertices();
 
     cb.get_edges();
-    render.edges = cb.edges();
+    renderer.edges = cb.edges();
 
     // execute functions
-    render.run();
+    renderer.run();
 
-    render.destroy();
+    renderer.destroy();
 
     return 0;
 }

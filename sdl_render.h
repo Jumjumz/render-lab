@@ -4,7 +4,6 @@
 #include "SDL.h"
 #include "screen.h"
 #include "vect.h"
-#include <array>
 #include <cmath>
 #include <cstdint>
 #include <vector>
@@ -15,7 +14,7 @@ class sdl_render {
     float aspect_ratio = 1.0f;
 
     std::vector<vect> positions;
-    std::vector<std::array<int, 2>> edges;
+    std::vector<std::vector<int>> edges;
 
     void run() {
         initialize();
@@ -54,7 +53,7 @@ class sdl_render {
                 SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
             }
 
-            for (std::array<int, 2> f : edges) {
+            for (std::vector<int> f : edges) {
                 for (int j = 0; j < f.size(); j++) {
                     vect2 pt_a = screen_display.position(positions[f[j]]);
                     vect2 pt_b =

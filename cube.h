@@ -2,7 +2,6 @@
 #define CUBE_H
 
 #include "vect.h"
-#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -28,30 +27,31 @@ class cube {
     };
 
     void get_edges() {
-        // use bit ^ (XOR) operator to flip the values and identify the n
-        std::array<int, 2> edge;
+        // use bit ^ (XOR) operator to flip the values and identify the num_vtx
         for (int i = 0; i < num_vtx; i++) {
+            std::vector<int> edge;
             for (int j = 0; j < val.size(); j++) {
                 int n = i ^ (1 << j); // i is "from" and n is "to"
 
                 if (i < n) {
-                    edge[0] = i;
-                    edge[1] = n;
+                    edge.push_back(i);
+                    edge.push_back(n);
                 }
+
                 faces.push_back(edge);
             }
         }
     }
 
     std::vector<vect3> vertices() const { return this->vectors; };
-    std::vector<std::array<int, 2>> edges() const { return this->faces; };
+    std::vector<std::vector<int>> edges() const { return this->faces; };
 
   private:
     vect3 val;
     const uint32_t num_vtx = 8;
 
     std::vector<vect3> vectors;
-    std::vector<std::array<int, 2>> faces;
+    std::vector<std::vector<int>> faces;
 };
 
 #endif // !CUBE_H
