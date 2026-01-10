@@ -1,5 +1,5 @@
-#ifndef OBJECTS_H
-#define OBJECTS_H
+#ifndef CUBE_H
+#define CUBE_H
 
 #include "vect.h"
 #include <array>
@@ -32,7 +32,7 @@ class cube {
         std::array<int, 2> edge;
         for (int i = 0; i < num_vtx; i++) {
             for (int j = 0; j < val.size(); j++) {
-                int n = i ^ (1 << j); // i is from and n is to
+                int n = i ^ (1 << j); // i is "from" and n is "to"
 
                 if (i < n) {
                     edge[0] = i;
@@ -54,4 +54,4 @@ class cube {
     std::vector<std::array<int, 2>> faces;
 };
 
-#endif // !OBJECTS_H
+#endif // !CUBE_H
