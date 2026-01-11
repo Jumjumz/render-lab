@@ -51,7 +51,6 @@ class sdl_render {
 
             for (int i = 0; i < points.size(); i++) {
                 vect2 pt = screen_display.position(points[i]);
-                SDL_Rect rec = {(int)pt.x(), (int)pt.y(), 20, 20};
 
                 SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
             }
