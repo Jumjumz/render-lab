@@ -27,4 +27,16 @@ using vect2 = vect;
 // alias for vector 3
 using vect3 = vect;
 
+inline vect operator+(const vect &v, const vect &u) {
+    return {v.x() + u.x(), v.y() + u.y(), v.z() + u.z()};
+};
+
+inline vect operator-(const vect &v, const vect &u) {
+    return {v.x() - u.x(), v.y() - u.y(), v.z() - u.z()};
+};
+
+inline vect operator*(const vect &v, const vect &u) {
+    return {v.x() * u.x(), v.y() * u.y(), v.z() * u.z()};
+}
+
 #endif // !VECT_H
