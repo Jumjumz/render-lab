@@ -20,6 +20,31 @@ class vect {
 
     vect operator=(const vect &v) const { return {v.x(), v.y(), v.z()}; };
     double operator[](int i) const { return e[i]; };
+    double &operator[](int i) { return e[i]; };
+
+    vect operator+=(vect const &v) {
+        e[0] += v.x();
+        e[1] += v.y();
+        e[2] += v.z();
+
+        return *this;
+    }
+
+    vect operator*=(double t) {
+        e[0] *= t;
+        e[1] *= t;
+        e[2] *= t;
+
+        return *this;
+    }
+
+    vect operator/=(double t) {
+        e[0] /= t;
+        e[1] /= t;
+        e[2] /= t;
+
+        return *this;
+    }
 };
 
 // alias for vector 2
