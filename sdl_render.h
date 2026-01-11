@@ -16,7 +16,7 @@ class sdl_render {
     uint32_t window_width = 720;
     float aspect_ratio = 1.0f;
 
-    void run(std::shared_ptr<vertex> shape) {
+    void run(const std::shared_ptr<vertex> &shape) {
         initialize();
 
         points = shape->points();
