@@ -33,7 +33,7 @@ class cube : public vertex {
     };
 
     std::vector<std::array<int, 2>> lines() override {
-        // use bit ^ (XOR) operator to flip the values and identify the num_vtx
+        // use bit ^ (XOR) operator to flip the value and identify the num_vtx
         for (int i = 0; i < num_vtx; i++) {
             std::array<int, 2> edge;
             for (int j = 0; j < val.size(); j++) {
@@ -54,13 +54,13 @@ class cube : public vertex {
     std::vector<vect3> between_vertices() override {
         for (int face = 0; face < faces; face++) {
             int axis = face / 2;
-            int values = face % 2;
+            int value = face % 2;
 
             std::vector<vect3> corners;
 
             // find each corners
             for (int i = 0; i < vertices.size(); i++) {
-                if (((i >> axis) & 1) == values) {
+                if (((i >> axis) & 1) == value) {
                     corners.push_back(vertices[i]);
                 }
             }
@@ -71,19 +71,19 @@ class cube : public vertex {
 
             std::sort(corners.begin(), corners.end(),
                       [axis1, axis2](const vect3 a, const vect3 b) {
-                          double a1 = a.e[axis1], a2 = a.e[axis2];
-                          double b1 = b.e[axis1], b2 = b.e[axis2];
+                          double a1 = a.e[axis1], a2 = a.e[axis1];
+                          double b1 = b.e[axis2], b2 = b.e[axis2];
 
                           if (a1 != b1)
                               return a1 < b1;
                           return a2 < b2;
                       });
 
-            // ineterpolate
-            for (int i = 0; i <= 10; i++) {
-                for (int j = 0; j <= 10; j++) {
-                    double u = double(i) / 10;
-                    double v = double(j) / 10;
+            // interpolate
+            for (int i = 0; i <= subdivisions; i++) {
+                for (int j = 0; j <= subdivisions; j++) {
+                    double u = double(i) / subdivisions;
+                    double v = double(j) / subdivisions;
 
                     vect3 pt = (1 - u) * (1 - v) * corners[0] +
                                u * (1 - v) * corners[1] + u * v * corners[2] +
@@ -103,6 +103,7 @@ class cube : public vertex {
 
     const uint32_t num_vtx = 8;
     const uint32_t faces = 6;
+    const uint32_t subdivisions = 20;
 
     std::vector<vect3> vertices;
     std::vector<std::array<int, 2>> edges;

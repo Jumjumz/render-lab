@@ -38,7 +38,7 @@ class sdl_render {
             static float focal_point = 1.0f;
             static float angle = 0.0f;
 
-            angle += M_PI / 4 * delta_time; // velocity (radians) * time elapsed
+            angle += M_PI / 6 * delta_time; // velocity (radians) * time elapsed
 
             screen screen_display = {focal_point, angle, aspect_ratio,
                                      window_width, window_height};
