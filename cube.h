@@ -3,8 +3,10 @@
 
 #include "vect.h"
 #include "vertex.h"
+#include <algorithm>
 #include <array>
 #include <cstdint>
+#include <sys/types.h>
 #include <vector>
 
 class cube : public vertex {
@@ -50,44 +52,57 @@ class cube : public vertex {
     }
 
     std::vector<vect3> between_vertices() override {
-        for (int i = 0; i < vertices.size(); i++) {
-            std::vector<vect3> u_steps = this->steps(
-                i, vertices[i], vertices[(i + 1) % vertices.size()], 10);
-            std::vector<vect3> v_steps = this->steps(
-                i, vertices[i], vertices[(i + 1) % vertices.size()], 10);
+        for (int face = 0; face < faces; face++) {
+            int axis = face / 2;
+            int values = face % 2;
 
-            for (vect3 u : u_steps) {
-                for (vect3 v : v_steps) {
-                    vll = (1.0 - u) * (1.0 - v) * vertices[i] +
-                          u * (1.0 - v) * vertices[(i + 1) % vertices.size()] +
-                          u * v * vertices[(i + 2) % vertices.size()] +
-                          (1.0 - u) * v * vertices[(i + 3) % vertices.size()];
+            std::vector<vect3> corners;
+
+            // find each corners
+            for (int i = 0; i < vertices.size(); i++) {
+                if (((i >> axis) & 1) == values) {
+                    corners.push_back(vertices[i]);
                 }
+            }
 
-                points_between_vertices.push_back(vll);
+            // sort by other axes
+            int axis1 = (axis + 1) % 3;
+            int axis2 = (axis + 2) % 3;
+
+            std::sort(corners.begin(), corners.end(),
+                      [axis1, axis2](const vect3 a, const vect3 b) {
+                          double a1 = a.e[axis1], a2 = a.e[axis2];
+                          double b1 = b.e[axis1], b2 = b.e[axis2];
+
+                          if (a1 != b1)
+                              return a1 < b1;
+                          return a2 < b2;
+                      });
+
+            // ineterpolate
+            for (int i = 0; i <= 10; i++) {
+                for (int j = 0; j <= 10; j++) {
+                    double u = double(i) / 10;
+                    double v = double(j) / 10;
+
+                    vect3 pt = (1 - u) * (1 - v) * corners[0] +
+                               u * (1 - v) * corners[1] + u * v * corners[2] +
+                               (1 - u) * v * corners[3];
+
+                    points_between_vertices.push_back(pt);
+                }
             }
         }
 
         return points_between_vertices;
-        // cubes faces using index..
-        // top-face: (1, 2, 5, 6), bot-face: (0, 3, 4, 7), right-face: (0, 1, 4,
-        // 5), left: (3, 2, 7, 6), front-face: (4, 5, 6, 7), back-face: (0, 1, 2, 3)
-    }
-
-    std::vector<vect3> steps(int index, vect3 &from, vect3 &to, int reso) {
-        std::vector<vect3> sts;
-        vect3 step = from + (double(index) / reso - 1) * (to - from);
-
-        sts.push_back(step);
-        return sts;
     }
 
   private:
     vect3 val;
-    vect3 vll;
     double sides = 0.5;
 
     const uint32_t num_vtx = 8;
+    const uint32_t faces = 6;
 
     std::vector<vect3> vertices;
     std::vector<std::array<int, 2>> edges;
