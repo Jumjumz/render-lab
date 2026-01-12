@@ -21,6 +21,7 @@ class sdl_render {
 
         points = shape->points();
         lines = shape->lines();
+        bt_vt = shape->between_vertices();
 
         uint32_t prev_time = SDL_GetTicks();
 
@@ -66,6 +67,12 @@ class sdl_render {
                 }
             }
 
+            for (int i = 0; i < bt_vt.size(); i++) {
+                vect2 pt = screen_display.position(bt_vt[i]);
+
+                SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
+            }
+
             SDL_RenderPresent(renderer);
         }
     }
@@ -83,6 +90,7 @@ class sdl_render {
 
     std::vector<vect> points;
     std::vector<std::array<int, 2>> lines;
+    std::vector<vect> bt_vt;
 
     SDL_Window *window;
     SDL_Renderer *renderer;
