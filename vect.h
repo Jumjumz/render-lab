@@ -64,4 +64,17 @@ inline vect operator*(const vect &v, const vect &u) {
     return {v.x() * u.x(), v.y() * u.y(), v.z() * u.z()};
 }
 
+inline bool operator==(const vect &v, const vect &u) {
+    if (v == u)
+        return true;
+    if (v.x() == u.x())
+        return true;
+    if (v.y() == u.y())
+        return true;
+    if (v.z() == u.z())
+        return true;
+
+    return false;
+};
+
 #endif // !VECT_H
