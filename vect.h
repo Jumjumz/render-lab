@@ -64,6 +64,14 @@ inline vect operator*(const vect &v, const vect &u) {
     return {v.x() * u.x(), v.y() * u.y(), v.z() * u.z()};
 }
 
+inline vect operator*(double t, const vect &v) {
+    return {v.e[0] * t, v.e[1] * t, v.e[2] * t};
+};
+
+inline vect operator*(const vect &v, double t) {
+    return {v.e[0] * t, v.e[1] * t, v.e[2] * t};
+};
+
 inline bool operator==(const vect &v, const vect &u) {
     if (v == u)
         return true;
