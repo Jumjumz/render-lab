@@ -18,7 +18,13 @@ class vect {
 
     int size() { return this->e.size(); };
 
-    vect operator=(const vect &v) const { return {v.x(), v.y(), v.z()}; };
+    vect operator=(const vect &v) {
+        e[0] = v.e[0];
+        e[1] = v.e[1];
+        e[2] = v.e[2];
+
+        return *this;
+    };
     double operator[](int i) const { return e[i]; };
     double &operator[](int i) { return e[i]; };
 
@@ -53,15 +59,27 @@ using vect2 = vect;
 using vect3 = vect;
 
 inline vect operator+(const vect &v, const vect &u) {
-    return {v.x() + u.x(), v.y() + u.y(), v.z() + u.z()};
+    return {v.e[0] + u.e[0], v.e[1] + u.e[1], v.e[2] + u.e[2]};
 };
 
 inline vect operator-(const vect &v, const vect &u) {
-    return {v.x() - u.x(), v.y() - u.y(), v.z() - u.z()};
+    return {v.e[0] - u.e[0], v.e[1] - u.e[1], v.e[2] - u.e[2]};
 };
 
+inline vect operator+(const vect &v, double t) {
+    return {v.e[0] + t, v.e[1] + t, v.e[2] + t};
+};
+
+inline vect operator-(double t, const vect &v) {
+    return {v.e[0] - t, v.e[1] - t, v.e[2] - t};
+};
+
+inline vect operator-(const vect &v, double t) {
+    return {v.e[0] - t, v.e[1] - t, v.e[2] - t};
+}
+
 inline vect operator*(const vect &v, const vect &u) {
-    return {v.x() * u.x(), v.y() * u.y(), v.z() * u.z()};
+    return {v.e[0] * u.e[0], v.e[1] * u.e[1], v.e[2] * u.e[2]};
 }
 
 inline vect operator*(double t, const vect &v) {
