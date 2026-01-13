@@ -21,7 +21,7 @@ class sdl_render {
 
         points = shape->points();
         lines = shape->lines();
-        bt_vt = shape->between_vertices();
+        surface_points = shape->surface_interpolation(this->subdivisions);
 
         uint32_t prev_time = SDL_GetTicks();
 
@@ -67,8 +67,8 @@ class sdl_render {
                 }
             }
 
-            for (int i = 0; i < bt_vt.size(); i++) {
-                vect2 pt = screen_display.position(bt_vt[i]);
+            for (int i = 0; i < surface_points.size(); i++) {
+                vect2 pt = screen_display.position(surface_points[i]);
 
                 SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
             }
@@ -87,10 +87,11 @@ class sdl_render {
   private:
     uint32_t window_height;
     bool running = true;
+    const uint32_t subdivisions = 10;
 
     std::vector<vect> points;
     std::vector<std::array<int, 2>> lines;
-    std::vector<vect> bt_vt;
+    std::vector<vect> surface_points;
 
     SDL_Window *window;
     SDL_Renderer *renderer;

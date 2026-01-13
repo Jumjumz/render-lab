@@ -51,7 +51,7 @@ class cube : public vertex {
         return edges;
     }
 
-    std::vector<vect3> between_vertices() override {
+    std::vector<vect3> surface_interpolation(const uint32_t &subdivisions) override {
         for (int face = 0; face < faces; face++) {
             int axis = face / 2;
             int value = face % 2;
@@ -70,7 +70,7 @@ class cube : public vertex {
             int axis2 = (axis + 2) % 3;
 
             std::sort(corners.begin(), corners.end(),
-                      [axis1, axis2](const vect3 a, const vect3 b) {
+                      [axis1, axis2](const vect3 a, const vect3 b) -> bool {
                           double a1 = a.e[axis1], a2 = a.e[axis1];
                           double b1 = b.e[axis2], b2 = b.e[axis2];
 
@@ -85,16 +85,17 @@ class cube : public vertex {
                     double u = double(i) / subdivisions;
                     double v = double(j) / subdivisions;
 
+                    // Bilinear interpolation
                     vect3 pt = (1 - u) * (1 - v) * corners[0] +
                                u * (1 - v) * corners[1] + u * v * corners[2] +
                                (1 - u) * v * corners[3];
 
-                    points_between_vertices.push_back(pt);
+                    surface_points.push_back(pt);
                 }
             }
         }
 
-        return points_between_vertices;
+        return surface_points;
     }
 
   private:
@@ -103,11 +104,10 @@ class cube : public vertex {
 
     const uint32_t num_vtx = 8;
     const uint32_t faces = 6;
-    const uint32_t subdivisions = 20;
 
     std::vector<vect3> vertices;
     std::vector<std::array<int, 2>> edges;
-    std::vector<vect3> points_between_vertices;
+    std::vector<vect3> surface_points;
 };
 
 #endif // !CUBE_H
