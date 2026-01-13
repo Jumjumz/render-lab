@@ -32,16 +32,17 @@ class cube : public mesh {
         return vertices;
     };
 
-    std::vector<std::array<int, 2>> lines() override {
+    std::vector<from_to> lines() override {
         // use bit ^ (XOR) operator to flip the value and identify the num_vtx
         for (int i = 0; i < num_vtx; i++) {
-            std::array<int, 2> edge;
+            from_to edge;
+
             for (int j = 0; j < val.size(); j++) {
                 int n = i ^ (1 << j); // i is "from" and n is "to"
 
                 if (i < n) {
-                    edge[0] = i;
-                    edge[1] = n;
+                    edge[0] = i; // from
+                    edge[1] = n; // to
                 }
 
                 edges.push_back(edge);
@@ -107,7 +108,7 @@ class cube : public mesh {
     const uint32_t faces = 6;
 
     std::vector<vect3> vertices;
-    std::vector<std::array<int, 2>> edges;
+    std::vector<from_to> edges;
     std::vector<vect3> surface_points;
 };
 

@@ -5,7 +5,6 @@
 #include "mesh.h"
 #include "screen.h"
 #include "vect.h"
-#include <array>
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -58,7 +57,7 @@ class sdl_render {
             }
 
             // lines connecting vertices
-            for (std::array<int, 2> f : lines) {
+            for (from_to f : lines) {
                 for (int j = 0; j < f.size(); j++) {
                     vect2 pt_a = screen_display.position(points[f[j]]);
                     vect2 pt_b =
@@ -93,7 +92,7 @@ class sdl_render {
     const uint32_t subdivisions = 5;
 
     std::vector<vect> points;
-    std::vector<std::array<int, 2>> lines;
+    std::vector<from_to> lines;
     std::vector<vect> surface_points;
 
     SDL_Window *window;

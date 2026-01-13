@@ -2,6 +2,7 @@
 #define VECT_H
 
 #include <array>
+
 class vect {
   public:
     std::array<double, 3> e;
