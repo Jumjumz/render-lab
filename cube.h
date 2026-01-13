@@ -1,15 +1,15 @@
 #ifndef CUBE_H
 #define CUBE_H
 
+#include "mesh.h"
 #include "vect.h"
-#include "vertex.h"
 #include <algorithm>
 #include <array>
 #include <cstdint>
 #include <sys/types.h>
 #include <vector>
 
-class cube : public vertex {
+class cube : public mesh {
   public:
     cube(double sides) : sides(sides) {};
 
@@ -53,8 +53,9 @@ class cube : public vertex {
 
     std::vector<vect3> surface_interpolation(const uint32_t &subdivisions) override {
         for (int face = 0; face < faces; face++) {
-            int axis = face / 2;
-            int value = face % 2;
+            int axis = face / 2;  // x = 0; y; 1; z; 2
+            int value = face % 2; // min = 0; max = 1 -> identify the face of
+                                  // which axis we are in the loop
 
             std::vector<vect3> corners;
 

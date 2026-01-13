@@ -2,9 +2,9 @@
 #define SDL_RENDER_H
 
 #include "SDL.h"
+#include "mesh.h"
 #include "screen.h"
 #include "vect.h"
-#include "vertex.h"
 #include <array>
 #include <cmath>
 #include <cstdint>
@@ -16,7 +16,7 @@ class sdl_render {
     uint32_t window_width = 720;
     float aspect_ratio = 1.0f;
 
-    void run(const std::shared_ptr<vertex> &shape) {
+    void run(const std::shared_ptr<mesh> &shape) {
         initialize();
 
         points = shape->points();
@@ -50,12 +50,14 @@ class sdl_render {
             // prepare the color for what we to draw in the current frame
             SDL_SetRenderDrawColor(renderer, 0, 255, 0, 0);
 
+            // vertices
             for (int i = 0; i < points.size(); i++) {
                 vect2 pt = screen_display.position(points[i]);
 
                 SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
             }
 
+            // lines connecting vertices
             for (std::array<int, 2> f : lines) {
                 for (int j = 0; j < f.size(); j++) {
                     vect2 pt_a = screen_display.position(points[f[j]]);
@@ -67,6 +69,7 @@ class sdl_render {
                 }
             }
 
+            // points in the surface (interpolate)
             for (int i = 0; i < surface_points.size(); i++) {
                 vect2 pt = screen_display.position(surface_points[i]);
 
@@ -87,7 +90,7 @@ class sdl_render {
   private:
     uint32_t window_height;
     bool running = true;
-    const uint32_t subdivisions = 10;
+    const uint32_t subdivisions = 5;
 
     std::vector<vect> points;
     std::vector<std::array<int, 2>> lines;

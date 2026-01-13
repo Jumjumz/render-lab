@@ -5,9 +5,9 @@
 #include <cstdint>
 #include <vector>
 
-class vertex {
+class mesh {
   public:
-    virtual ~vertex() = default;
+    virtual ~mesh() = default;
 
     virtual std::vector<vect3> points() = 0;
 
@@ -15,6 +15,9 @@ class vertex {
 
     virtual std::vector<vect3>
     surface_interpolation(const uint32_t &subdivision) = 0;
+
+    // TODO: add lines that connect the surface points
+    // virtual std::vector<std::array<int , 2>> surface_lines = 0;
 };
 
 #endif // !VERTEX_H
