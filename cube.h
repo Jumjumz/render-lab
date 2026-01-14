@@ -11,9 +11,7 @@
 
 class cube : public mesh {
   public:
-    cube(double sides) : sides(sides) {};
-
-    std::vector<vect3> points() override {
+    cube(double sides) : sides(sides) {
         // use bit & operator to identify the 1.. if a bit is 1 it is value is negative
         for (int i = 0; i < num_vtx; i++) {
             for (int j = 0; j < val.size(); j++) {
@@ -28,31 +26,9 @@ class cube : public mesh {
 
             vertices.push_back(val);
         }
-
-        return vertices;
     };
 
-    std::vector<from_to> lines() override {
-        // use bit ^ (XOR) operator to flip the value and identify the num_vtx
-        for (int i = 0; i < num_vtx; i++) {
-            from_to edge;
-
-            for (int j = 0; j < val.size(); j++) {
-                int n = i ^ (1 << j); // i is "from" and n is "to"
-
-                if (i < n) {
-                    edge[0] = i; // from
-                    edge[1] = n; // to
-                }
-
-                edges.push_back(edge);
-            }
-        }
-
-        return edges;
-    }
-
-    std::vector<vect3> surface_interpolation(const uint32_t &subdivisions) override {
+    std::vector<vect3> surface_interpolation(const uint32_t &subdivision) override {
         for (int face = 0; face < faces; face++) {
             int axis = face / 2;  // x = 0; y; 1; z; 2
             int value = face % 2; // min = 0; max = 1 -> identify the face of
@@ -82,10 +58,10 @@ class cube : public mesh {
                       });
 
             // interpolate
-            for (int i = 0; i <= subdivisions; i++) {
-                for (int j = 0; j <= subdivisions; j++) {
-                    double u = double(i) / subdivisions;
-                    double v = double(j) / subdivisions;
+            for (int i = 0; i <= subdivision; i++) {
+                for (int j = 0; j <= subdivision; j++) {
+                    double u = double(i) / subdivision;
+                    double v = double(j) / subdivision;
 
                     // Bilinear interpolation
                     vect3 pt = (1 - u) * (1 - v) * corners[0] +
@@ -100,9 +76,9 @@ class cube : public mesh {
         return surface_points;
     }
 
-    std::vector<from_to> surface_lines(uint32_t &subdivisions) override {
-        int points_per_face = (subdivisions + 1) * (subdivisions + 1);
-        int points_per_row = subdivisions + 1;
+    std::vector<from_to> grid(uint32_t &subdivision) override {
+        int points_per_face = (subdivision + 1) * (subdivision + 1);
+        int points_per_row = subdivision + 1;
         from_to pt;
 
         for (int face = 0; face < faces; face++) {
@@ -113,23 +89,23 @@ class cube : public mesh {
                 int row = i / points_per_row;
                 int col = i % points_per_row;
 
-                if (col < subdivisions) {
+                if (col < subdivision) {
                     pt[0] = n;
                     pt[1] = n + 1;
 
-                    point_lines.push_back(pt);
+                    lines.push_back(pt);
                 }
 
-                if (row < subdivisions) {
+                if (row < subdivision) {
                     pt[0] = n;
                     pt[1] = n + points_per_row;
 
-                    point_lines.push_back(pt);
+                    lines.push_back(pt);
                 }
             }
         }
 
-        return point_lines;
+        return lines;
     }
 
   private:
@@ -140,9 +116,8 @@ class cube : public mesh {
     const uint32_t faces = 6;
 
     std::vector<vect3> vertices;
-    std::vector<from_to> edges;
     std::vector<vect3> surface_points;
-    std::vector<from_to> point_lines;
+    std::vector<from_to> lines;
 };
 
 #endif // !CUBE_H

@@ -19,10 +19,8 @@ class sdl_render {
     void run(const std::shared_ptr<mesh> &shape) {
         initialize();
 
-        points = shape->points();
-        // lines = shape->lines();
-        surface_points = shape->surface_interpolation(this->subdivisions);
-        surface_lines = shape->surface_lines(this->subdivisions);
+        points = shape->surface_interpolation(this->subdivision);
+        lines = shape->grid(this->subdivision);
 
         uint32_t prev_time = SDL_GetTicks();
 
@@ -51,37 +49,19 @@ class sdl_render {
             // prepare the color for what we to draw in the current frame
             SDL_SetRenderDrawColor(renderer, 0, 255, 0, 0);
 
-            // vertices
+            // points in the surface (interpolate)
             for (int i = 0; i < points.size(); i++) {
                 vect2 pt = screen_display.position(points[i]);
 
                 SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
             }
 
-            // lines connecting vertices
+            // lines connecting points
             for (from_to f : lines) {
-                for (int j = 0; j < f.size(); j++) {
-                    vect2 pt_a = screen_display.position(points[f[j]]);
-                    vect2 pt_b =
-                        screen_display.position(points[f[(j + 1) % f.size()]]);
-
-                    SDL_RenderDrawLine(renderer, pt_a.x(), pt_a.y(), pt_b.x(),
-                                       pt_b.y());
-                }
-            }
-
-            // points in the surface (interpolate)
-            for (int i = 0; i < surface_points.size(); i++) {
-                vect2 pt = screen_display.position(surface_points[i]);
-
-                SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
-            }
-
-            for (from_to f : surface_lines) {
                 for (int i = 0; i < f.size(); i++) {
-                    vect2 pt_a = screen_display.position(surface_points[f[i]]);
-                    vect2 pt_b = screen_display.position(
-                        surface_points[f[(i + 1) % f.size()]]);
+                    vect2 pt_a = screen_display.position(points[f[i]]);
+                    vect2 pt_b =
+                        screen_display.position(points[f[(i + 1) % f.size()]]);
 
                     SDL_RenderDrawLine(renderer, pt_a.x(), pt_a.y(), pt_b.x(),
                                        pt_b.y());
@@ -102,12 +82,10 @@ class sdl_render {
   private:
     uint32_t window_height;
     bool running = true;
-    uint32_t subdivisions = 5;
+    uint32_t subdivision = 5;
 
     std::vector<vect> points;
     std::vector<from_to> lines;
-    std::vector<vect> surface_points;
-    std::vector<from_to> surface_lines;
 
     SDL_Window *window;
     SDL_Renderer *renderer;

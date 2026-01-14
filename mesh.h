@@ -12,14 +12,10 @@ class mesh {
   public:
     virtual ~mesh() = default;
 
-    virtual std::vector<vect3> points() = 0;
-
-    virtual std::vector<from_to> lines() = 0;
-
     virtual std::vector<vect3>
     surface_interpolation(const uint32_t &subdivision) = 0;
 
-    virtual std::vector<from_to> surface_lines(uint32_t &subdivision) = 0;
+    virtual std::vector<from_to> grid(uint32_t &subdivision) = 0;
 };
 
 #endif // !VERTEX_H
