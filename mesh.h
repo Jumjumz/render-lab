@@ -19,7 +19,7 @@ class mesh {
     virtual std::vector<vect3>
     surface_interpolation(const uint32_t &subdivision) = 0;
 
-    virtual std::vector<from_to> surface_lines() = 0;
+    virtual std::vector<from_to> surface_lines(uint32_t &subdivision) = 0;
 };
 
 #endif // !VERTEX_H

@@ -100,22 +100,32 @@ class cube : public mesh {
         return surface_points;
     }
 
-    std::vector<from_to> surface_lines() override {
+    std::vector<from_to> surface_lines(uint32_t &subdivisions) override {
+        int points_per_face = (subdivisions + 1) * (subdivisions + 1);
+        int points_per_row = subdivisions + 1;
         from_to pt;
 
-        for (int sp = 0; sp < surface_points.size(); sp++) {
-            if ((sp + 1) % 6 != 0) {
-                pt[0] = sp;
-                pt[1] = sp + 1;
+        for (int face = 0; face < faces; face++) {
+            int face_start = face * points_per_face;
 
-                point_lines.push_back(pt);
-            }
+            for (int i = 0; i < points_per_face; i++) {
+                int n = face_start + i;
+                int row = i / points_per_row;
+                int col = i % points_per_row;
 
-            if (sp + 6 < surface_points.size()) {
-                pt[0] = sp;
-                pt[1] = sp + 6;
+                if (col < subdivisions) {
+                    pt[0] = n;
+                    pt[1] = n + 1;
 
-                point_lines.push_back(pt);
+                    point_lines.push_back(pt);
+                }
+
+                if (row < subdivisions) {
+                    pt[0] = n;
+                    pt[1] = n + points_per_row;
+
+                    point_lines.push_back(pt);
+                }
             }
         }
 

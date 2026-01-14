@@ -22,7 +22,7 @@ class sdl_render {
         points = shape->points();
         // lines = shape->lines();
         surface_points = shape->surface_interpolation(this->subdivisions);
-        surface_lines = shape->surface_lines();
+        surface_lines = shape->surface_lines(this->subdivisions);
 
         uint32_t prev_time = SDL_GetTicks();
 
@@ -102,7 +102,7 @@ class sdl_render {
   private:
     uint32_t window_height;
     bool running = true;
-    const uint32_t subdivisions = 5;
+    uint32_t subdivisions = 5;
 
     std::vector<vect> points;
     std::vector<from_to> lines;
