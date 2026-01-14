@@ -1,7 +1,9 @@
 #include "cube.h"
 #include "sdl_render.h"
+#include "spheres.h"
 
 #include <SDL2/SDL.h>
+#include <memory>
 
 int main(int argc, char *argv[]) {
     sdl_render renderer;
@@ -10,7 +12,7 @@ int main(int argc, char *argv[]) {
     renderer.window_width = 1440;
 
     // execute functions
-    renderer.run(std::make_shared<cube>(0.7));
+    renderer.run(std::make_shared<spheres>(0.5));
 
     renderer.destroy();
 
