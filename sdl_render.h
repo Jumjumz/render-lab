@@ -2,6 +2,7 @@
 #define SDL_RENDER_H
 
 #include "SDL.h"
+#include "SDL_render.h"
 #include "mesh.h"
 #include "screen.h"
 #include "vect.h"
@@ -19,8 +20,9 @@ class sdl_render {
         initialize();
 
         points = shape->points();
-        lines = shape->lines();
+        // lines = shape->lines();
         surface_points = shape->surface_interpolation(this->subdivisions);
+        surface_lines = shape->surface_lines();
 
         uint32_t prev_time = SDL_GetTicks();
 
@@ -75,6 +77,17 @@ class sdl_render {
                 SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
             }
 
+            for (from_to f : surface_lines) {
+                for (int i = 0; i < f.size(); i++) {
+                    vect2 pt_a = screen_display.position(surface_points[f[i]]);
+                    vect2 pt_b = screen_display.position(
+                        surface_points[f[(i + 1) % f.size()]]);
+
+                    SDL_RenderDrawLine(renderer, pt_a.x(), pt_a.y(), pt_b.x(),
+                                       pt_b.y());
+                }
+            }
+
             SDL_RenderPresent(renderer);
         }
     }
@@ -94,6 +107,7 @@ class sdl_render {
     std::vector<vect> points;
     std::vector<from_to> lines;
     std::vector<vect> surface_points;
+    std::vector<from_to> surface_lines;
 
     SDL_Window *window;
     SDL_Renderer *renderer;

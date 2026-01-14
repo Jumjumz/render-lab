@@ -100,6 +100,28 @@ class cube : public mesh {
         return surface_points;
     }
 
+    std::vector<from_to> surface_lines() override {
+        from_to pt;
+
+        for (int sp = 0; sp < surface_points.size(); sp++) {
+            if ((sp + 1) % 6 != 0) {
+                pt[0] = sp;
+                pt[1] = sp + 1;
+
+                point_lines.push_back(pt);
+            }
+
+            if (sp + 6 < surface_points.size()) {
+                pt[0] = sp;
+                pt[1] = sp + 6;
+
+                point_lines.push_back(pt);
+            }
+        }
+
+        return point_lines;
+    }
+
   private:
     vect3 val;
     double sides = 0.5;
@@ -110,6 +132,7 @@ class cube : public mesh {
     std::vector<vect3> vertices;
     std::vector<from_to> edges;
     std::vector<vect3> surface_points;
+    std::vector<from_to> point_lines;
 };
 
 #endif // !CUBE_H

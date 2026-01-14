@@ -19,9 +19,7 @@ class mesh {
     virtual std::vector<vect3>
     surface_interpolation(const uint32_t &subdivision) = 0;
 
-    // TODO: add lines that connect the surface points
-    // virtual std::vector<std::array<int , 2>> surface_lines = 0;
-  private:
+    virtual std::vector<from_to> surface_lines() = 0;
 };
 
 #endif // !VERTEX_H
