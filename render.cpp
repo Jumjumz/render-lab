@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
     renderer.window_width = 1440;
 
     // execute functions
-    renderer.run(std::make_shared<cube>(0.5));
+    renderer.run(std::make_shared<cube>(0.7));
 
     renderer.destroy();
 

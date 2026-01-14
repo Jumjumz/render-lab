@@ -2,18 +2,17 @@
 #define SDL_RENDER_H
 
 #include "SDL.h"
-#include "SDL_render.h"
 #include "mesh.h"
 #include "screen.h"
 #include "vect.h"
 #include <cmath>
-#include <cstdint>
+#include <cstddef>
 #include <memory>
 #include <vector>
 
 class sdl_render {
   public:
-    uint32_t window_width = 720;
+    uint window_width = 720;
     float aspect_ratio = 1.0f;
 
     void run(const std::shared_ptr<mesh> &shape) {
@@ -22,7 +21,7 @@ class sdl_render {
         points = shape->surface_interpolation(this->subdivision);
         lines = shape->grid(this->subdivision);
 
-        uint32_t prev_time = SDL_GetTicks();
+        uint prev_time = SDL_GetTicks();
 
         while (running) {
             while (SDL_PollEvent(&event)) {
@@ -30,7 +29,7 @@ class sdl_render {
                     running = false;
             }
 
-            uint32_t current_time = SDL_GetTicks();
+            uint current_time = SDL_GetTicks();
             float delta_time = (current_time - prev_time) / 1000.0f;
             prev_time = current_time;
 
@@ -50,7 +49,7 @@ class sdl_render {
             SDL_SetRenderDrawColor(renderer, 0, 255, 0, 0);
 
             // points in the surface (interpolate)
-            for (int i = 0; i < points.size(); i++) {
+            for (size_t i = 0; i < points.size(); i++) {
                 vect2 pt = screen_display.position(points[i]);
 
                 SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
@@ -58,7 +57,7 @@ class sdl_render {
 
             // lines connecting points
             for (from_to f : lines) {
-                for (int i = 0; i < f.size(); i++) {
+                for (size_t i = 0; i < f.size(); i++) {
                     vect2 pt_a = screen_display.position(points[f[i]]);
                     vect2 pt_b =
                         screen_display.position(points[f[(i + 1) % f.size()]]);
@@ -80,9 +79,9 @@ class sdl_render {
     }
 
   private:
-    uint32_t window_height;
+    uint window_height;
     bool running = true;
-    uint32_t subdivision = 5;
+    uint subdivision = 8;
 
     std::vector<vect> points;
     std::vector<from_to> lines;
@@ -92,7 +91,7 @@ class sdl_render {
     SDL_Event event;
 
     void initialize() {
-        window_height = uint32_t(window_width / aspect_ratio);
+        window_height = uint(window_width / aspect_ratio);
 
         SDL_Init(SDL_INIT_EVERYTHING);
 

@@ -2,6 +2,7 @@
 #define VECT_H
 
 #include <array>
+#include <cstddef>
 
 class vect {
   public:
@@ -17,7 +18,7 @@ class vect {
     double y() const { return this->e[1]; };
     double z() const { return this->e[2]; };
 
-    int size() { return this->e.size(); };
+    size_t size() { return this->e.size(); };
 
     double operator[](int i) const { return this->e[i]; };
     double &operator[](int i) { return this->e[i]; };
