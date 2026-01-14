@@ -1,5 +1,5 @@
-#ifndef VERTEX_H
-#define VERTEX_H
+#ifndef MESH_H
+#define MESH_H
 
 #include "vect.h"
 #include <array>
@@ -17,4 +17,4 @@ class mesh {
     virtual std::vector<from_to> grid(uint &subdivision) = 0;
 };
 
-#endif // !VERTEX_H
+#endif // !MESH_H
