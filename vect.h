@@ -20,8 +20,8 @@ class vect {
 
     size_t size() { return this->e.size(); };
 
-    double operator[](int i) const { return this->e[i]; };
-    double &operator[](int i) { return this->e[i]; };
+    double operator[](size_t i) const { return this->e[i]; };
+    double &operator[](size_t i) { return this->e[i]; };
 
     vect operator=(const vect &v) {
         e[0] = v.e[0];

@@ -28,7 +28,7 @@ class cube : public mesh {
         }
     };
 
-    std::vector<vect3> surface_interpolation(const uint &subdivision) override {
+    std::vector<vect3> surface_interpolation(const size_t &subdivision) override {
         for (size_t face = 0; face < faces; face++) {
             uint axis = face / 2;  // x = 0; y; 1; z; 2
             uint value = face % 2; // min = 0; max = 1 -> identify the face of
@@ -76,7 +76,7 @@ class cube : public mesh {
         return surface_points;
     }
 
-    std::vector<from_to> grid(uint &subdivision) override {
+    std::vector<from_to> grid(size_t &subdivision) override {
         uint points_per_face = (subdivision + 1) * (subdivision + 1);
         uint points_per_row = subdivision + 1;
         from_to pt;
@@ -112,8 +112,8 @@ class cube : public mesh {
     vect3 val;
     double sides = 0.5;
 
-    const uint num_vtx = 8;
-    const uint faces = 6;
+    const size_t num_vtx = 8;
+    const size_t faces = 6;
 
     std::vector<vect3> vertices;
     std::vector<vect3> surface_points;

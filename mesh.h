@@ -3,6 +3,7 @@
 
 #include "vect.h"
 #include <array>
+#include <cstddef>
 #include <sys/types.h>
 #include <vector>
 
@@ -12,9 +13,9 @@ class mesh {
   public:
     virtual ~mesh() = default;
 
-    virtual std::vector<vect3> surface_interpolation(const uint &subdivision) = 0;
+    virtual std::vector<vect3> surface_interpolation(const size_t &subdivision) = 0;
 
-    virtual std::vector<from_to> grid(uint &subdivision) = 0;
+    virtual std::vector<from_to> grid(size_t &subdivision) = 0;
 };
 
 #endif // !MESH_H

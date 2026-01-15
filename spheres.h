@@ -10,13 +10,14 @@
 
 class spheres : public mesh {
   public:
-    spheres(double &radius) : radius(radius) {
-        // this is fibonacci sphere
-        float phi = 1.618; // golden retio
-        radius /= 2;
+    spheres(double &radius) : radius(radius) { this->radius /= 2; };
 
-        for (size_t i = 0; i < num; i++) {
-            val.e[1] = radius - ((2.0 * i) / num - radius);
+    std::vector<vect3> surface_interpolation(const size_t &subdivision) override {
+        size_t num_points = subdivision * 50;
+
+        // fibonacci sphere
+        for (size_t i = 0; i < num_points; i++) {
+            val.e[1] = radius - ((2.0 * i) / num_points - radius);
 
             float radius_at_y = std::sqrt((radius - (val.e[1] * val.e[1])));
             float theta = 2 * M_PI * (i / phi);
@@ -24,22 +25,18 @@ class spheres : public mesh {
             val.e[0] = std::cos(theta) * radius_at_y;
             val.e[2] = std::sin(theta) * radius_at_y;
 
-            vertices.push_back(val);
+            points.push_back(val);
         }
+
+        return points;
     };
 
-    std::vector<vect3> surface_interpolation(const uint &subdivision) override {
-        return vertices;
-    };
-
-    std::vector<from_to> grid(uint &subdivision) override { return lines; };
+    std::vector<from_to> grid(size_t &subdivision) override { return lines; };
 
   private:
     vect3 val;
     double radius = 0.5;
-    uint num = 400;
-
-    std::vector<vect3> vertices;
+    const float phi = 1.618f; // golden ratio
 
     std::vector<vect3> points;
     std::vector<from_to> lines;

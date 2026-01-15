@@ -81,7 +81,7 @@ class sdl_render {
   private:
     uint window_height;
     bool running = true;
-    uint subdivision = 8;
+    size_t subdivision = 8;
 
     std::vector<vect> points;
     std::vector<from_to> lines;
