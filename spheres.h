@@ -10,21 +10,21 @@
 
 class spheres : public mesh {
   public:
-    spheres(double radius) : radius(radius) {
-        uint n = num * 2;
-        float phi;
-        float theta;
-        for (size_t i = 0; i < n; i++) {
-            for (size_t j = 0; j < n; j++) {
-                phi = M_PI * (double(i) / num);
-                theta = 2 * M_PI * (double(j) / num);
+    spheres(double &radius) : radius(radius) {
+        // this is fibonacci sphere
+        float phi = 1.618; // golden retio
+        radius /= 2;
 
-                val.e[0] = radius * std::sin(phi) * std::cos(theta);
-                val.e[1] = radius * std::cos(phi);
-                val.e[2] = radius * std::sin(phi) * std::sin(theta);
+        for (size_t i = 0; i < num; i++) {
+            val.e[1] = radius - ((2.0 * i) / num - radius);
 
-                vertices.push_back(val);
-            }
+            float radius_at_y = std::sqrt((radius - (val.e[1] * val.e[1])));
+            float theta = 2 * M_PI * (i / phi);
+
+            val.e[0] = std::cos(theta) * radius_at_y;
+            val.e[2] = std::sin(theta) * radius_at_y;
+
+            vertices.push_back(val);
         }
     };
 
@@ -37,7 +37,7 @@ class spheres : public mesh {
   private:
     vect3 val;
     double radius = 0.5;
-    uint num = 4;
+    uint num = 400;
 
     std::vector<vect3> vertices;
 

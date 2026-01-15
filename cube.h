@@ -11,7 +11,7 @@
 
 class cube : public mesh {
   public:
-    cube(double sides) : sides(sides) {
+    cube(double &sides) : sides(sides) {
         // use bit & operator to identify the 1.. if a bit is 1 it is value is negative
         for (size_t i = 0; i < num_vtx; i++) {
             for (size_t j = 0; j < val.size(); j++) {

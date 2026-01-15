@@ -37,7 +37,7 @@ class vect {
         e[2] += v.z();
 
         return *this;
-    }
+    };
 
     vect operator*=(double t) {
         e[0] *= t;
@@ -45,7 +45,7 @@ class vect {
         e[2] *= t;
 
         return *this;
-    }
+    };
 
     vect operator/=(double t) {
         e[0] /= t;
@@ -53,7 +53,7 @@ class vect {
         e[2] /= t;
 
         return *this;
-    }
+    };
 };
 
 // alias for vector 2
@@ -79,11 +79,11 @@ inline vect operator-(double t, const vect &v) {
 
 inline vect operator-(const vect &v, double t) {
     return vect(v.e[0] - t, v.e[1] - t, v.e[2] - t);
-}
+};
 
 inline vect operator*(const vect &v, const vect &u) {
     return vect(v.e[0] * u.e[0], v.e[1] * u.e[1], v.e[2] * u.e[2]);
-}
+};
 
 inline vect operator*(double t, const vect &v) {
     return vect(v.e[0] * t, v.e[1] * t, v.e[2] * t);
