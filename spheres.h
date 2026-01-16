@@ -3,8 +3,10 @@
 
 #include "mesh.h"
 #include "vect.h"
+#include <algorithm>
+#include <array>
 #include <cmath>
-#include <sys/types.h>
+#include <utility>
 #include <vector>
 
 class spheres : public mesh {
@@ -31,28 +33,33 @@ class spheres : public mesh {
     };
 
     std::vector<from_to> grid(size_t &subdivision) override {
-        from_to line;
-
         for (size_t i = 0; i < points.size(); i++) {
-            size_t offsets[2] = {subdivision,
-                                 subdivision + 5}; // { 1, 8, 21, 34};
+            std::vector<std::pair<double, size_t>> neighbors;
 
-            for (size_t offset : offsets) {
-                uint n = i + offset;
+            for (size_t j = 0; j < points.size(); j++) {
+                if (i == j)
+                    continue;
 
-                vect3 diff = points[i] - points[n];
+                vect3 diff = points[j] - points[i];
                 double dist =
                     std::sqrt(diff.x() * diff.x() + diff.y() * diff.y() +
                               diff.z() * diff.z());
 
-                if (dist <= points.size()) {
-                    line[0] = i;
-                    line[1] = n;
+                neighbors.push_back({dist, j});
+            };
 
-                    arcs.push_back(line);
-                }
+            std::sort(neighbors.begin(), neighbors.end());
+
+            from_to arc;
+
+            for (size_t k = 0; k < subdivision - 2; k++) {
+                size_t n = neighbors[k].second;
+                arc[0] = i;
+                arc[1] = n;
+
+                arcs.push_back(arc);
             }
-        }
+        };
 
         return arcs;
     };
@@ -61,7 +68,7 @@ class spheres : public mesh {
     vect3 val;
     double radius = 0.5;
     const float phi = 1.618f; // golden ratio
-    const uint multiplier = 50;
+    const uint multiplier = 100;
 
     std::vector<vect3> points;
     std::vector<from_to> arcs;

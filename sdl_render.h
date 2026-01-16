@@ -53,7 +53,7 @@ class sdl_render {
                 SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
             }
 
-            // lines connecting points
+            // lines/arcs connecting points
             for (from_to f : lines) {
                 for (size_t i = 0; i < f.size(); i++) {
                     vect2 pt_a = screen_display.position(points[f[i]]);
