@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
     renderer.aspect_ratio = 16.0 / 9.0;
     renderer.window_width = 1440;
 
-    // execute functions
+    // execute function
     renderer.run(std::make_shared<spheres>(size));
 
     renderer.destroy();

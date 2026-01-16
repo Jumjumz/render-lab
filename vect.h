@@ -94,8 +94,6 @@ inline vect operator*(const vect &v, double t) {
 };
 
 inline bool operator==(const vect &v, const vect &u) {
-    if (v == u)
-        return true;
     if (v.x() == u.x())
         return true;
     if (v.y() == u.y())
@@ -105,5 +103,9 @@ inline bool operator==(const vect &v, const vect &u) {
 
     return false;
 };
+
+inline double dot(const vect &v, const vect &u) {
+    return v.e[0] * u.e[0] + v.e[1] * u.e[1] + v.e[2] * u.e[2];
+}
 
 #endif // !VECT_H

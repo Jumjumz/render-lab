@@ -5,8 +5,6 @@
 #include "vect.h"
 #include <algorithm>
 #include <array>
-#include <cstddef>
-#include <sys/types.h>
 #include <vector>
 
 class cube : public mesh {

@@ -4,8 +4,6 @@
 #include "mesh.h"
 #include "vect.h"
 #include <cmath>
-#include <cstddef>
-#include <sys/types.h>
 #include <vector>
 
 class spheres : public mesh {
@@ -13,7 +11,7 @@ class spheres : public mesh {
     spheres(double &radius) : radius(radius) { this->radius /= 2; };
 
     std::vector<vect3> surface_interpolation(const size_t &subdivision) override {
-        size_t num_points = subdivision * 50;
+        size_t num_points = subdivision * multiplier;
 
         // fibonacci sphere
         for (size_t i = 0; i < num_points; i++) {
@@ -31,12 +29,31 @@ class spheres : public mesh {
         return points;
     };
 
-    std::vector<from_to> grid(size_t &subdivision) override { return lines; };
+    std::vector<from_to> grid(size_t &subdivision) override {
+        from_to arcs;
+
+        for (size_t i = 0; i < points.size(); i++) {
+            size_t offsets[4] = {1, 8, 21, 34};
+            for (uint offset : offsets) {
+                size_t n = i + offset;
+
+                if (n < points.size()) {
+                    arcs[0] = i;
+                    arcs[1] = n;
+
+                    lines.push_back(arcs);
+                }
+            }
+        }
+
+        return lines;
+    };
 
   private:
     vect3 val;
     double radius = 0.5;
     const float phi = 1.618f; // golden ratio
+    const uint multiplier = 50;
 
     std::vector<vect3> points;
     std::vector<from_to> lines;
