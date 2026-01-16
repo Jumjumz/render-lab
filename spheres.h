@@ -4,6 +4,7 @@
 #include "mesh.h"
 #include "vect.h"
 #include <cmath>
+#include <sys/types.h>
 #include <vector>
 
 class spheres : public mesh {
@@ -30,23 +31,30 @@ class spheres : public mesh {
     };
 
     std::vector<from_to> grid(size_t &subdivision) override {
-        from_to arcs;
+        from_to line;
 
         for (size_t i = 0; i < points.size(); i++) {
-            size_t offsets[4] = {1, 8, 21, 34};
-            for (uint offset : offsets) {
-                size_t n = i + offset;
+            size_t offsets[2] = {subdivision,
+                                 subdivision + 5}; // { 1, 8, 21, 34};
 
-                if (n < points.size()) {
-                    arcs[0] = i;
-                    arcs[1] = n;
+            for (size_t offset : offsets) {
+                uint n = i + offset;
 
-                    lines.push_back(arcs);
+                vect3 diff = points[i] - points[n];
+                double dist =
+                    std::sqrt(diff.x() * diff.x() + diff.y() * diff.y() +
+                              diff.z() * diff.z());
+
+                if (dist <= points.size()) {
+                    line[0] = i;
+                    line[1] = n;
+
+                    arcs.push_back(line);
                 }
             }
         }
 
-        return lines;
+        return arcs;
     };
 
   private:
@@ -56,7 +64,7 @@ class spheres : public mesh {
     const uint multiplier = 50;
 
     std::vector<vect3> points;
-    std::vector<from_to> lines;
+    std::vector<from_to> arcs;
 };
 
 #endif // !SPHERES_H

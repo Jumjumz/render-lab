@@ -5,8 +5,6 @@
 #include "mesh.h"
 #include "screen.h"
 #include "vect.h"
-#include <cmath>
-#include <cstddef>
 #include <memory>
 #include <vector>
 
