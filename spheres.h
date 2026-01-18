@@ -3,8 +3,8 @@
 
 #include "mesh.h"
 #include "vect.h"
-#include <array>
 #include <cmath>
+#include <cstddef>
 #include <vector>
 
 class spheres : public mesh {

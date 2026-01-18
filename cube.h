@@ -4,7 +4,7 @@
 #include "mesh.h"
 #include "vect.h"
 #include <algorithm>
-#include <array>
+#include <cstddef>
 #include <vector>
 
 class cube : public mesh {
