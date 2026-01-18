@@ -2,6 +2,7 @@
 #define VECT_H
 
 #include <array>
+#include <cmath>
 #include <cstddef>
 
 class vect {
@@ -18,7 +19,16 @@ class vect {
     double y() const { return this->e[1]; };
     double z() const { return this->e[2]; };
 
-    size_t size() { return this->e.size(); };
+    size_t size() const { return this->e.size(); };
+
+    double magnitude() const {
+        return std::sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
+    }
+
+    vect normalize() const {
+        return vect((e[0] / magnitude()), (e[1] / magnitude()),
+                    (e[2] / magnitude()));
+    }
 
     double operator[](size_t i) const { return this->e[i]; };
     double &operator[](size_t i) { return this->e[i]; };
@@ -65,12 +75,12 @@ inline vect operator+(const vect &v, const vect &u) {
     return vect(v.e[0] + u.e[0], v.e[1] + u.e[1], v.e[2] + u.e[2]);
 };
 
-inline vect operator-(const vect &v, const vect &u) {
-    return vect(v.e[0] - u.e[0], v.e[1] - u.e[1], v.e[2] - u.e[2]);
-};
-
 inline vect operator+(const vect &v, double t) {
     return vect(v.e[0] + t, v.e[1] + t, v.e[2] + t);
+};
+
+inline vect operator-(const vect &v, const vect &u) {
+    return vect(v.e[0] - u.e[0], v.e[1] - u.e[1], v.e[2] - u.e[2]);
 };
 
 inline vect operator-(double t, const vect &v) {
@@ -93,12 +103,16 @@ inline vect operator*(const vect &v, double t) {
     return vect(v.e[0] * t, v.e[1] * t, v.e[2] * t);
 };
 
+inline vect operator/(const vect &v, double t) {
+    return vect(v.e[0] / t, v.e[1] / t, v.e[2] / t);
+}
+
+inline vect operator/(double t, const vect &v) {
+    return vect(v.e[0] / t, v.e[1] / t, v.e[2] / t);
+}
+
 inline bool operator==(const vect &v, const vect &u) {
-    if (v.x() == u.x())
-        return true;
-    if (v.y() == u.y())
-        return true;
-    if (v.z() == u.z())
+    if (v.x() == u.x() && v.y() == u.y() && v.z() == u.z())
         return true;
 
     return false;
@@ -106,6 +120,12 @@ inline bool operator==(const vect &v, const vect &u) {
 
 inline double dot(const vect &v, const vect &u) {
     return v.e[0] * u.e[0] + v.e[1] * u.e[1] + v.e[2] * u.e[2];
+}
+
+inline vect cross(const vect &v, const vect &u) {
+    return vect(v.e[1] * u.e[2] - v.e[2] * u.e[1],
+                v.e[2] * u.e[0] - v.e[0] * u.e[2],
+                v.e[0] * u.e[1] - v.e[1] * v.e[0]);
 }
 
 #endif // !VECT_H

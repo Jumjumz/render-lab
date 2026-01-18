@@ -3,12 +3,11 @@
 
 #include "vect.h"
 #include <cmath>
-#include <cstdint>
 
 class screen {
   public:
     screen(float &focal_point, float &angle, float &aspect_ratio,
-           uint32_t &screen_width, uint32_t &screen_height)
+           uint &screen_width, uint &screen_height)
         : focal_point(focal_point), angle(angle), aspect_ratio(aspect_ratio),
           screen_width(screen_width), screen_height(screen_height) {};
 
@@ -20,8 +19,8 @@ class screen {
     }
 
   private:
-    const uint32_t screen_width;
-    const uint32_t screen_height;
+    const uint screen_width;
+    const uint screen_height;
 
     const float angle;
     const float focal_point;
