@@ -5,12 +5,11 @@
 #include "vect.h"
 #include <array>
 #include <cmath>
-#include <cstddef>
 #include <vector>
 
 class spheres : public mesh {
   public:
-    spheres(double &radius) : radius(radius) { this->radius /= 2; };
+    spheres(double &diameter) { radius = diameter / 2; };
 
     std::vector<vect3> surface_interpolation(const size_t &subdivision) override {
         size_t num_points = subdivision * multiplier;
@@ -59,8 +58,9 @@ class spheres : public mesh {
   private:
     vect3 val;
     double radius = 0.5;
-    const float phi = 1.618f; // golden ratio
-    const uint multiplier = 50;
+
+    const float phi = (1 + std::sqrt(5)) / 2; // golden ratio
+    const uint multiplier = 200;
 
     std::vector<vect3> points;
     std::vector<from_to> arcs;

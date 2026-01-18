@@ -2,6 +2,7 @@
 #define SDL_RENDER_H
 
 #include "SDL.h"
+#include "SDL_keycode.h"
 #include "mesh.h"
 #include "screen.h"
 #include "vect.h"
@@ -23,8 +24,14 @@ class sdl_render {
 
         while (running) {
             while (SDL_PollEvent(&event)) {
-                if (event.type == SDL_QUIT)
+                switch (event.type) {
+                case SDL_QUIT:
                     running = false;
+                case SDL_KEYDOWN:
+                    if (event.key.keysym.sym == SDLK_w) {
+                        show_lines = !show_lines;
+                    }
+                }
             }
 
             uint current_time = SDL_GetTicks();
@@ -53,15 +60,17 @@ class sdl_render {
                 SDL_RenderDrawPoint(renderer, pt.x(), pt.y());
             }
 
-            // lines/arcs connecting points
-            for (from_to f : lines) {
-                for (size_t i = 0; i < f.size(); i++) {
-                    vect2 pt_a = screen_display.position(points[f[i]]);
-                    vect2 pt_b =
-                        screen_display.position(points[f[(i + 1) % f.size()]]);
+            if (show_lines) {
+                // lines/arcs connecting points
+                for (from_to f : lines) {
+                    for (size_t i = 0; i < f.size(); i++) {
+                        vect2 pt_a = screen_display.position(points[f[i]]);
+                        vect2 pt_b = screen_display.position(
+                            points[f[(i + 1) % f.size()]]);
 
-                    SDL_RenderDrawLine(renderer, pt_a.x(), pt_a.y(), pt_b.x(),
-                                       pt_b.y());
+                        SDL_RenderDrawLine(renderer, pt_a.x(), pt_a.y(),
+                                           pt_b.x(), pt_b.y());
+                    }
                 }
             }
 
@@ -79,6 +88,7 @@ class sdl_render {
   private:
     uint window_height;
     bool running = true;
+    bool show_lines = true;
     size_t subdivision = 8;
 
     std::vector<vect> points;
