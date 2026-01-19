@@ -13,7 +13,6 @@ int main(int argc, char *argv[]) {
 
     // execute function
     renderer.run(std::make_shared<spheres>(size));
-
     renderer.destroy();
 
     return 0;
