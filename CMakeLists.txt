@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE COMMANDS ON)
 
 find_package(SDL2 REQUIRED)
+find_package(Vulkan REQUIRED)
 
 add_executable(main.out src/main.cpp)
 

@@ -2,6 +2,7 @@
 #include "sdl_render.h"
 #include "spheres.h"
 #include <memory>
+#include <vulkan/vulkan.h>
 
 int main(int argc, char *argv[]) {
     sdl_render renderer;
