@@ -1,19 +1,18 @@
-// #include "cube.h"
-#include "sdl_render.h"
-#include "spheres.h"
-#include <memory>
+#include "triangle.hpp"
+#include <cstdlib>
+#include <exception>
+#include <iostream>
 #include <vulkan/vulkan.h>
 
-int main(int argc, char *argv[]) {
-    sdl_render renderer;
-    double size = 0.5; // size for all shapes
+int main() {
+    HelloTriangleApplication app;
 
-    renderer.aspect_ratio = 16.0 / 9.0;
-    renderer.window_width = 1440;
+    try {
+        app.run();
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
 
-    // execute function
-    renderer.run(std::make_shared<spheres>(size));
-    renderer.destroy();
-
-    return 0;
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
 }
