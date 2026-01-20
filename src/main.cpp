@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vulkan/vulkan.h>
 
-int main() {
+int main(int argc, char *argv[]) {
     HelloTriangleApplication app;
 
     try {
@@ -14,5 +14,6 @@ int main() {
 
         return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
 }
