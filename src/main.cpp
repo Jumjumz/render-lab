@@ -5,7 +5,7 @@
 #include <ostream>
 #include <vulkan/vulkan.hpp>
 
-int main(int argc, char *argv[]) {
+int main() {
     HelloTriangleApplication app;
 
     try {

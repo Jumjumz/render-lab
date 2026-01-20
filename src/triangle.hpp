@@ -9,6 +9,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <vector>
+#include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_raii.hpp>
 #include <vulkan/vulkan_structs.hpp>
@@ -40,10 +41,15 @@ class HelloTriangleApplication {
     void initVulkan() { createInstance(); };
 
     void createInstance() {
-        constexpr vk::ApplicationInfo appInfo{
-            "Wireframe Renderer", VK_MAKE_VERSION(1, 0, 0), "Jumz Engine",
-            VK_MAKE_VERSION(0, 0, 1), vk::ApiVersion13};
+        // create app information
+        VkApplicationInfo appInfo{};
+        appInfo.pApplicationName = "Wireframe Render";
+        appInfo.applicationVersion = VK_MAKE_VERSION(0, 0, 1);
+        appInfo.pEngineName = "Jumz Engine";
+        appInfo.engineVersion = VK_MAKE_VERSION(0, 0, 1);
+        appInfo.apiVersion = vk::ApiVersion13;
 
+        // enable validation layers
         std::vector<char const *> requiredLayers;
 
         if (enableValidationLayers)
@@ -63,6 +69,7 @@ class HelloTriangleApplication {
                 "One or more required layers are not supported!");
         }
 
+        // get SDL vulkan extensions
         uint32_t extensionsCount = 0;
 
         SDL_Vulkan_GetInstanceExtensions(appWindow.window, &extensionsCount,
@@ -72,6 +79,7 @@ class HelloTriangleApplication {
                                          extensions.data());
 
         VkInstanceCreateInfo createInfo{};
+        createInfo.pApplicationInfo = &appInfo;
         createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         createInfo.enabledLayerCount =
             static_cast<uint32_t>(requiredLayers.size());
@@ -81,6 +89,7 @@ class HelloTriangleApplication {
 
         vkCreateInstance(&createInfo, nullptr, &instance);
 
+        // create sdl vulkan surface
         SDL_Vulkan_CreateSurface(appWindow.window, instance, &surface);
 
         // run
