@@ -2,13 +2,16 @@
 #include <cstdlib>
 #include <exception>
 #include <iostream>
-#include <vulkan/vulkan.h>
+#include <ostream>
+#include <vulkan/vulkan.hpp>
 
 int main(int argc, char *argv[]) {
     HelloTriangleApplication app;
 
     try {
         app.run();
+    } catch (const vk::SystemError &err) {
+        std::cerr << "Vulkan error: " << err.what() << std::endl;
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
 
