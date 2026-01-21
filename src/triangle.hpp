@@ -5,9 +5,12 @@
 #include "sdl.h"
 #include <SDL_vulkan.h>
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <map>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_core.h>
@@ -29,6 +32,8 @@ class HelloTriangleApplication {
     VkInstance instance;
     VkSurfaceKHR surface;
 
+    VkPhysicalDevice physicalDevice;
+
     vk::raii::Context context;
 
     void initWindow() {
@@ -38,7 +43,10 @@ class HelloTriangleApplication {
         appWindow.init();
     };
 
-    void initVulkan() { createInstance(); };
+    void initVulkan() {
+        createInstance();
+        pickPhysicalDevice();
+    };
 
     void createInstance() {
         // create app information
@@ -94,7 +102,48 @@ class HelloTriangleApplication {
 
         // run
         appWindow.run();
-    }
+    };
+
+    void pickPhysicalDevice() {
+        uint32_t deviceCount = 0;
+        vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+
+        if (deviceCount == 0) {
+            throw std::runtime_error("No GPU with Vulkan Support found\n");
+        }
+
+        std::vector<VkPhysicalDevice> devices(deviceCount);
+
+        vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+
+        std::multimap<int, VkPhysicalDevice> candidates;
+
+        for (size_t i = 0; i < devices.size(); i++) {
+            VkPhysicalDeviceProperties properties;
+            vkGetPhysicalDeviceProperties(devices[i], &properties);
+            uint score = 0;
+
+            switch (properties.deviceType) {
+            case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
+                score += 1000;
+                break;
+            case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
+                score += 300;
+                break;
+            default:
+                break;
+            }
+
+            score += properties.limits.maxImageDimension2D;
+            candidates.insert(std::make_pair(score, devices[i]));
+        }
+
+        if (candidates.rbegin()->first > 0) {
+            physicalDevice = candidates.rbegin()->second;
+        } else {
+            throw std::runtime_error("Failed to find suitable GPU!");
+        }
+    };
 
     void mainLoop() {};
 
