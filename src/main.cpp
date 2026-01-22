@@ -11,7 +11,9 @@ int main() {
     try {
         app.run();
     } catch (const vk::SystemError &err) {
-        std::cerr << "Vulkan error: " << err.what() << std::endl;
+        std::cerr << "Vulkan Error: " << err.what() << std::endl;
+
+        return EXIT_FAILURE;
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
 
