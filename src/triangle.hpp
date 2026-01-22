@@ -11,10 +11,12 @@
 #include <map>
 #include <set>
 #include <stdexcept>
+#include <sys/types.h>
 #include <utility>
 #include <vector>
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan_handles.hpp>
 #include <vulkan/vulkan_raii.hpp>
 #include <vulkan/vulkan_structs.hpp>
 
@@ -36,13 +38,21 @@ class HelloTriangleApplication {
     VkDevice device;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
-    vk::raii::Context context;
-
     struct QueueFamilyIndices {
         int graphicsFamily = -1;
         int presentFamily = -1;
 
         bool isComplete() { return graphicsFamily >= 0 && presentFamily >= 0; }
+    };
+
+    struct SurfaceConfig {
+        VkSurfaceCapabilitiesKHR capabilities;
+        std::vector<VkSurfaceFormatKHR> formats;
+        std::vector<VkPresentModeKHR> presentModes;
+
+        VkSurfaceFormatKHR chosenFormat;
+        VkPresentModeKHR chosenPresentMode;
+        VkExtent2D chosenExtent;
     };
 
     void initWindow() {
@@ -55,6 +65,7 @@ class HelloTriangleApplication {
     void initVulkan() {
         createInstance();
         pickPhysicalDevice();
+        createSurface();
         createLogicalDevice();
     };
 
@@ -73,6 +84,8 @@ class HelloTriangleApplication {
         if (enableValidationLayers)
             requiredLayers.assign(validationLayers.begin(),
                                   validationLayers.end());
+
+        vk::raii::Context context;
 
         auto layerProperties = context.enumerateInstanceLayerProperties();
 
@@ -187,7 +200,7 @@ class HelloTriangleApplication {
             static_cast<uint32_t>(queueCreateInfos.size());
         createInfo.pEnabledFeatures = &features;
 
-        // get device extensions
+        // get swapchains extensions
         const std::vector<const char *> deviceExtensions = {
             VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
@@ -237,11 +250,75 @@ class HelloTriangleApplication {
         return indices;
     };
 
+    void createSurface() {
+        SurfaceConfig config = surfaceConfig();
+
+        config.chosenFormat = config.formats[0]; // default
+        for (const auto &format : config.formats) {
+            if (format.format == VK_FORMAT_B8G8R8A8_SRGB &&
+                format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+                config.chosenFormat = format;
+                break;
+            }
+        }
+
+        config.chosenPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+        for (const auto &mode : config.presentModes) {
+            if (mode == VK_PRESENT_MODE_MAILBOX_KHR) {
+                config.chosenPresentMode = mode;
+                break;
+            }
+        }
+
+        if (config.capabilities.currentExtent.width != UINT32_MAX) {
+            config.chosenExtent = config.capabilities.currentExtent;
+        } else {
+            int width, height;
+            SDL_Vulkan_GetDrawableSize(appWindow.window, &width, &height);
+
+            config.chosenExtent.width =
+                std::clamp(static_cast<uint32_t>(width),
+                           config.capabilities.minImageExtent.width,
+                           config.capabilities.maxImageExtent.width);
+
+            config.chosenExtent.height =
+                std::clamp(static_cast<uint32_t>(height),
+                           config.capabilities.minImageExtent.height,
+                           config.capabilities.maxImageExtent.height);
+        }
+    };
+
+    SurfaceConfig surfaceConfig() {
+        SurfaceConfig config;
+
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface,
+                                                  &config.capabilities);
+
+        uint32_t formatCount = 0;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface,
+                                             &formatCount, nullptr);
+
+        config.formats.resize(formatCount);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(
+            physicalDevice, surface, &formatCount, config.formats.data());
+
+        uint32_t presentModeCount = 0;
+        vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface,
+                                                  &presentModeCount, nullptr);
+
+        config.presentModes.resize(presentModeCount);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface,
+                                                  &presentModeCount,
+                                                  config.presentModes.data());
+
+        return config;
+    }
+
     void mainLoop() {};
 
     void cleanUp() {
-        vkDestroyDevice(device, nullptr);
         vkDestroySurfaceKHR(instance, surface, nullptr);
+        vkDestroyDevice(device, nullptr);
         vkDestroyInstance(instance, nullptr);
 
         appWindow.destroy();
