@@ -136,6 +136,13 @@ class HelloTriangleApplication {
 
             score += properties.limits.maxImageDimension2D;
             candidates.insert(std::make_pair(score, devices[i]));
+
+            // check queue families
+            uint32_t queueFamilyCount = 0;
+            vkGetPhysicalDeviceQueueFamilyProperties(devices[i],
+                                                     &queueFamilyCount, nullptr);
+            VkPhysicalDeviceFeatures features;
+            vkGetPhysicalDeviceFeatures(devices[i], &features);
         }
 
         if (candidates.rbegin()->first > 0) {
