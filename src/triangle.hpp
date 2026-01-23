@@ -16,6 +16,7 @@
 #include <vector>
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan_enums.hpp>
 #include <vulkan/vulkan_handles.hpp>
 #include <vulkan/vulkan_raii.hpp>
 #include <vulkan/vulkan_structs.hpp>
@@ -37,6 +38,7 @@ class HelloTriangleApplication {
 
     VkDevice device;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+    VkSwapchainKHR swapChain;
 
     struct QueueFamilyIndices {
         int graphicsFamily = -1;
@@ -53,6 +55,15 @@ class HelloTriangleApplication {
         VkSurfaceFormatKHR chosenFormat;
         VkPresentModeKHR chosenPresentMode;
         VkExtent2D chosenExtent;
+
+        uint32_t imageCount;
+    };
+
+    struct SwapchainResources {
+        std::vector<VkImage> images;
+        std::vector<VkImageView> imageViews;
+        VkFormat imageFormat;
+        VkExtent2D extent;
     };
 
     void initWindow() {
@@ -67,6 +78,7 @@ class HelloTriangleApplication {
         pickPhysicalDevice();
         createSurface();
         createLogicalDevice();
+        createSwapChain();
     };
 
     void createInstance() {
@@ -253,12 +265,12 @@ class HelloTriangleApplication {
     void createSurface() {
         SurfaceConfig config = surfaceConfig();
 
-        config.chosenFormat = config.formats[0]; // default
         for (const auto &format : config.formats) {
             if (format.format == VK_FORMAT_B8G8R8A8_SRGB &&
                 format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
                 config.chosenFormat = format;
-                break;
+            } else {
+                config.chosenFormat = config.formats[0]; // default
             }
         }
 
@@ -270,6 +282,7 @@ class HelloTriangleApplication {
             }
         }
 
+        // choose extent
         if (config.capabilities.currentExtent.width != UINT32_MAX) {
             config.chosenExtent = config.capabilities.currentExtent;
         } else {
@@ -285,6 +298,12 @@ class HelloTriangleApplication {
                 std::clamp(static_cast<uint32_t>(height),
                            config.capabilities.minImageExtent.height,
                            config.capabilities.maxImageExtent.height);
+        }
+
+        config.imageCount = config.capabilities.minImageCount + 1;
+        if (config.capabilities.maxImageCount > 0 &&
+            config.imageCount > config.capabilities.maxImageCount) {
+            config.imageCount = config.capabilities.maxImageCount;
         }
     };
 
@@ -314,9 +333,86 @@ class HelloTriangleApplication {
         return config;
     }
 
+    void createSwapChain() {
+        SurfaceConfig config;
+        QueueFamilyIndices indices;
+
+        SwapchainResources resources;
+
+        VkSwapchainCreateInfoKHR chainCreateInfo{};
+        chainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+        chainCreateInfo.surface = surface;
+        chainCreateInfo.minImageCount = config.imageCount;
+        chainCreateInfo.imageFormat = config.chosenFormat.format;
+        chainCreateInfo.imageColorSpace = config.chosenFormat.colorSpace;
+        chainCreateInfo.imageExtent = config.chosenExtent;
+        chainCreateInfo.imageArrayLayers = 1;
+        chainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+        uint32_t queueFamilyIndeces[] = {uint32_t(indices.graphicsFamily),
+                                         uint32_t(indices.presentFamily)};
+
+        if (indices.graphicsFamily != indices.presentFamily) {
+            chainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+            chainCreateInfo.queueFamilyIndexCount = 2;
+            chainCreateInfo.pQueueFamilyIndices = queueFamilyIndeces;
+        } else {
+            chainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        }
+
+        chainCreateInfo.preTransform = config.capabilities.currentTransform;
+        chainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+        chainCreateInfo.presentMode = config.chosenPresentMode;
+        chainCreateInfo.clipped = VK_TRUE;
+        chainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
+
+        if (vkCreateSwapchainKHR(device, &chainCreateInfo, nullptr,
+                                 &swapChain) != VK_SUCCESS)
+            throw std::runtime_error("Failed to Create Swapchain!");
+
+        uint32_t imageCount;
+        vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);
+        resources.images.resize(imageCount);
+        vkGetSwapchainImagesKHR(device, swapChain, &imageCount,
+                                resources.images.data());
+
+        resources.imageViews.resize(imageCount);
+        for (size_t i = 0; i < imageCount; i++) {
+            VkImageViewCreateInfo viewInfo;
+            memset(&viewInfo, 0, sizeof(viewInfo));
+            viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+            viewInfo.image = resources.images[i];
+            viewInfo.format = config.chosenFormat.format;
+            viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+            viewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+            viewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+            viewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+            viewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+            viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            viewInfo.subresourceRange.baseArrayLayer = 0;
+            viewInfo.subresourceRange.baseMipLevel = 0;
+            viewInfo.subresourceRange.levelCount = 1;
+            viewInfo.subresourceRange.layerCount = 1;
+
+            if (vkCreateImageView(device, &viewInfo, nullptr,
+                                  &resources.imageViews[i]) != VK_SUCCESS)
+                throw std::runtime_error("Failed to Create View Info!");
+        }
+
+        resources.imageFormat = config.chosenFormat.format;
+        resources.extent = config.chosenExtent;
+    };
+
     void mainLoop() {};
 
-    void cleanUp() {
+    void cleanUp() const {
+        SwapchainResources resources;
+
+        for (auto imageView : resources.imageViews) {
+            vkDestroyImageView(device, imageView, nullptr);
+        }
+
+        vkDestroySwapchainKHR(device, swapChain, nullptr);
         vkDestroySurfaceKHR(instance, surface, nullptr);
         vkDestroyDevice(device, nullptr);
         vkDestroyInstance(instance, nullptr);
