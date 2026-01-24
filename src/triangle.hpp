@@ -45,7 +45,7 @@ class HelloTriangleApplication {
         int presentFamily = -1;
 
         bool isComplete() { return graphicsFamily >= 0 && presentFamily >= 0; }
-    };
+    } indices;
 
     struct SurfaceConfig {
         VkSurfaceCapabilitiesKHR capabilities;
@@ -57,14 +57,14 @@ class HelloTriangleApplication {
         VkExtent2D chosenExtent;
 
         uint32_t imageCount;
-    };
+    } config;
 
     struct SwapchainResources {
         std::vector<VkImage> images;
         std::vector<VkImageView> imageViews;
         VkFormat imageFormat;
         VkExtent2D extent;
-    };
+    } resources;
 
     void initWindow() {
         appWindow.window_width = 1440;
@@ -182,7 +182,7 @@ class HelloTriangleApplication {
     };
 
     void createLogicalDevice() {
-        QueueFamilyIndices indices = findQueueFamilies();
+        findQueueFamilies();
 
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         std::set<int> uniqueQueueFamilies = {indices.graphicsFamily,
@@ -232,8 +232,7 @@ class HelloTriangleApplication {
         vkGetDeviceQueue(device, indices.presentFamily, 0, &presentQueue);
     };
 
-    QueueFamilyIndices findQueueFamilies() {
-        QueueFamilyIndices indices;
+    void findQueueFamilies() {
         // check queue families
         uint32_t queueFamilyCount = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice,
@@ -258,12 +257,10 @@ class HelloTriangleApplication {
             if (indices.isComplete())
                 break;
         }
-
-        return indices;
     };
 
     void createSurface() {
-        SurfaceConfig config = surfaceConfig();
+        surfaceConfig();
 
         for (const auto &format : config.formats) {
             if (format.format == VK_FORMAT_B8G8R8A8_SRGB &&
@@ -307,9 +304,7 @@ class HelloTriangleApplication {
         }
     };
 
-    SurfaceConfig surfaceConfig() {
-        SurfaceConfig config;
-
+    void surfaceConfig() {
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface,
                                                   &config.capabilities);
 
@@ -329,17 +324,12 @@ class HelloTriangleApplication {
         vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface,
                                                   &presentModeCount,
                                                   config.presentModes.data());
-
-        return config;
     }
 
     void createSwapChain() {
-        SurfaceConfig config;
-        QueueFamilyIndices indices;
+        VkSwapchainCreateInfoKHR chainCreateInfo;
+        memset(&chainCreateInfo, 0, sizeof(chainCreateInfo));
 
-        SwapchainResources resources;
-
-        VkSwapchainCreateInfoKHR chainCreateInfo{};
         chainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
         chainCreateInfo.surface = surface;
         chainCreateInfo.minImageCount = config.imageCount;
@@ -380,6 +370,7 @@ class HelloTriangleApplication {
         for (size_t i = 0; i < imageCount; i++) {
             VkImageViewCreateInfo viewInfo;
             memset(&viewInfo, 0, sizeof(viewInfo));
+
             viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
             viewInfo.image = resources.images[i];
             viewInfo.format = config.chosenFormat.format;
@@ -406,8 +397,6 @@ class HelloTriangleApplication {
     void mainLoop() {};
 
     void cleanUp() const {
-        SwapchainResources resources;
-
         for (auto imageView : resources.imageViews) {
             vkDestroyImageView(device, imageView, nullptr);
         }
