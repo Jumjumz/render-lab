@@ -82,6 +82,7 @@ class HelloTriangleApplication {
         createSurface();
         createLogicalDevice();
         createSwapChain();
+        createViewImage();
     };
 
     void createInstance() {
@@ -364,7 +365,9 @@ class HelloTriangleApplication {
         if (vkCreateSwapchainKHR(this->device, &swapInfo, nullptr,
                                  &this->swapChain) != VK_SUCCESS)
             throw std::runtime_error("Failed to create swapchain!");
+    };
 
+    void createViewImage() {
         uint32_t imageCount;
         vkGetSwapchainImagesKHR(this->device, this->swapChain, &imageCount,
                                 nullptr);
