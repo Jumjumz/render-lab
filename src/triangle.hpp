@@ -44,7 +44,9 @@ class HelloTriangleApplication {
         int graphicsFamily = -1;
         int presentFamily = -1;
 
-        bool isComplete() { return graphicsFamily >= 0 && presentFamily >= 0; }
+        bool isComplete() const {
+            return graphicsFamily >= 0 && presentFamily >= 0;
+        };
     } indices;
 
     struct SurfaceConfig {
@@ -62,15 +64,16 @@ class HelloTriangleApplication {
     struct SwapchainResources {
         std::vector<VkImage> images;
         std::vector<VkImageView> imageViews;
+
         VkFormat imageFormat;
         VkExtent2D extent;
     } resources;
 
     void initWindow() {
-        appWindow.window_width = 1440;
-        appWindow.aspect_ratio = 16.0 / 9.0;
+        this->appWindow.window_width = 1440;
+        this->appWindow.aspect_ratio = 16.0 / 9.0;
 
-        appWindow.init();
+        this->appWindow.init();
     };
 
     void initVulkan() {
@@ -97,7 +100,7 @@ class HelloTriangleApplication {
             requiredLayers.assign(validationLayers.begin(),
                                   validationLayers.end());
 
-        vk::raii::Context context;
+        const vk::raii::Context context;
 
         auto layerProperties = context.enumerateInstanceLayerProperties();
 
@@ -115,41 +118,41 @@ class HelloTriangleApplication {
         // get SDL vulkan extensions
         uint32_t extensionsCount = 0;
 
-        SDL_Vulkan_GetInstanceExtensions(appWindow.window, &extensionsCount,
-                                         nullptr);
+        SDL_Vulkan_GetInstanceExtensions(this->appWindow.window,
+                                         &extensionsCount, nullptr);
         std::vector<const char *> extensions(extensionsCount);
-        SDL_Vulkan_GetInstanceExtensions(appWindow.window, &extensionsCount,
-                                         extensions.data());
+        SDL_Vulkan_GetInstanceExtensions(this->appWindow.window,
+                                         &extensionsCount, extensions.data());
 
-        VkInstanceCreateInfo createInfo{};
-        createInfo.pApplicationInfo = &appInfo;
-        createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-        createInfo.enabledLayerCount =
+        VkInstanceCreateInfo instanceInfo{};
+        instanceInfo.pApplicationInfo = &appInfo;
+        instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+        instanceInfo.enabledLayerCount =
             static_cast<uint32_t>(requiredLayers.size());
-        createInfo.ppEnabledLayerNames = requiredLayers.data();
-        createInfo.enabledExtensionCount = extensionsCount;
-        createInfo.ppEnabledExtensionNames = extensions.data();
+        instanceInfo.ppEnabledLayerNames = requiredLayers.data();
+        instanceInfo.enabledExtensionCount = extensionsCount;
+        instanceInfo.ppEnabledExtensionNames = extensions.data();
 
-        vkCreateInstance(&createInfo, nullptr, &instance);
+        vkCreateInstance(&instanceInfo, nullptr, &instance);
 
         // create sdl vulkan surface
-        SDL_Vulkan_CreateSurface(appWindow.window, instance, &surface);
+        SDL_Vulkan_CreateSurface(this->appWindow.window, this->instance,
+                                 &this->surface);
 
         // run
-        appWindow.run();
+        this->appWindow.run();
     };
 
     void pickPhysicalDevice() {
         uint32_t deviceCount = 0;
-        vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+        vkEnumeratePhysicalDevices(this->instance, &deviceCount, nullptr);
 
-        if (deviceCount == 0) {
-            throw std::runtime_error("No GPU with Vulkan Support found\n");
-        }
+        if (deviceCount == 0)
+            throw std::runtime_error("No GPU with Vulkan support found\n");
 
         std::vector<VkPhysicalDevice> devices(deviceCount);
 
-        vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+        vkEnumeratePhysicalDevices(this->instance, &deviceCount, devices.data());
 
         std::multimap<int, VkPhysicalDevice> candidates;
 
@@ -175,205 +178,206 @@ class HelloTriangleApplication {
 
         // get the physical device base on score
         if (candidates.rbegin()->first > 0) {
-            physicalDevice = candidates.rbegin()->second;
+            this->physicalDevice = candidates.rbegin()->second;
         } else {
             throw std::runtime_error("Failed to find suitable GPU!");
         }
     };
 
     void createLogicalDevice() {
-        findQueueFamilies();
+        findQueueFamilies(); // init indices
 
-        std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-        std::set<int> uniqueQueueFamilies = {indices.graphicsFamily,
-                                             indices.presentFamily};
+        std::vector<VkDeviceQueueCreateInfo> deviceQueueInfos;
+        std::set<int> uniqueQueueFamilies = {this->indices.graphicsFamily,
+                                             this->indices.presentFamily};
 
         float queuePriority = 1.0f;
-        for (int queueFamily : uniqueQueueFamilies) {
+        for (const int queueFamily : uniqueQueueFamilies) {
             VkDeviceQueueCreateInfo deviceQueueInfo{};
             deviceQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
             deviceQueueInfo.queueFamilyIndex = queueFamily;
             deviceQueueInfo.queueCount = 1;
             deviceQueueInfo.pQueuePriorities = &queuePriority;
-            queueCreateInfos.push_back(deviceQueueInfo);
+
+            deviceQueueInfos.push_back(deviceQueueInfo);
         }
 
         // check device features
         VkPhysicalDeviceFeatures features{};
-        memset(&features, 0, sizeof(VkPhysicalDeviceFeatures));
-
         features.samplerAnisotropy = VK_TRUE;
         features.geometryShader = VK_TRUE;
 
-        VkDeviceCreateInfo createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        createInfo.pQueueCreateInfos = queueCreateInfos.data();
-        createInfo.queueCreateInfoCount =
-            static_cast<uint32_t>(queueCreateInfos.size());
-        createInfo.pEnabledFeatures = &features;
+        VkDeviceCreateInfo deviceInfo{};
+        deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+        deviceInfo.pQueueCreateInfos = deviceQueueInfos.data();
+        deviceInfo.queueCreateInfoCount =
+            static_cast<uint32_t>(deviceQueueInfos.size());
+        deviceInfo.pEnabledFeatures = &features;
 
         // get swapchains extensions
         const std::vector<const char *> deviceExtensions = {
             VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
-        createInfo.enabledExtensionCount =
+        deviceInfo.enabledExtensionCount =
             static_cast<uint32_t>(deviceExtensions.size());
-        createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+        deviceInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
-        if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) !=
-            VK_SUCCESS)
-            throw std::runtime_error("Failed to Create Logical Device!");
+        if (vkCreateDevice(this->physicalDevice, &deviceInfo, nullptr,
+                           &this->device) != VK_SUCCESS)
+            throw std::runtime_error("Failed to create logical device!");
 
         // get queue handles
         VkQueue graphicsQueue;
         VkQueue presentQueue;
 
-        vkGetDeviceQueue(device, indices.graphicsFamily, 0, &graphicsQueue);
-        vkGetDeviceQueue(device, indices.presentFamily, 0, &presentQueue);
+        vkGetDeviceQueue(this->device, this->indices.graphicsFamily, 0,
+                         &graphicsQueue);
+        vkGetDeviceQueue(this->device, this->indices.presentFamily, 0,
+                         &presentQueue);
     };
 
     void findQueueFamilies() {
         // check queue families
         uint32_t queueFamilyCount = 0;
-        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice,
+        vkGetPhysicalDeviceQueueFamilyProperties(this->physicalDevice,
                                                  &queueFamilyCount, nullptr);
 
         std::vector<VkQueueFamilyProperties> queueFamilyProperties(
             queueFamilyCount);
-        vkGetPhysicalDeviceQueueFamilyProperties(
-            physicalDevice, &queueFamilyCount, queueFamilyProperties.data());
+        vkGetPhysicalDeviceQueueFamilyProperties(this->physicalDevice,
+                                                 &queueFamilyCount,
+                                                 queueFamilyProperties.data());
 
         for (size_t i = 0; i < queueFamilyProperties.size(); i++) {
             if (queueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
-                indices.graphicsFamily = i;
+                this->indices.graphicsFamily = i;
 
-            VkBool32 presentSupport = false;
-            vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, surface,
-                                                 &presentSupport);
+            VkBool32 presentSupport = VK_FALSE;
+            vkGetPhysicalDeviceSurfaceSupportKHR(this->physicalDevice, i,
+                                                 this->surface, &presentSupport);
 
             if (presentSupport)
-                indices.presentFamily = i;
+                this->indices.presentFamily = i;
 
-            if (indices.isComplete())
+            if (this->indices.isComplete())
                 break;
         }
     };
 
     void createSurface() {
-        surfaceConfig();
+        surfaceConfig(); // init config
 
-        for (const auto &format : config.formats) {
+        this->config.chosenFormat = this->config.formats[0]; // default
+        for (const auto &format : this->config.formats) {
             if (format.format == VK_FORMAT_B8G8R8A8_SRGB &&
                 format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-                config.chosenFormat = format;
-            } else {
-                config.chosenFormat = config.formats[0]; // default
+                this->config.chosenFormat = format;
+                break;
             }
         }
 
-        config.chosenPresentMode = VK_PRESENT_MODE_FIFO_KHR;
-        for (const auto &mode : config.presentModes) {
+        this->config.chosenPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+        for (const auto &mode : this->config.presentModes) {
             if (mode == VK_PRESENT_MODE_MAILBOX_KHR) {
-                config.chosenPresentMode = mode;
+                this->config.chosenPresentMode = mode;
                 break;
             }
         }
 
         // choose extent
-        if (config.capabilities.currentExtent.width != UINT32_MAX) {
-            config.chosenExtent = config.capabilities.currentExtent;
+        if (this->config.capabilities.currentExtent.width != UINT32_MAX) {
+            this->config.chosenExtent = this->config.capabilities.currentExtent;
         } else {
             int width, height;
-            SDL_Vulkan_GetDrawableSize(appWindow.window, &width, &height);
+            SDL_Vulkan_GetDrawableSize(this->appWindow.window, &width, &height);
 
-            config.chosenExtent.width =
+            this->config.chosenExtent.width =
                 std::clamp(static_cast<uint32_t>(width),
-                           config.capabilities.minImageExtent.width,
-                           config.capabilities.maxImageExtent.width);
+                           this->config.capabilities.minImageExtent.width,
+                           this->config.capabilities.maxImageExtent.width);
 
-            config.chosenExtent.height =
+            this->config.chosenExtent.height =
                 std::clamp(static_cast<uint32_t>(height),
-                           config.capabilities.minImageExtent.height,
-                           config.capabilities.maxImageExtent.height);
+                           this->config.capabilities.minImageExtent.height,
+                           this->config.capabilities.maxImageExtent.height);
         }
 
-        config.imageCount = config.capabilities.minImageCount + 1;
-        if (config.capabilities.maxImageCount > 0 &&
-            config.imageCount > config.capabilities.maxImageCount) {
-            config.imageCount = config.capabilities.maxImageCount;
+        this->config.imageCount = this->config.capabilities.minImageCount + 1;
+        if (this->config.capabilities.maxImageCount > 0 &&
+            this->config.imageCount > this->config.capabilities.maxImageCount) {
+            this->config.imageCount = this->config.capabilities.maxImageCount;
         }
     };
 
     void surfaceConfig() {
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface,
-                                                  &config.capabilities);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
+            this->physicalDevice, this->surface, &this->config.capabilities);
 
         uint32_t formatCount = 0;
-        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface,
+        vkGetPhysicalDeviceSurfaceFormatsKHR(this->physicalDevice, this->surface,
                                              &formatCount, nullptr);
 
-        config.formats.resize(formatCount);
-        vkGetPhysicalDeviceSurfaceFormatsKHR(
-            physicalDevice, surface, &formatCount, config.formats.data());
+        this->config.formats.resize(formatCount);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(this->physicalDevice,
+                                             this->surface, &formatCount,
+                                             this->config.formats.data());
 
         uint32_t presentModeCount = 0;
-        vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface,
-                                                  &presentModeCount, nullptr);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(
+            this->physicalDevice, this->surface, &presentModeCount, nullptr);
 
-        config.presentModes.resize(presentModeCount);
-        vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface,
-                                                  &presentModeCount,
-                                                  config.presentModes.data());
+        this->config.presentModes.resize(presentModeCount);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(
+            this->physicalDevice, this->surface, &presentModeCount,
+            this->config.presentModes.data());
     }
 
     void createSwapChain() {
-        VkSwapchainCreateInfoKHR chainCreateInfo;
-        memset(&chainCreateInfo, 0, sizeof(chainCreateInfo));
+        VkSwapchainCreateInfoKHR swapInfo{};
+        swapInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+        swapInfo.surface = this->surface;
+        swapInfo.minImageCount = this->config.imageCount;
+        swapInfo.imageFormat = this->config.chosenFormat.format;
+        swapInfo.imageColorSpace = this->config.chosenFormat.colorSpace;
+        swapInfo.imageExtent = this->config.chosenExtent;
+        swapInfo.imageArrayLayers = 1;
+        swapInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-        chainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-        chainCreateInfo.surface = surface;
-        chainCreateInfo.minImageCount = config.imageCount;
-        chainCreateInfo.imageFormat = config.chosenFormat.format;
-        chainCreateInfo.imageColorSpace = config.chosenFormat.colorSpace;
-        chainCreateInfo.imageExtent = config.chosenExtent;
-        chainCreateInfo.imageArrayLayers = 1;
-        chainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+        uint32_t queueFamilyIndeces[] = {
+            static_cast<uint32_t>(this->indices.graphicsFamily),
+            static_cast<uint32_t>(this->indices.presentFamily)};
 
-        uint32_t queueFamilyIndeces[] = {uint32_t(indices.graphicsFamily),
-                                         uint32_t(indices.presentFamily)};
-
-        if (indices.graphicsFamily != indices.presentFamily) {
-            chainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-            chainCreateInfo.queueFamilyIndexCount = 2;
-            chainCreateInfo.pQueueFamilyIndices = queueFamilyIndeces;
+        if (this->indices.graphicsFamily != this->indices.presentFamily) {
+            swapInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+            swapInfo.queueFamilyIndexCount = 2;
+            swapInfo.pQueueFamilyIndices = queueFamilyIndeces;
         } else {
-            chainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+            swapInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
         }
 
-        chainCreateInfo.preTransform = config.capabilities.currentTransform;
-        chainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-        chainCreateInfo.presentMode = config.chosenPresentMode;
-        chainCreateInfo.clipped = VK_TRUE;
-        chainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
+        swapInfo.preTransform = this->config.capabilities.currentTransform;
+        swapInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+        swapInfo.presentMode = this->config.chosenPresentMode;
+        swapInfo.clipped = VK_TRUE;
+        swapInfo.oldSwapchain = VK_NULL_HANDLE;
 
-        if (vkCreateSwapchainKHR(device, &chainCreateInfo, nullptr,
-                                 &swapChain) != VK_SUCCESS)
-            throw std::runtime_error("Failed to Create Swapchain!");
+        if (vkCreateSwapchainKHR(this->device, &swapInfo, nullptr,
+                                 &this->swapChain) != VK_SUCCESS)
+            throw std::runtime_error("Failed to create swapchain!");
 
         uint32_t imageCount;
-        vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);
-        resources.images.resize(imageCount);
-        vkGetSwapchainImagesKHR(device, swapChain, &imageCount,
-                                resources.images.data());
+        vkGetSwapchainImagesKHR(this->device, this->swapChain, &imageCount,
+                                nullptr);
+        this->resources.images.resize(imageCount);
+        vkGetSwapchainImagesKHR(this->device, this->swapChain, &imageCount,
+                                this->resources.images.data());
 
-        resources.imageViews.resize(imageCount);
+        this->resources.imageViews.resize(imageCount);
         for (size_t i = 0; i < imageCount; i++) {
-            VkImageViewCreateInfo viewInfo;
-            memset(&viewInfo, 0, sizeof(viewInfo));
-
+            VkImageViewCreateInfo viewInfo{};
             viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-            viewInfo.image = resources.images[i];
-            viewInfo.format = config.chosenFormat.format;
+            viewInfo.image = this->resources.images[i];
+            viewInfo.format = this->config.chosenFormat.format;
             viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
             viewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
             viewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
@@ -385,28 +389,28 @@ class HelloTriangleApplication {
             viewInfo.subresourceRange.levelCount = 1;
             viewInfo.subresourceRange.layerCount = 1;
 
-            if (vkCreateImageView(device, &viewInfo, nullptr,
-                                  &resources.imageViews[i]) != VK_SUCCESS)
-                throw std::runtime_error("Failed to Create View Info!");
+            if (vkCreateImageView(this->device, &viewInfo, nullptr,
+                                  &this->resources.imageViews[i]) != VK_SUCCESS)
+                throw std::runtime_error("Failed to create view info!");
         }
 
-        resources.imageFormat = config.chosenFormat.format;
-        resources.extent = config.chosenExtent;
+        this->resources.imageFormat = this->config.chosenFormat.format;
+        this->resources.extent = this->config.chosenExtent;
     };
 
     void mainLoop() {};
 
     void cleanUp() const {
-        for (auto imageView : resources.imageViews) {
-            vkDestroyImageView(device, imageView, nullptr);
+        for (const auto imageView : this->resources.imageViews) {
+            vkDestroyImageView(this->device, imageView, nullptr);
         }
 
-        vkDestroySwapchainKHR(device, swapChain, nullptr);
-        vkDestroySurfaceKHR(instance, surface, nullptr);
-        vkDestroyDevice(device, nullptr);
-        vkDestroyInstance(instance, nullptr);
+        vkDestroySwapchainKHR(this->device, this->swapChain, nullptr);
+        vkDestroySurfaceKHR(this->instance, this->surface, nullptr);
+        vkDestroyDevice(this->device, nullptr);
+        vkDestroyInstance(this->instance, nullptr);
 
-        appWindow.destroy();
+        this->appWindow.destroy();
     };
 };
 
