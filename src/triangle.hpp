@@ -83,6 +83,7 @@ class HelloTriangleApplication {
         createLogicalDevice();
         createSwapChain();
         createViewImage();
+        createGraphicsPipeline();
     };
 
     void createInstance() {
@@ -400,6 +401,8 @@ class HelloTriangleApplication {
         this->resources.imageFormat = this->config.chosenFormat.format;
         this->resources.extent = this->config.chosenExtent;
     };
+
+    void createGraphicsPipeline() {};
 
     void mainLoop() {};
 
