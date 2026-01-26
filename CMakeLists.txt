@@ -5,6 +5,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE COMMANDS ON)
 
+set(SOURCES
+src/main.cpp
+src/shapes/triangle.cpp
+src/shapes/triangle.hpp)
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug)
 endif()
@@ -12,7 +17,7 @@ endif()
 find_package(Vulkan REQUIRED)
 find_package(SDL2 REQUIRED)
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
 ${Vulkan_INCLUDE_DIRS}
