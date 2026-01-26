@@ -15,12 +15,12 @@ struct VertextOutput {
     float4 sv_position : SV_Position;
 };
 
-[shader("vertex")]
+[shader("vertex")] 
 VertextOutput vertMain(uint vid : SV_VertexID) {
   VertextOutput output;
   output.sv_position = float4(positions[vid], 0.0, 1.0);
   output.color = colors[vid];
-  
+
   return output;
 };
 

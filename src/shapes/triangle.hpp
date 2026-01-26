@@ -1,6 +1,7 @@
 #ifndef TRIANGLE_HPP
 #define TRIANGLE_HPP
 
+#include <vulkan/vulkan_core.h>
 #pragma once
 
 #include "window/window.h"
@@ -22,6 +23,8 @@ class Triangle {
     VkDevice device;
     VkPhysicalDevice physicalDevice;
     VkSwapchainKHR swapChain;
+
+    VkShaderModule module;
 
     struct QueueFamilyIndices {
         int graphicsFamily = -1;
@@ -73,6 +76,11 @@ class Triangle {
     void createViewImage();
 
     void createGraphicsPipeline();
+
+    static std::vector<char> readFile(const std::string &fileName);
+
+    [[nodiscard]]
+    VkShaderModule createShaderModule(const std::vector<char> &code);
 
     void mainLoop();
 

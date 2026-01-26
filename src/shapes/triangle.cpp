@@ -6,11 +6,16 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <fstream>
+#include <ios>
 #include <map>
 #include <set>
 #include <stdexcept>
+#include <string>
 #include <sys/types.h>
 #include <utility>
+#include <vector>
+#include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_raii.hpp>
 
 Triangle::Triangle() {
@@ -357,11 +362,62 @@ void Triangle::createViewImage() {
     this->resources.extent = this->config.chosenExtent;
 };
 
-void Triangle::createGraphicsPipeline() {};
+void Triangle::createGraphicsPipeline() {
+    VkShaderModule shaderModule =
+        createShaderModule(readFile("shaders/slang.spv"));
+
+    VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+    vertShaderStageInfo.sType =
+        VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+    vertShaderStageInfo.module = shaderModule;
+    vertShaderStageInfo.pName = "vertMain";
+
+    VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
+    fragShaderStageInfo.sType =
+        VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    fragShaderStageInfo.module = shaderModule;
+    fragShaderStageInfo.pName = "fragMain";
+
+    VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo,
+                                                      fragShaderStageInfo};
+};
+
+std::vector<char> Triangle::readFile(const std::string &fileName) {
+    std::ifstream file(fileName, std::ios::ate | std::ios::binary);
+
+    if (!file.is_open())
+        throw std::runtime_error("Failed to open file!");
+
+    std::vector<char> buffer(file.tellg());
+    file.seekg(0, std::ios::beg);
+    file.read(buffer.data(), static_cast<std::streamsize>(buffer.size()));
+
+    return buffer;
+};
+
+[[nodiscard]]
+VkShaderModule Triangle::createShaderModule(const std::vector<char> &code) {
+    VkShaderModuleCreateInfo shaderInfo{};
+    shaderInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    shaderInfo.codeSize = code.size() * sizeof(char);
+    shaderInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
+
+    VkShaderModule shaderModule;
+    if (vkCreateShaderModule(this->device, &shaderInfo, nullptr,
+                             &shaderModule) != VK_SUCCESS)
+        throw std::runtime_error("Failed to create shader module!");
+
+    this->module = shaderModule; // wip
+
+    return shaderModule;
+};
 
 void Triangle::mainLoop() {};
 
 void Triangle::cleanUp() const {
+    vkDestroyShaderModule(this->device, this->module, nullptr);
     for (const auto imageView : this->resources.imageViews) {
         vkDestroyImageView(this->device, imageView, nullptr);
     }
