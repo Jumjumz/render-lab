@@ -8,7 +8,9 @@ set(CMAKE_EXPORT_COMPILE COMMANDS ON)
 set(SOURCES
 src/main.cpp
 src/shapes/triangle.cpp
-src/shapes/triangle.hpp)
+src/shapes/triangle.hpp
+src/window/window.cpp
+src/window/window.h)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug)
@@ -20,8 +22,7 @@ find_package(SDL2 REQUIRED)
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-${Vulkan_INCLUDE_DIRS}
-${SDL2_INCLUDE_DIRS})
+"${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
 Vulkan::Vulkan

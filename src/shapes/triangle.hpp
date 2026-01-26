@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "../sdl.h"
+#include "window/window.h"
 #include <vector>
 #include <vulkan/vulkan.hpp>
 
@@ -14,7 +14,7 @@ class Triangle {
     void run();
 
   private:
-    sdl appWindow;
+    window appWindow;
 
     VkInstance instance;
     VkSurfaceKHR surface;

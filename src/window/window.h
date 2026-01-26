@@ -1,10 +1,10 @@
-#ifndef SDL_H
-#define SDL_H
+#ifndef WINDOW_H
+#define WINDOW_H
 
 #include <SDL.h>
 #include <sys/types.h>
 
-class sdl {
+class window {
   public:
     uint window_width = 720;
     float aspect_ratio = 1.0;
@@ -47,4 +47,4 @@ class sdl {
     SDL_Event event;
 };
 
-#endif // !SDL_H
+#endif // !WINDOW_H
