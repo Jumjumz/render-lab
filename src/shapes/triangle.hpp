@@ -1,8 +1,8 @@
 #ifndef TRIANGLE_HPP
 #define TRIANGLE_HPP
 
-#include "ndebug.h"
-#include "sdl.h"
+#include "../ndebug.h"
+#include "../sdl.h"
 #include <SDL_vulkan.h>
 #include <algorithm>
 #include <cstddef>
@@ -21,7 +21,7 @@
 #include <vulkan/vulkan_raii.hpp>
 #include <vulkan/vulkan_structs.hpp>
 
-class HelloTriangleApplication {
+class Triangle {
   public:
     void run() {
         initWindow();

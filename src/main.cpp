@@ -1,4 +1,4 @@
-#include "triangle.hpp"
+#include "shapes/triangle.hpp"
 #include <cstdlib>
 #include <exception>
 #include <iostream>
@@ -6,7 +6,7 @@
 #include <vulkan/vulkan.hpp>
 
 int main() {
-    HelloTriangleApplication app;
+    Triangle app;
 
     try {
         app.run();
