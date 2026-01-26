@@ -80,11 +80,11 @@ void Triangle::createInstance() {
     // get SDL vulkan extensions
     uint32_t extensionsCount = 0;
 
-    SDL_Vulkan_GetInstanceExtensions(this->appWindow.window, &extensionsCount,
-                                     nullptr);
+    SDL_Vulkan_GetInstanceExtensions(this->appWindow.sdl_window,
+                                     &extensionsCount, nullptr);
     std::vector<const char *> extensions(extensionsCount);
-    SDL_Vulkan_GetInstanceExtensions(this->appWindow.window, &extensionsCount,
-                                     extensions.data());
+    SDL_Vulkan_GetInstanceExtensions(this->appWindow.sdl_window,
+                                     &extensionsCount, extensions.data());
 
     VkInstanceCreateInfo instanceInfo{};
     instanceInfo.pApplicationInfo = &appInfo;
@@ -97,7 +97,7 @@ void Triangle::createInstance() {
     vkCreateInstance(&instanceInfo, nullptr, &instance);
 
     // create sdl vulkan surface
-    SDL_Vulkan_CreateSurface(this->appWindow.window, this->instance,
+    SDL_Vulkan_CreateSurface(this->appWindow.sdl_window, this->instance,
                              &this->surface);
 
     // run
@@ -247,7 +247,7 @@ void Triangle::createSurface() {
         this->config.chosenExtent = this->config.capabilities.currentExtent;
     } else {
         int width, height;
-        SDL_Vulkan_GetDrawableSize(this->appWindow.window, &width, &height);
+        SDL_Vulkan_GetDrawableSize(this->appWindow.sdl_window, &width, &height);
 
         this->config.chosenExtent.width =
             std::clamp(static_cast<uint32_t>(width),

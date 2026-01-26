@@ -6,39 +6,18 @@
 
 class window {
   public:
+    window() = default;
+
     uint window_width = 720;
     float aspect_ratio = 1.0;
 
-    SDL_Window *window;
+    SDL_Window *sdl_window;
 
-    void init() {
-        window_height = uint(window_width / aspect_ratio);
-        window_height =
-            (window_height < 1)
-                ? 1
-                : window_height; // make sure height is not 0 or negative
+    void init();
 
-        SDL_Init(SDL_INIT_VIDEO);
+    void run();
 
-        window = SDL_CreateWindow("Wireframe Renderer", SDL_WINDOWPOS_CENTERED,
-                                  SDL_WINDOWPOS_CENTERED, window_width,
-                                  window_height, SDL_WINDOW_VULKAN);
-    };
-
-    void run() {
-        while (running) {
-            while (SDL_PollEvent(&event)) {
-                if (event.type == SDL_QUIT)
-                    running = false;
-            }
-        }
-    }
-
-    void destroy() const {
-        SDL_DestroyWindow(window);
-
-        SDL_Quit();
-    };
+    void destroy() const;
 
   private:
     uint window_height;
