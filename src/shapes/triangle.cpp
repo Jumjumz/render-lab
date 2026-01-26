@@ -14,12 +14,12 @@
 #include <vulkan/vulkan_raii.hpp>
 
 Triangle::Triangle() {
-    instance = VK_NULL_HANDLE;
-    surface = VK_NULL_HANDLE;
+    this->instance = VK_NULL_HANDLE;
+    this->surface = VK_NULL_HANDLE;
 
-    device = VK_NULL_HANDLE;
-    physicalDevice = VK_NULL_HANDLE;
-    swapChain = VK_NULL_HANDLE;
+    this->device = VK_NULL_HANDLE;
+    this->physicalDevice = VK_NULL_HANDLE;
+    this->swapChain = VK_NULL_HANDLE;
 }
 
 void Triangle::run() {
