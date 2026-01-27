@@ -25,6 +25,10 @@ class Triangle {
     VkSwapchainKHR swapChain;
 
     VkShaderModule module;
+    VkRenderPass renderPass;
+
+    VkPipeline graphicsPipeline;
+    VkPipelineLayout layout;
 
     struct QueueFamilyIndices {
         int graphicsFamily = -1;
@@ -81,6 +85,8 @@ class Triangle {
 
     [[nodiscard]]
     VkShaderModule createShaderModule(const std::vector<char> &code);
+
+    void createRenderPass();
 
     void mainLoop();
 

@@ -49,6 +49,7 @@ void Triangle::initVulkan() {
     createLogicalDevice();
     createSwapChain();
     createViewImage();
+    createRenderPass();
     createGraphicsPipeline();
 };
 
@@ -382,6 +383,118 @@ void Triangle::createGraphicsPipeline() {
 
     VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo,
                                                       fragShaderStageInfo};
+
+    VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+    inputAssembly.sType =
+        VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    VkViewport viewPort{0.0f,
+                        0.0f,
+                        static_cast<float>(resources.extent.width),
+                        static_cast<float>(resources.extent.height),
+                        0.0f,
+                        1.0f};
+
+    VkRect2D scissor{};
+    scissor.extent = resources.extent;
+    scissor.offset = {0, 0};
+
+    std::vector<VkDynamicState> dynamicStates = {
+        VK_DYNAMIC_STATE_VIEWPORT,
+        VK_DYNAMIC_STATE_SCISSOR,
+    };
+
+    VkPipelineDynamicStateCreateInfo dynamicState{};
+    dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    dynamicState.dynamicStateCount = dynamicStates.size();
+    dynamicState.pDynamicStates = dynamicStates.data();
+
+    VkPipelineVertexInputStateCreateInfo vertexInfo{};
+    vertexInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vertexInfo.vertexBindingDescriptionCount = 0;
+    vertexInfo.vertexAttributeDescriptionCount = 0;
+    vertexInfo.pVertexBindingDescriptions = nullptr;
+    vertexInfo.pVertexAttributeDescriptions = nullptr;
+
+    VkPipelineViewportStateCreateInfo viewportState{};
+    viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+    viewportState.pViewports = &viewPort;
+    viewportState.viewportCount = 1;
+    viewportState.scissorCount = 1;
+    viewportState.pScissors = &scissor;
+
+    VkPipelineRasterizationStateCreateInfo rasterizer{};
+    rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+    rasterizer.depthClampEnable = VK_FALSE;
+    rasterizer.rasterizerDiscardEnable = VK_FALSE;
+    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+    rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+    rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+    rasterizer.depthBiasEnable = VK_FALSE;
+    rasterizer.depthBiasSlopeFactor = 1.0f;
+    rasterizer.lineWidth = 1.0f;
+
+    VkPipelineMultisampleStateCreateInfo multiSampling{};
+    multiSampling.sType =
+        VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+    multiSampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+    multiSampling.sampleShadingEnable = VK_FALSE;
+
+    VkPipelineColorBlendAttachmentState colorAttachment{};
+    colorAttachment.blendEnable = VK_FALSE;
+    colorAttachment.colorWriteMask =
+        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+        VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    colorAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    colorAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    colorAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+    colorAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+    colorAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+    colorAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+
+    VkPipelineColorBlendStateCreateInfo colorBlending{};
+    colorBlending.sType =
+        VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    colorBlending.logicOpEnable = VK_FALSE;
+    colorBlending.logicOp = VK_LOGIC_OP_COPY;
+    colorBlending.attachmentCount = 1;
+    colorBlending.pAttachments = &colorAttachment;
+
+    VkPipelineLayoutCreateInfo layoutInfo{};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    layoutInfo.setLayoutCount = 0;
+    layoutInfo.pushConstantRangeCount = 0;
+
+    if (vkCreatePipelineLayout(this->device, &layoutInfo, nullptr,
+                               &this->layout) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create pipeline layout");
+    }
+
+    VkPipelineRenderingCreateInfo renderingInfo{};
+    renderingInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
+    renderingInfo.colorAttachmentCount = 1;
+    renderingInfo.pColorAttachmentFormats = &resources.imageFormat;
+
+    VkGraphicsPipelineCreateInfo graphicsInfo{};
+    graphicsInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    graphicsInfo.stageCount = 2;
+    graphicsInfo.pStages = shaderStages;
+    graphicsInfo.pNext = &renderingInfo;
+    graphicsInfo.pVertexInputState = &vertexInfo;
+    graphicsInfo.pInputAssemblyState = &inputAssembly;
+    graphicsInfo.pViewportState = &viewportState;
+    graphicsInfo.pRasterizationState = &rasterizer;
+    graphicsInfo.pMultisampleState = &multiSampling;
+    graphicsInfo.pColorBlendState = &colorBlending;
+    graphicsInfo.pDynamicState = &dynamicState;
+    graphicsInfo.layout = layout;
+    graphicsInfo.renderPass = this->renderPass;
+    graphicsInfo.basePipelineHandle = VK_NULL_HANDLE;
+    graphicsInfo.basePipelineIndex = -1;
+
+    if (vkCreateGraphicsPipelines(this->device, VK_NULL_HANDLE, 1, &graphicsInfo,
+                                  nullptr, &this->graphicsPipeline) != VK_SUCCESS)
+        throw std::runtime_error("Failed to create a graphics pipeline!");
 };
 
 std::vector<char> Triangle::readFile(const std::string &fileName) {
@@ -414,10 +527,46 @@ VkShaderModule Triangle::createShaderModule(const std::vector<char> &code) {
     return shaderModule;
 };
 
+void Triangle::createRenderPass() {
+    VkAttachmentDescription colorAttachment{};
+    colorAttachment.format = resources.imageFormat;
+    colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+    colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+    colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    colorAttachment.initialLayout = VK_IMAGE_LAYOUT_GENERAL;
+    colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+    VkAttachmentReference colorAttachmentRef{};
+    colorAttachmentRef.attachment = 0;
+    colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+    VkSubpassDescription subpass{};
+    subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    subpass.colorAttachmentCount = 1;
+    subpass.pColorAttachments = &colorAttachmentRef;
+
+    VkRenderPassCreateInfo renderInfo{};
+    renderInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+    renderInfo.attachmentCount = 1;
+    renderInfo.pAttachments = &colorAttachment;
+    renderInfo.subpassCount = 1;
+    renderInfo.pSubpasses = &subpass;
+
+    if (vkCreateRenderPass(this->device, &renderInfo, nullptr,
+                           &this->renderPass) != VK_SUCCESS)
+        throw std::runtime_error("Failed to create render pass!");
+};
+
 void Triangle::mainLoop() {};
 
 void Triangle::cleanUp() const {
+    vkDestroyPipeline(this->device, this->graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(this->device, this->layout, nullptr);
+    vkDestroyRenderPass(this->device, this->renderPass, nullptr);
     vkDestroyShaderModule(this->device, this->module, nullptr);
+
     for (const auto imageView : this->resources.imageViews) {
         vkDestroyImageView(this->device, imageView, nullptr);
     }
