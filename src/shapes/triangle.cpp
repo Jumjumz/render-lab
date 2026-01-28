@@ -392,13 +392,13 @@ void Triangle::createGraphicsPipeline() {
     inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     VkViewport viewPort{0.0f,
                         0.0f,
-                        static_cast<float>(resources.extent.width),
-                        static_cast<float>(resources.extent.height),
+                        static_cast<float>(this->resources.extent.width),
+                        static_cast<float>(this->resources.extent.height),
                         0.0f,
                         1.0f};
 
     VkRect2D scissor{};
-    scissor.extent = resources.extent;
+    scissor.extent = this->resources.extent;
     scissor.offset = {0, 0};
 
     std::vector<VkDynamicState> dynamicStates = {
@@ -474,7 +474,7 @@ void Triangle::createGraphicsPipeline() {
     VkPipelineRenderingCreateInfo renderingInfo{};
     renderingInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
     renderingInfo.colorAttachmentCount = 1;
-    renderingInfo.pColorAttachmentFormats = &resources.imageFormat;
+    renderingInfo.pColorAttachmentFormats = &this->resources.imageFormat;
 
     VkGraphicsPipelineCreateInfo graphicsInfo{};
     graphicsInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -530,7 +530,7 @@ VkShaderModule Triangle::createShaderModule(const std::vector<char> &code) {
 
 void Triangle::createRenderPass() {
     VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = resources.imageFormat;
+    colorAttachment.format = this->resources.imageFormat;
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
     colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -561,31 +561,43 @@ void Triangle::createRenderPass() {
 };
 
 void Triangle::createFrameBuffers() {
-    framebuffers.resize(resources.imageViews.size());
+    framebuffers.resize(this->resources.imageViews.size());
 
-    for (size_t i = 0; i < resources.imageViews.size(); i++) {
-        VkImageView attachments[] = {resources.imageViews[i]};
+    for (size_t i = 0; i < this->resources.imageViews.size(); i++) {
+        VkImageView attachments[] = {this->resources.imageViews[i]};
 
         VkFramebufferCreateInfo bufferInfo{};
         bufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         bufferInfo.pAttachments = attachments;
-        bufferInfo.renderPass = renderPass;
-        bufferInfo.width = resources.extent.width;
-        bufferInfo.height = resources.extent.height;
+        bufferInfo.renderPass = this->renderPass;
+        bufferInfo.width = this->resources.extent.width;
+        bufferInfo.height = this->resources.extent.height;
         bufferInfo.attachmentCount = 1;
         bufferInfo.layers = 1;
 
         if (vkCreateFramebuffer(this->device, &bufferInfo, nullptr,
-                                &framebuffers[i]) != VK_SUCCESS)
+                                &this->framebuffers[i]) != VK_SUCCESS)
             throw std::runtime_error("Failed to create a framebuffers");
     }
 };
 
-void Triangle::createCommandPool() {};
+void Triangle::createCommandPool() {
+    VkCommandPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    poolInfo.queueFamilyIndex =
+        static_cast<uint32_t>(this->indices.graphicsFamily);
+
+    if (vkCreateCommandPool(this->device, &poolInfo, nullptr,
+                            &this->commandPool) != VK_SUCCESS)
+        throw std::runtime_error("Faild to create command pool");
+};
 
 void Triangle::mainLoop() {};
 
 void Triangle::cleanUp() const {
+    vkDestroyCommandPool(this->device, this->commandPool, nullptr);
+
     for (const auto framebuffer : this->framebuffers) {
         vkDestroyFramebuffer(this->device, framebuffer, nullptr);
     }
