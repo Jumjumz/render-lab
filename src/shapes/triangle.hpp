@@ -1,12 +1,12 @@
 #ifndef TRIANGLE_HPP
 #define TRIANGLE_HPP
 
-#include <vulkan/vulkan_core.h>
 #pragma once
 
 #include "window/window.h"
 #include <vector>
 #include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan_core.h>
 
 class Triangle {
   public:
@@ -29,6 +29,10 @@ class Triangle {
 
     VkPipeline graphicsPipeline;
     VkPipelineLayout layout;
+
+    VkCommandPool commandPool;
+
+    std::vector<VkFramebuffer> framebuffers;
 
     struct QueueFamilyIndices {
         int graphicsFamily = -1;
@@ -87,6 +91,10 @@ class Triangle {
     VkShaderModule createShaderModule(const std::vector<char> &code);
 
     void createRenderPass();
+
+    void createFrameBuffers();
+
+    void createCommandPool();
 
     void mainLoop();
 

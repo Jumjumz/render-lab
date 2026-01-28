@@ -51,6 +51,8 @@ void Triangle::initVulkan() {
     createViewImage();
     createRenderPass();
     createGraphicsPipeline();
+    createFrameBuffers();
+    createCommandPool();
 };
 
 void Triangle::createInstance() {
@@ -466,9 +468,8 @@ void Triangle::createGraphicsPipeline() {
     layoutInfo.pushConstantRangeCount = 0;
 
     if (vkCreatePipelineLayout(this->device, &layoutInfo, nullptr,
-                               &this->layout) != VK_SUCCESS) {
+                               &this->layout) != VK_SUCCESS)
         throw std::runtime_error("Failed to create pipeline layout");
-    }
 
     VkPipelineRenderingCreateInfo renderingInfo{};
     renderingInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
@@ -559,9 +560,36 @@ void Triangle::createRenderPass() {
         throw std::runtime_error("Failed to create render pass!");
 };
 
+void Triangle::createFrameBuffers() {
+    framebuffers.resize(resources.imageViews.size());
+
+    for (size_t i = 0; i < resources.imageViews.size(); i++) {
+        VkImageView attachments[] = {resources.imageViews[i]};
+
+        VkFramebufferCreateInfo bufferInfo{};
+        bufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        bufferInfo.pAttachments = attachments;
+        bufferInfo.renderPass = renderPass;
+        bufferInfo.width = resources.extent.width;
+        bufferInfo.height = resources.extent.height;
+        bufferInfo.attachmentCount = 1;
+        bufferInfo.layers = 1;
+
+        if (vkCreateFramebuffer(this->device, &bufferInfo, nullptr,
+                                &framebuffers[i]) != VK_SUCCESS)
+            throw std::runtime_error("Failed to create a framebuffers");
+    }
+};
+
+void Triangle::createCommandPool() {};
+
 void Triangle::mainLoop() {};
 
 void Triangle::cleanUp() const {
+    for (const auto framebuffer : this->framebuffers) {
+        vkDestroyFramebuffer(this->device, framebuffer, nullptr);
+    }
+
     vkDestroyPipeline(this->device, this->graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(this->device, this->layout, nullptr);
     vkDestroyRenderPass(this->device, this->renderPass, nullptr);

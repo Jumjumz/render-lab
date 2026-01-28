@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(WireFrameRender VERSION 0.10)
+project(RenderLab VERSION 0.10)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
