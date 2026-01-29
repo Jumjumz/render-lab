@@ -1,16 +1,17 @@
-#ifndef TRIANGLE_HPP
-#define TRIANGLE_HPP
+#ifndef VULKAN_H
+#define VULKAN_H
 
 #pragma once
 
 #include "window/window.h"
+#include <string>
 #include <vector>
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_core.h>
 
-class Triangle {
+class Vulkan {
   public:
-    Triangle();
+    Vulkan();
 
     void run();
 
@@ -35,6 +36,8 @@ class Triangle {
 
     VkCommandPool commandPool;
     VkCommandBuffer commandBuffer;
+
+    VkBuffer vertexBuffer;
 
     VkSemaphore availableSemaphore;
     VkSemaphore finishedSemaphore;
@@ -77,6 +80,8 @@ class Triangle {
 
     void createInstance();
 
+    void checkValidationLayers();
+
     void pickPhysicalDevice();
 
     void createLogicalDevice();
@@ -106,7 +111,7 @@ class Triangle {
 
     void createCommandBuffer();
 
-    void recordCommandBuffer(uint32_t imageIndex);
+    void recordCommandBuffer(uint32_t &imageIndex);
 
     void mainLoop();
 
@@ -117,4 +122,4 @@ class Triangle {
     void cleanUp() const;
 };
 
-#endif // !TRIANGLE_HPP
+#endif // !VULKAN_H

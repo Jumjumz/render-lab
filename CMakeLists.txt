@@ -7,8 +7,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(SOURCES
 src/main.cpp
-src/shapes/triangle.cpp
-src/shapes/triangle.hpp
+src/shapes/vulkan.cpp
+src/shapes/vulkan.h
 src/window/window.cpp
 src/window/window.h)
 

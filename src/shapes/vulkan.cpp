@@ -1,6 +1,7 @@
-#include "triangle.hpp"
+#include "vulkan.h"
 
 #include "ndebug.h"
+#include <SDL_stdinc.h>
 #include <SDL_vulkan.h>
 #include <algorithm>
 #include <cstddef>
@@ -15,10 +16,9 @@
 #include <sys/types.h>
 #include <utility>
 #include <vector>
-#include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_raii.hpp>
 
-Triangle::Triangle() {
+Vulkan::Vulkan() {
     this->instance = VK_NULL_HANDLE;
     this->surface = VK_NULL_HANDLE;
 
@@ -39,7 +39,7 @@ Triangle::Triangle() {
     this->commandBuffer = VK_NULL_HANDLE;
 }
 
-void Triangle::run() {
+void Vulkan::run() {
     initWindow();
     initVulkan();
     mainLoop();
@@ -47,15 +47,16 @@ void Triangle::run() {
 };
 
 // private methods
-void Triangle::initWindow() {
+void Vulkan::initWindow() {
     this->appWindow.window_width = 1440;
     this->appWindow.aspect_ratio = 16.0 / 9.0;
 
     this->appWindow.init();
 };
 
-void Triangle::initVulkan() {
+void Vulkan::initVulkan() {
     createInstance();
+    checkValidationLayers();
     pickPhysicalDevice();
     createSurface();
     createLogicalDevice();
@@ -69,7 +70,7 @@ void Triangle::initVulkan() {
     createSyncObjects();
 };
 
-void Triangle::createInstance() {
+void Vulkan::createInstance() {
     // create app information
     VkApplicationInfo appInfo{};
     appInfo.pApplicationName = "Wireframe Render";
@@ -116,14 +117,20 @@ void Triangle::createInstance() {
     instanceInfo.enabledExtensionCount = extensionsCount;
     instanceInfo.ppEnabledExtensionNames = extensions.data();
 
-    vkCreateInstance(&instanceInfo, nullptr, &instance);
+    if (vkCreateInstance(&instanceInfo, nullptr, &instance) != VK_SUCCESS)
+        throw std::runtime_error("Failed to create instance!");
 
     // create sdl vulkan surface
-    SDL_Vulkan_CreateSurface(this->appWindow.sdl_window, this->instance,
-                             &this->surface);
+    if (SDL_Vulkan_CreateSurface(this->appWindow.sdl_window, this->instance,
+                                 &this->surface) != SDL_TRUE)
+        throw std::runtime_error("Failed to create surface!");
 };
 
-void Triangle::pickPhysicalDevice() {
+void Vulkan::checkValidationLayers() {
+
+};
+
+void Vulkan::pickPhysicalDevice() {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(this->instance, &deviceCount, nullptr);
 
@@ -164,7 +171,7 @@ void Triangle::pickPhysicalDevice() {
     }
 }
 
-void Triangle::createLogicalDevice() {
+void Vulkan::createLogicalDevice() {
     findQueueFamilies(); // init indices
 
     std::vector<VkDeviceQueueCreateInfo> deviceQueueInfos;
@@ -212,7 +219,7 @@ void Triangle::createLogicalDevice() {
                      &this->presentQueue);
 };
 
-void Triangle::findQueueFamilies() {
+void Vulkan::findQueueFamilies() {
     // check queue families
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(this->physicalDevice,
@@ -238,7 +245,7 @@ void Triangle::findQueueFamilies() {
     }
 };
 
-void Triangle::createSurface() {
+void Vulkan::createSurface() {
     surfaceConfig(); // init config
 
     this->config.chosenFormat = this->config.formats[0]; // default
@@ -283,7 +290,7 @@ void Triangle::createSurface() {
     }
 };
 
-void Triangle::surfaceConfig() {
+void Vulkan::surfaceConfig() {
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
         this->physicalDevice, this->surface, &this->config.capabilities);
 
@@ -306,7 +313,7 @@ void Triangle::surfaceConfig() {
                                               this->config.presentModes.data());
 };
 
-void Triangle::createSwapChain() {
+void Vulkan::createSwapChain() {
     VkSwapchainCreateInfoKHR swapInfo{};
     swapInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     swapInfo.surface = this->surface;
@@ -340,7 +347,7 @@ void Triangle::createSwapChain() {
         throw std::runtime_error("Failed to create swapchain!");
 };
 
-void Triangle::createViewImage() {
+void Vulkan::createViewImage() {
     uint32_t imageCount;
     vkGetSwapchainImagesKHR(this->device, this->swapChain, &imageCount, nullptr);
     this->resources.images.resize(imageCount);
@@ -373,7 +380,7 @@ void Triangle::createViewImage() {
     this->resources.extent = this->config.chosenExtent;
 };
 
-void Triangle::createGraphicsPipeline() {
+void Vulkan::createGraphicsPipeline() {
     VkShaderModule shaderModule =
         createShaderModule(readFile("shaders/slang.spv"));
 
@@ -496,7 +503,7 @@ void Triangle::createGraphicsPipeline() {
         throw std::runtime_error("Failed to create a graphics pipeline!");
 };
 
-std::vector<char> Triangle::readFile(const std::string &fileName) {
+std::vector<char> Vulkan::readFile(const std::string &fileName) {
     std::ifstream file(fileName, std::ios::ate | std::ios::binary);
 
     if (!file.is_open())
@@ -510,7 +517,7 @@ std::vector<char> Triangle::readFile(const std::string &fileName) {
 };
 
 [[nodiscard]]
-VkShaderModule Triangle::createShaderModule(const std::vector<char> &code) {
+VkShaderModule Vulkan::createShaderModule(const std::vector<char> &code) {
     VkShaderModuleCreateInfo shaderInfo{};
     shaderInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     shaderInfo.codeSize = code.size() * sizeof(char);
@@ -526,7 +533,7 @@ VkShaderModule Triangle::createShaderModule(const std::vector<char> &code) {
     return shaderModule;
 };
 
-void Triangle::createRenderPass() {
+void Vulkan::createRenderPass() {
     VkAttachmentDescription colorAttachment{};
     colorAttachment.format = this->resources.imageFormat;
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -568,7 +575,7 @@ void Triangle::createRenderPass() {
         throw std::runtime_error("Failed to create render pass!");
 };
 
-void Triangle::createFrameBuffers() {
+void Vulkan::createFrameBuffers() {
     framebuffers.resize(this->resources.imageViews.size());
 
     for (size_t i = 0; i < this->resources.imageViews.size(); i++) {
@@ -589,7 +596,7 @@ void Triangle::createFrameBuffers() {
     }
 };
 
-void Triangle::createCommandPool() {
+void Vulkan::createCommandPool() {
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
@@ -601,7 +608,7 @@ void Triangle::createCommandPool() {
         throw std::runtime_error("Faild to create command pool!");
 };
 
-void Triangle::createCommandBuffer() {
+void Vulkan::createCommandBuffer() {
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -613,7 +620,7 @@ void Triangle::createCommandBuffer() {
         throw std::runtime_error("Failed to allocate command buffer");
 };
 
-void Triangle::recordCommandBuffer(uint32_t imageIndex) {
+void Vulkan::recordCommandBuffer(uint32_t &imageIndex) {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = 0;
@@ -661,18 +668,18 @@ void Triangle::recordCommandBuffer(uint32_t imageIndex) {
         throw std::runtime_error("Failed to record command buffer!");
 };
 
-void Triangle::mainLoop() {
+void Vulkan::mainLoop() {
     while (this->appWindow.running) {
         while (SDL_PollEvent(&this->appWindow.event)) {
             if (this->appWindow.event.type == SDL_QUIT)
                 this->appWindow.running = false;
-
-            drawFrame();
         }
+
+        drawFrame();
     }
 };
 
-void Triangle::drawFrame() {
+void Vulkan::drawFrame() {
     vkWaitForFences(this->device, 1, &this->inFlightFence, VK_TRUE, UINT64_MAX);
     vkResetFences(this->device, 1, &this->inFlightFence);
 
@@ -713,7 +720,7 @@ void Triangle::drawFrame() {
     vkQueuePresentKHR(this->presentQueue, &presentInfo);
 };
 
-void Triangle::createSyncObjects() {
+void Vulkan::createSyncObjects() {
     VkSemaphoreCreateInfo semaphoreInfo{};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
@@ -729,7 +736,7 @@ void Triangle::createSyncObjects() {
         throw std::runtime_error("Failed to create semaphores!");
 };
 
-void Triangle::cleanUp() const {
+void Vulkan::cleanUp() const {
     vkDestroySemaphore(this->device, this->availableSemaphore, nullptr);
     vkDestroySemaphore(this->device, this->finishedSemaphore, nullptr);
     vkDestroyFence(this->device, this->inFlightFence, nullptr);
