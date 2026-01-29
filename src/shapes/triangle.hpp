@@ -1,6 +1,7 @@
 #ifndef TRIANGLE_HPP
 #define TRIANGLE_HPP
 
+#include <cstdint>
 #pragma once
 
 #include "window/window.h"
@@ -31,6 +32,7 @@ class Triangle {
     VkPipelineLayout layout;
 
     VkCommandPool commandPool;
+    VkCommandBuffer commandBuffer;
 
     std::vector<VkFramebuffer> framebuffers;
 
@@ -95,6 +97,10 @@ class Triangle {
     void createFrameBuffers();
 
     void createCommandPool();
+
+    void createCommandBuffer();
+
+    void recordCommandBuffer(uint32_t imageIndex);
 
     void mainLoop();
 

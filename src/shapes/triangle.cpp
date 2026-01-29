@@ -53,6 +53,7 @@ void Triangle::initVulkan() {
     createGraphicsPipeline();
     createFrameBuffers();
     createCommandPool();
+    createCommandBuffer();
 };
 
 void Triangle::createInstance() {
@@ -390,16 +391,19 @@ void Triangle::createGraphicsPipeline() {
     inputAssembly.sType =
         VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
     VkViewport viewPort{0.0f,
                         0.0f,
                         static_cast<float>(this->resources.extent.width),
                         static_cast<float>(this->resources.extent.height),
                         0.0f,
                         1.0f};
+    // vkCmdSetViewport(this->commandBuffer, 0, 1, &viewPort);
 
     VkRect2D scissor{};
     scissor.extent = this->resources.extent;
     scissor.offset = {0, 0};
+    // vkCmdSetScissor(this->commandBuffer, 0, 1, &scissor);
 
     std::vector<VkDynamicState> dynamicStates = {
         VK_DYNAMIC_STATE_VIEWPORT,
@@ -591,6 +595,53 @@ void Triangle::createCommandPool() {
     if (vkCreateCommandPool(this->device, &poolInfo, nullptr,
                             &this->commandPool) != VK_SUCCESS)
         throw std::runtime_error("Faild to create command pool");
+};
+
+void Triangle::createCommandBuffer() {
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool = this->commandPool;
+    allocInfo.commandBufferCount = 1;
+
+    if (vkAllocateCommandBuffers(this->device, &allocInfo,
+                                 &this->commandBuffer) != VK_SUCCESS)
+        throw std::runtime_error("Failed to allocate command buffer");
+};
+
+void Triangle::recordCommandBuffer(uint32_t imageIndex) {
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = 0;
+    beginInfo.pInheritanceInfo = nullptr;
+
+    if (vkBeginCommandBuffer(this->commandBuffer, &beginInfo) != VK_SUCCESS)
+        throw std::runtime_error("Failed to begin recording command buffer");
+
+    VkRenderPassBeginInfo renderBeginInfo{};
+    renderBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderBeginInfo.renderPass = this->renderPass;
+    renderBeginInfo.framebuffer = this->framebuffers[imageIndex];
+    renderBeginInfo.renderArea.offset = {0, 0};
+    renderBeginInfo.renderArea.extent = this->resources.extent;
+
+    VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+
+    renderBeginInfo.clearValueCount = 1;
+    renderBeginInfo.pClearValues = &clearColor;
+
+    vkCmdBeginRenderPass(this->commandBuffer, &renderBeginInfo,
+                         VK_SUBPASS_CONTENTS_INLINE);
+
+    vkCmdBindPipeline(this->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                      graphicsPipeline);
+
+    vkCmdDraw(this->commandBuffer, 3, 1, 0, 0);
+
+    vkCmdEndRenderPass(this->commandBuffer);
+
+    if (vkEndCommandBuffer(this->commandBuffer) != VK_SUCCESS)
+        throw std::runtime_error("Failed to record command buffer");
 };
 
 void Triangle::mainLoop() {};
