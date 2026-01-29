@@ -16,7 +16,6 @@
 #include <sys/types.h>
 #include <utility>
 #include <vector>
-#include <vulkan/vulkan_raii.hpp>
 
 Vulkan::Vulkan() {
     this->instance = VK_NULL_HANDLE;
@@ -56,7 +55,6 @@ void Vulkan::initWindow() {
 
 void Vulkan::initVulkan() {
     createInstance();
-    checkValidationLayers();
     pickPhysicalDevice();
     createSurface();
     createLogicalDevice();
@@ -80,25 +78,9 @@ void Vulkan::createInstance() {
     appInfo.apiVersion = vk::ApiVersion13;
 
     // enable validation layers
-    std::vector<char const *> requiredLayers;
-
-    if (enableValidationLayers)
-        requiredLayers.assign(validationLayers.begin(), validationLayers.end());
-
-    const vk::raii::Context context;
-
-    auto layerProperties = context.enumerateInstanceLayerProperties();
-
-    if (std::ranges::any_of(requiredLayers, [&layerProperties](
-                                                auto const &requiredLayer) {
-            return std::ranges::none_of(
-                layerProperties, [requiredLayer](auto const &layerPropery) {
-                    return strcmp(layerPropery.layerName, requiredLayer) == 0;
-                });
-        })) {
+    if (enableValidationLayers && !checkValidationLayers())
         throw std::runtime_error(
-            "One or more required layers are not supported!");
-    }
+            "Validation layers requested, but not available!");
 
     // get SDL vulkan extensions
     uint32_t extensionsCount = 0;
@@ -112,8 +94,13 @@ void Vulkan::createInstance() {
     VkInstanceCreateInfo instanceInfo{};
     instanceInfo.pApplicationInfo = &appInfo;
     instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    instanceInfo.enabledLayerCount = static_cast<uint32_t>(requiredLayers.size());
-    instanceInfo.ppEnabledLayerNames = requiredLayers.data();
+
+    if (enableValidationLayers) {
+        instanceInfo.enabledLayerCount =
+            static_cast<uint32_t>(validationLayers.size());
+        instanceInfo.ppEnabledLayerNames = validationLayers.data();
+    }
+
     instanceInfo.enabledExtensionCount = extensionsCount;
     instanceInfo.ppEnabledExtensionNames = extensions.data();
 
@@ -126,8 +113,29 @@ void Vulkan::createInstance() {
         throw std::runtime_error("Failed to create surface!");
 };
 
-void Vulkan::checkValidationLayers() {
+bool Vulkan::checkValidationLayers() {
+    uint32_t layerCount;
+    vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
+    std::vector<VkLayerProperties> availableLayers{layerCount};
+
+    vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+    for (const char *layerName : validationLayers) {
+        bool layerFound = false;
+
+        for (const auto &layerProperties : availableLayers) {
+            if (strcmp(layerName, layerProperties.layerName) == 0) {
+                layerFound = true;
+                break;
+            }
+        }
+
+        if (!layerFound)
+            return false;
+    }
+
+    return true;
 };
 
 void Vulkan::pickPhysicalDevice() {

@@ -80,7 +80,7 @@ class Vulkan {
 
     void createInstance();
 
-    void checkValidationLayers();
+    bool checkValidationLayers();
 
     void pickPhysicalDevice();
 
