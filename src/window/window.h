@@ -13,19 +13,18 @@ class window {
     uint window_width = 720;
     float aspect_ratio = 1.0;
 
+    bool running = true;
+
     SDL_Window *sdl_window;
 
-    void init();
+    SDL_Event event;
 
-    void run();
+    void init();
 
     void destroy() const;
 
   private:
     uint window_height;
-    bool running = true;
-
-    SDL_Event event;
 };
 
 #endif // !WINDOW_H

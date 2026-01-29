@@ -14,15 +14,6 @@ void window::init() {
         this->window_width, this->window_height, SDL_WINDOW_VULKAN);
 };
 
-void window::run() {
-    while (this->running) {
-        while (SDL_PollEvent(&this->event)) {
-            if (this->event.type == SDL_QUIT)
-                this->running = false;
-        }
-    }
-};
-
 void window::destroy() const {
     SDL_DestroyWindow(this->sdl_window);
 

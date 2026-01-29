@@ -1,7 +1,6 @@
 #ifndef TRIANGLE_HPP
 #define TRIANGLE_HPP
 
-#include <cstdint>
 #pragma once
 
 #include "window/window.h"
@@ -23,6 +22,9 @@ class Triangle {
 
     VkDevice device;
     VkPhysicalDevice physicalDevice;
+
+    VkQueue graphicsQueue;
+    VkQueue presentQueue;
     VkSwapchainKHR swapChain;
 
     VkShaderModule module;
@@ -33,6 +35,10 @@ class Triangle {
 
     VkCommandPool commandPool;
     VkCommandBuffer commandBuffer;
+
+    VkSemaphore availableSemaphore;
+    VkSemaphore finishedSemaphore;
+    VkFence inFlightFence;
 
     std::vector<VkFramebuffer> framebuffers;
 
@@ -103,6 +109,10 @@ class Triangle {
     void recordCommandBuffer(uint32_t imageIndex);
 
     void mainLoop();
+
+    void drawFrame();
+
+    void createSyncObjects();
 
     void cleanUp() const;
 };
