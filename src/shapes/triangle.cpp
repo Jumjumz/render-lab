@@ -25,6 +25,15 @@ Triangle::Triangle() {
     this->device = VK_NULL_HANDLE;
     this->physicalDevice = VK_NULL_HANDLE;
     this->swapChain = VK_NULL_HANDLE;
+
+    this->module = VK_NULL_HANDLE;
+    this->renderPass = VK_NULL_HANDLE;
+
+    this->graphicsPipeline = VK_NULL_HANDLE;
+    this->layout = VK_NULL_HANDLE;
+
+    this->commandPool = VK_NULL_HANDLE;
+    this->commandBuffer = VK_NULL_HANDLE;
 }
 
 void Triangle::run() {
@@ -118,7 +127,7 @@ void Triangle::pickPhysicalDevice() {
     vkEnumeratePhysicalDevices(this->instance, &deviceCount, nullptr);
 
     if (deviceCount == 0)
-        throw std::runtime_error("No GPU with Vulkan support found\n");
+        throw std::runtime_error("No GPU with Vulkan support found!\n");
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
 
@@ -392,19 +401,6 @@ void Triangle::createGraphicsPipeline() {
         VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
-    VkViewport viewPort{0.0f,
-                        0.0f,
-                        static_cast<float>(this->resources.extent.width),
-                        static_cast<float>(this->resources.extent.height),
-                        0.0f,
-                        1.0f};
-    // vkCmdSetViewport(this->commandBuffer, 0, 1, &viewPort);
-
-    VkRect2D scissor{};
-    scissor.extent = this->resources.extent;
-    scissor.offset = {0, 0};
-    // vkCmdSetScissor(this->commandBuffer, 0, 1, &scissor);
-
     std::vector<VkDynamicState> dynamicStates = {
         VK_DYNAMIC_STATE_VIEWPORT,
         VK_DYNAMIC_STATE_SCISSOR,
@@ -424,10 +420,10 @@ void Triangle::createGraphicsPipeline() {
 
     VkPipelineViewportStateCreateInfo viewportState{};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-    viewportState.pViewports = &viewPort;
+    viewportState.pViewports = nullptr; // use dynamic viewport state
+    viewportState.pScissors = nullptr;  // use dunamic scissor state
     viewportState.viewportCount = 1;
     viewportState.scissorCount = 1;
-    viewportState.pScissors = &scissor;
 
     VkPipelineRasterizationStateCreateInfo rasterizer{};
     rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -473,7 +469,7 @@ void Triangle::createGraphicsPipeline() {
 
     if (vkCreatePipelineLayout(this->device, &layoutInfo, nullptr,
                                &this->layout) != VK_SUCCESS)
-        throw std::runtime_error("Failed to create pipeline layout");
+        throw std::runtime_error("Failed to create pipeline layout!");
 
     VkPipelineRenderingCreateInfo renderingInfo{};
     renderingInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
@@ -492,7 +488,7 @@ void Triangle::createGraphicsPipeline() {
     graphicsInfo.pMultisampleState = &multiSampling;
     graphicsInfo.pColorBlendState = &colorBlending;
     graphicsInfo.pDynamicState = &dynamicState;
-    graphicsInfo.layout = layout;
+    graphicsInfo.layout = this->layout;
     graphicsInfo.renderPass = this->renderPass;
     graphicsInfo.basePipelineHandle = VK_NULL_HANDLE;
     graphicsInfo.basePipelineIndex = -1;
@@ -536,11 +532,11 @@ void Triangle::createRenderPass() {
     VkAttachmentDescription colorAttachment{};
     colorAttachment.format = this->resources.imageFormat;
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+    colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    colorAttachment.initialLayout = VK_IMAGE_LAYOUT_GENERAL;
+    colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
     VkAttachmentReference colorAttachmentRef{};
@@ -581,7 +577,7 @@ void Triangle::createFrameBuffers() {
 
         if (vkCreateFramebuffer(this->device, &bufferInfo, nullptr,
                                 &this->framebuffers[i]) != VK_SUCCESS)
-            throw std::runtime_error("Failed to create a framebuffers");
+            throw std::runtime_error("Failed to create a framebuffers!");
     }
 };
 
@@ -594,7 +590,7 @@ void Triangle::createCommandPool() {
 
     if (vkCreateCommandPool(this->device, &poolInfo, nullptr,
                             &this->commandPool) != VK_SUCCESS)
-        throw std::runtime_error("Faild to create command pool");
+        throw std::runtime_error("Faild to create command pool!");
 };
 
 void Triangle::createCommandBuffer() {
@@ -616,7 +612,7 @@ void Triangle::recordCommandBuffer(uint32_t imageIndex) {
     beginInfo.pInheritanceInfo = nullptr;
 
     if (vkBeginCommandBuffer(this->commandBuffer, &beginInfo) != VK_SUCCESS)
-        throw std::runtime_error("Failed to begin recording command buffer");
+        throw std::runtime_error("Failed to begin recording command buffer!");
 
     VkRenderPassBeginInfo renderBeginInfo{};
     renderBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -636,12 +632,25 @@ void Triangle::recordCommandBuffer(uint32_t imageIndex) {
     vkCmdBindPipeline(this->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                       graphicsPipeline);
 
+    VkViewport viewPort{0.0f,
+                        0.0f,
+                        static_cast<float>(this->resources.extent.width),
+                        static_cast<float>(this->resources.extent.height),
+                        0.0f,
+                        1.0f};
+    vkCmdSetViewport(this->commandBuffer, 0, 1, &viewPort);
+
+    VkRect2D scissor{};
+    scissor.extent = this->resources.extent;
+    scissor.offset = {0, 0};
+    vkCmdSetScissor(this->commandBuffer, 0, 1, &scissor);
+
     vkCmdDraw(this->commandBuffer, 3, 1, 0, 0);
 
     vkCmdEndRenderPass(this->commandBuffer);
 
     if (vkEndCommandBuffer(this->commandBuffer) != VK_SUCCESS)
-        throw std::runtime_error("Failed to record command buffer");
+        throw std::runtime_error("Failed to record command buffer!");
 };
 
 void Triangle::mainLoop() {};
