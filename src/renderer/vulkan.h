@@ -35,15 +35,20 @@ class Vulkan {
     VkPipelineLayout layout;
 
     VkCommandPool commandPool;
-    VkCommandBuffer commandBuffer;
 
     VkBuffer vertexBuffer;
 
-    VkSemaphore availableSemaphore;
-    VkSemaphore finishedSemaphore;
-    VkFence inFlightFence;
+    std::vector<VkSemaphore> availableSemaphores;
+    std::vector<VkSemaphore> finishedSemaphores;
+    std::vector<VkFence> inFlightFences;
 
     std::vector<VkFramebuffer> framebuffers;
+    std::vector<VkCommandBuffer> commandBuffers;
+
+    const int MAX_FRAMES_IN_FLIGHT = 2;
+    uint32_t currentFrame = 0;
+
+    bool framebufferResized = false;
 
     struct QueueFamilyIndices {
         int graphicsFamily = -1;
@@ -109,9 +114,7 @@ class Vulkan {
 
     void createCommandPool();
 
-    void createCommandBuffer();
-
-    void recordCommandBuffer(uint32_t &imageIndex);
+    void createCommandBuffers();
 
     void mainLoop();
 
@@ -119,7 +122,14 @@ class Vulkan {
 
     void createSyncObjects();
 
-    void cleanUp() const;
+    void recordCommandBuffer(VkCommandBuffer &commandBuffer,
+                             uint32_t &imageIndex);
+
+    void recreateSwapChain();
+
+    void cleanupSwapChain();
+
+    void cleanUp();
 };
 
 #endif // !VULKAN_H
