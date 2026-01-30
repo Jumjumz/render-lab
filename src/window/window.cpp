@@ -10,7 +10,7 @@ void window::init() {
     SDL_Init(SDL_INIT_VIDEO);
 
     this->sdl_window = SDL_CreateWindow(
-        "Wireframe Renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        "Render Lab", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         this->window_width, this->window_height, SDL_WINDOW_VULKAN);
 };
 

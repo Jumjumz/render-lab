@@ -71,7 +71,7 @@ void Vulkan::initVulkan() {
 void Vulkan::createInstance() {
     // create app information
     VkApplicationInfo appInfo{};
-    appInfo.pApplicationName = "Wireframe Render";
+    appInfo.pApplicationName = "Render Lab";
     appInfo.applicationVersion = VK_MAKE_VERSION(0, 0, 1);
     appInfo.pEngineName = "Jumz Engine";
     appInfo.engineVersion = VK_MAKE_VERSION(0, 0, 1);
@@ -115,6 +115,7 @@ void Vulkan::createInstance() {
 
 bool Vulkan::checkValidationLayers() {
     uint32_t layerCount;
+
     vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
     std::vector<VkLayerProperties> availableLayers{layerCount};
@@ -613,7 +614,7 @@ void Vulkan::createCommandPool() {
 
     if (vkCreateCommandPool(this->device, &poolInfo, nullptr,
                             &this->commandPool) != VK_SUCCESS)
-        throw std::runtime_error("Faild to create command pool!");
+        throw std::runtime_error("Failed to create command pool!");
 };
 
 void Vulkan::createCommandBuffer() {
@@ -685,6 +686,8 @@ void Vulkan::mainLoop() {
 
         drawFrame();
     }
+
+    vkDeviceWaitIdle(this->device);
 };
 
 void Vulkan::drawFrame() {
@@ -713,6 +716,7 @@ void Vulkan::drawFrame() {
     VkSemaphore signalSemaphore[] = {this->finishedSemaphore};
     submitInfo.pSignalSemaphores = signalSemaphore;
     submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pCommandBuffers = &this->commandBuffer;
 
     if (vkQueueSubmit(this->graphicsQueue, 1, &submitInfo,
                       this->inFlightFence) != VK_SUCCESS)
@@ -720,12 +724,19 @@ void Vulkan::drawFrame() {
 
     VkPresentInfoKHR presentInfo{};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.waitSemaphoreCount = 1;
     presentInfo.pWaitSemaphores = signalSemaphore;
     presentInfo.pImageIndices = &imageIndex;
-    presentInfo.pSwapchains = &this->swapChain;
+
+    VkSwapchainKHR swapChains[] = {this->swapChain};
+    presentInfo.pSwapchains = swapChains;
     presentInfo.swapchainCount = 1;
+    presentInfo.pImageIndices = &imageIndex;
+    presentInfo.pResults = nullptr;
 
     vkQueuePresentKHR(this->presentQueue, &presentInfo);
+
+    vkQueueWaitIdle(this->presentQueue);
 };
 
 void Vulkan::createSyncObjects() {
@@ -739,8 +750,9 @@ void Vulkan::createSyncObjects() {
     if (vkCreateSemaphore(this->device, &semaphoreInfo, nullptr,
                           &this->availableSemaphore) != VK_SUCCESS ||
         vkCreateSemaphore(this->device, &semaphoreInfo, nullptr,
-                          &this->finishedSemaphore) ||
-        vkCreateFence(this->device, &fenceInfo, nullptr, &this->inFlightFence))
+                          &this->finishedSemaphore) != VK_SUCCESS ||
+        vkCreateFence(this->device, &fenceInfo, nullptr, &this->inFlightFence) !=
+            VK_SUCCESS)
         throw std::runtime_error("Failed to create semaphores!");
 };
 

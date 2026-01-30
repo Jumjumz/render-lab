@@ -1,9 +1,8 @@
-#include "shapes/vulkan.h"
+#include "renderer/vulkan.h"
 #include <cstdlib>
 #include <exception>
 #include <iostream>
 #include <ostream>
-#include <vulkan/vulkan.hpp>
 
 int main() {
     Vulkan app;
