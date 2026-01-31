@@ -2,6 +2,7 @@
 
 #include "ndebug.h"
 #include <SDL_stdinc.h>
+#include <SDL_video.h>
 #include <SDL_vulkan.h>
 #include <algorithm>
 #include <cstddef>
@@ -639,10 +640,11 @@ void Vulkan::mainLoop() {
         while (SDL_PollEvent(&this->appWindow.event)) {
             if (this->appWindow.event.type == SDL_QUIT)
                 this->appWindow.running = false;
-        }
 
+            if (this->appWindow.event.type == SDL_WINDOWEVENT_RESIZED)
+                this->framebufferResized = true;
+        }
         drawFrame();
-        this->framebufferResized = true;
     }
 
     vkDeviceWaitIdle(this->device);
@@ -681,7 +683,7 @@ void Vulkan::drawFrame() {
     submitInfo.pWaitSemaphores = waitSemaphore;
     submitInfo.pWaitDstStageMask = waitStages;
     submitInfo.waitSemaphoreCount = 1;
-    submitInfo.commandBufferCount = this->MAX_FRAMES_IN_FLIGHT;
+    submitInfo.commandBufferCount = 1;
 
     VkSemaphore signalSemaphore[] = {this->finishedSemaphores[this->currentFrame]};
     submitInfo.pSignalSemaphores = signalSemaphore;
@@ -776,7 +778,7 @@ void Vulkan::createSyncObjects() {
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    for (size_t i = 0; i < (size_t)this->MAX_FRAMES_IN_FLIGHT; i++) {
+    for (size_t i = 0; i < size_t(this->MAX_FRAMES_IN_FLIGHT); i++) {
         if (vkCreateSemaphore(this->device, &semaphoreInfo, nullptr,
                               &this->availableSemaphores[i]) != VK_SUCCESS ||
             vkCreateSemaphore(this->device, &semaphoreInfo, nullptr,
@@ -812,7 +814,7 @@ void Vulkan::cleanupSwapChain() {
 void Vulkan::cleanUp() {
     cleanupSwapChain();
 
-    for (size_t i = 0; i < (size_t)this->MAX_FRAMES_IN_FLIGHT; i++) {
+    for (size_t i = 0; i < size_t(this->MAX_FRAMES_IN_FLIGHT); i++) {
         vkDestroySemaphore(this->device, this->availableSemaphores[i], nullptr);
         vkDestroySemaphore(this->device, this->finishedSemaphores[i], nullptr);
         vkDestroyFence(this->device, this->inFlightFences[i], nullptr);
