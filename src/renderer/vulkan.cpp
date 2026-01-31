@@ -621,7 +621,7 @@ void Vulkan::createCommandPool() {
 };
 
 void Vulkan::createCommandBuffers() {
-    this->commandBuffers.resize(static_cast<size_t>(this->MAX_FRAMES_IN_FLIGHT));
+    this->commandBuffers.resize(static_cast<size_t>(Vulkan::MAX_FRAMES_IN_FLIGHT));
 
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -644,6 +644,7 @@ void Vulkan::mainLoop() {
             if (this->appWindow.event.type == SDL_WINDOWEVENT_RESIZED)
                 this->framebufferResized = true;
         }
+
         drawFrame();
     }
 
@@ -714,7 +715,7 @@ void Vulkan::drawFrame() {
         throw std::runtime_error("Failed to present swap chain image!");
     }
 
-    this->currentFrame = (this->currentFrame + 1) % this->MAX_FRAMES_IN_FLIGHT;
+    this->currentFrame = (this->currentFrame + 1) % Vulkan::MAX_FRAMES_IN_FLIGHT;
 };
 
 void Vulkan::recordCommandBuffer(VkCommandBuffer &commandBuffer,
@@ -767,9 +768,9 @@ void Vulkan::recordCommandBuffer(VkCommandBuffer &commandBuffer,
 };
 
 void Vulkan::createSyncObjects() {
-    this->availableSemaphores.resize(this->MAX_FRAMES_IN_FLIGHT);
-    this->finishedSemaphores.resize(this->MAX_FRAMES_IN_FLIGHT);
-    this->inFlightFences.resize(this->MAX_FRAMES_IN_FLIGHT);
+    this->availableSemaphores.resize(Vulkan::MAX_FRAMES_IN_FLIGHT);
+    this->finishedSemaphores.resize(Vulkan::MAX_FRAMES_IN_FLIGHT);
+    this->inFlightFences.resize(Vulkan::MAX_FRAMES_IN_FLIGHT);
 
     VkSemaphoreCreateInfo semaphoreInfo{};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -778,7 +779,7 @@ void Vulkan::createSyncObjects() {
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    for (size_t i = 0; i < size_t(this->MAX_FRAMES_IN_FLIGHT); i++) {
+    for (size_t i = 0; i < size_t(Vulkan::MAX_FRAMES_IN_FLIGHT); i++) {
         if (vkCreateSemaphore(this->device, &semaphoreInfo, nullptr,
                               &this->availableSemaphores[i]) != VK_SUCCESS ||
             vkCreateSemaphore(this->device, &semaphoreInfo, nullptr,
@@ -814,7 +815,7 @@ void Vulkan::cleanupSwapChain() {
 void Vulkan::cleanUp() {
     cleanupSwapChain();
 
-    for (size_t i = 0; i < size_t(this->MAX_FRAMES_IN_FLIGHT); i++) {
+    for (size_t i = 0; i < size_t(Vulkan::MAX_FRAMES_IN_FLIGHT); i++) {
         vkDestroySemaphore(this->device, this->availableSemaphores[i], nullptr);
         vkDestroySemaphore(this->device, this->finishedSemaphores[i], nullptr);
         vkDestroyFence(this->device, this->inFlightFences[i], nullptr);
