@@ -9,6 +9,8 @@ set(SOURCES
 src/main.cpp
 src/renderer/vulkan.cpp
 src/renderer/vulkan.h
+src/renderer/vulkan_init.cpp
+src/renderer/vulkan_init.hpp
 src/window/window.cpp
 src/window/window.h)
 
