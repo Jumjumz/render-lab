@@ -91,8 +91,10 @@ void Vulkan::createInstance() {
     SDL_Vulkan_GetInstanceExtensions(this->appWindow.sdl_window,
                                      &extensionsCount, nullptr);
     std::vector<const char *> extensions(extensionsCount);
-    SDL_Vulkan_GetInstanceExtensions(this->appWindow.sdl_window,
-                                     &extensionsCount, extensions.data());
+    if (SDL_Vulkan_GetInstanceExtensions(this->appWindow.sdl_window,
+                                         &extensionsCount,
+                                         extensions.data()) != SDL_TRUE)
+        throw std::runtime_error("Required SDL2 extensions not supported!");
 
     VkInstanceCreateInfo instanceInfo{};
     instanceInfo.pApplicationInfo = &appInfo;
@@ -107,7 +109,7 @@ void Vulkan::createInstance() {
     instanceInfo.enabledExtensionCount = extensionsCount;
     instanceInfo.ppEnabledExtensionNames = extensions.data();
 
-    if (vkCreateInstance(&instanceInfo, nullptr, &instance) != VK_SUCCESS)
+    if (vkCreateInstance(&instanceInfo, nullptr, &this->instance) != VK_SUCCESS)
         throw std::runtime_error("Failed to create instance!");
 
     // create sdl vulkan surface
