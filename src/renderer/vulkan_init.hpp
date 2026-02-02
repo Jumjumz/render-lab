@@ -18,16 +18,28 @@ class VulkanInit {
     vk::raii::SurfaceKHR surface = VK_NULL_HANDLE;
 
     vk::raii::Device device = VK_NULL_HANDLE;
-    vk::raii::PhysicalDevice PhysicalDevice = VK_NULL_HANDLE;
+    vk::raii::PhysicalDevice physicalDevice = VK_NULL_HANDLE;
+
+    vk::raii::Queue graphicsQueue = VK_NULL_HANDLE;
+    vk::raii::Queue presentQueue = VK_NULL_HANDLE;
+
+    struct QueueFamilyIndices {
+        int graphicsFamily = -1;
+        int presentFamily = -1;
+
+        bool isComplete() const {
+            return graphicsFamily >= 0 && presentFamily >= 0;
+        };
+    } familyIndices;
 
   private:
     void initWindow();
 
     void createInstance();
 
-    bool checkValidationLayers();
+    void pickPhysicalDevice();
 
-    void physicalDevice();
+    void findQueueFamilies();
 
     void createLogicalDevice();
 };
