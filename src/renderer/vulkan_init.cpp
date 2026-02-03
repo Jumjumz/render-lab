@@ -12,12 +12,14 @@
 #include <stdexcept>
 #include <utility>
 #include <vector>
+#include <vulkan/vulkan_enums.hpp>
 
 VulkanInit::VulkanInit() {
     initWindow();
     createInstance();
     pickPhysicalDevice();
     createLogicalDevice();
+    createSurface();
 };
 
 void VulkanInit::initWindow() {
@@ -166,20 +168,20 @@ void VulkanInit::createLogicalDevice() {
         featureChain = {};
 
     auto &features = featureChain.get<vk::PhysicalDeviceFeatures2>();
-    features.features.geometryShader = VK_TRUE;
-    features.features.samplerAnisotropy = VK_TRUE;
+    features.features.geometryShader = vk::True;
+    features.features.samplerAnisotropy = vk::True;
 
     auto &dynamicRendering =
         featureChain.get<vk::PhysicalDeviceVulkan13Features>();
-    dynamicRendering.dynamicRendering = VK_TRUE;
+    dynamicRendering.dynamicRendering = vk::True;
 
     auto &dynamicState =
         featureChain.get<vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT>();
-    dynamicState.extendedDynamicState = VK_TRUE;
+    dynamicState.extendedDynamicState = vk::True;
 
     // get swapchains extensions
     const std::vector<const char *> deviceExtensions = {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+        vk::KHRSwapchainExtensionName};
 
     vk::DeviceCreateInfo deviceInfo{};
     deviceInfo.pNext = &features;
@@ -194,4 +196,64 @@ void VulkanInit::createLogicalDevice() {
     this->graphicsQueue = vk::raii::Queue{
         this->device, static_cast<uint32_t>(this->familyIndices.graphicsFamily),
         0};
+
+    this->presentQueue = vk::raii::Queue{
+        this->device, static_cast<uint32_t>(this->familyIndices.presentFamily),
+        0};
+};
+
+void VulkanInit::surfaceConfig() {
+    this->config.capabilities =
+        this->physicalDevice.getSurfaceCapabilitiesKHR(this->surface);
+
+    this->config.formats =
+        this->physicalDevice.getSurfaceFormatsKHR(this->surface);
+
+    this->config.presentModes =
+        this->physicalDevice.getSurfacePresentModesKHR(this->surface);
+};
+
+void VulkanInit::createSurface() {
+    surfaceConfig();
+
+    this->config.chosenFormat = this->config.formats[0];
+    for (const auto &format : this->config.formats) {
+        if (format.format == vk::Format::eB8G8R8A8Srgb &&
+            format.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
+            this->config.chosenFormat = format;
+            break;
+        }
+    }
+
+    this->config.chosenPresentMode = vk::PresentModeKHR::eFifo;
+    for (const auto &mode : this->config.presentModes) {
+        if (mode == vk::PresentModeKHR::eMailbox) {
+            this->config.chosenPresentMode = mode;
+            break;
+        }
+    }
+
+    // choose extent
+    if (this->config.capabilities.currentExtent.width != UINT32_MAX) {
+        this->config.chosenExtent = this->config.capabilities.currentExtent;
+    } else {
+        int width, height;
+        SDL_Vulkan_GetDrawableSize(this->appWindow.sdl_window, &width, &height);
+
+        this->config.chosenExtent.width =
+            std::clamp(static_cast<uint32_t>(width),
+                       this->config.capabilities.minImageExtent.width,
+                       this->config.capabilities.maxImageExtent.width);
+
+        this->config.chosenExtent.height =
+            std::clamp(static_cast<uint32_t>(height),
+                       this->config.capabilities.minImageExtent.height,
+                       this->config.capabilities.maxImageExtent.height);
+    }
+
+    this->config.imageCount = this->config.capabilities.minImageCount + 1;
+    if (this->config.capabilities.maxImageCount > 0 &&
+        this->config.imageCount > this->config.capabilities.maxImageCount) {
+        this->config.imageCount = this->config.capabilities.maxImageCount;
+    }
 };

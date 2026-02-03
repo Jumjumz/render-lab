@@ -1,6 +1,5 @@
 #ifndef VULKAN_INIT
 #define VULKAN_INIT
-
 #pragma once
 
 #include "window/window.h"
@@ -14,11 +13,7 @@ class VulkanInit {
 
     window appWindow;
 
-    vk::raii::Instance instance = VK_NULL_HANDLE;
-    vk::raii::SurfaceKHR surface = VK_NULL_HANDLE;
-
     vk::raii::Device device = VK_NULL_HANDLE;
-    vk::raii::PhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
     vk::raii::Queue graphicsQueue = VK_NULL_HANDLE;
     vk::raii::Queue presentQueue = VK_NULL_HANDLE;
@@ -32,7 +27,23 @@ class VulkanInit {
         };
     } familyIndices;
 
+    struct SurfaceConfig {
+        vk::SurfaceCapabilitiesKHR capabilities;
+        std::vector<vk::SurfaceFormatKHR> formats;
+        std::vector<vk::PresentModeKHR> presentModes;
+
+        vk::SurfaceFormatKHR chosenFormat;
+        vk::PresentModeKHR chosenPresentMode;
+        vk::Extent2D chosenExtent;
+
+        uint32_t imageCount;
+    } config;
+
   private:
+    vk::raii::Instance instance = VK_NULL_HANDLE;
+    vk::raii::SurfaceKHR surface = VK_NULL_HANDLE;
+    vk::raii::PhysicalDevice physicalDevice = VK_NULL_HANDLE;
+
     void initWindow();
 
     void createInstance();
@@ -42,6 +53,10 @@ class VulkanInit {
     void findQueueFamilies();
 
     void createLogicalDevice();
+
+    void createSurface();
+
+    void surfaceConfig();
 };
 
 #endif // !VULKAN_INIT
