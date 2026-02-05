@@ -1,5 +1,6 @@
 #ifndef VULKAN_INIT
 #define VULKAN_INIT
+
 #pragma once
 
 #include "window/window.h"
@@ -17,6 +18,7 @@ class VulkanInit {
 
     vk::raii::Queue graphicsQueue = VK_NULL_HANDLE;
     vk::raii::Queue presentQueue = VK_NULL_HANDLE;
+    vk::raii::SwapchainKHR swapChain = VK_NULL_HANDLE;
 
     struct QueueFamilyIndices {
         int graphicsFamily = -1;
@@ -39,6 +41,14 @@ class VulkanInit {
         uint32_t imageCount;
     } config;
 
+    struct SwapchainResources {
+        std::vector<vk::Image> images;
+        std::vector<vk::raii::ImageView> imageViews;
+
+        vk::Format imageFormat;
+        vk::Extent2D extent;
+    } swapchainResources;
+
   private:
     vk::raii::Instance instance = VK_NULL_HANDLE;
     vk::raii::SurfaceKHR surface = VK_NULL_HANDLE;
@@ -57,6 +67,10 @@ class VulkanInit {
     void createSurface();
 
     void surfaceConfig();
+
+    void createSwapChain();
+
+    void createViewImage();
 };
 
 #endif // !VULKAN_INIT

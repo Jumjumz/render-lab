@@ -20,6 +20,8 @@ VulkanInit::VulkanInit() {
     pickPhysicalDevice();
     createLogicalDevice();
     createSurface();
+    createSwapChain();
+    createViewImage();
 };
 
 void VulkanInit::initWindow() {
@@ -256,4 +258,61 @@ void VulkanInit::createSurface() {
         this->config.imageCount > this->config.capabilities.maxImageCount) {
         this->config.imageCount = this->config.capabilities.maxImageCount;
     }
+};
+
+void VulkanInit::createSwapChain() {
+    vk::SwapchainCreateInfoKHR chainInfo{};
+    chainInfo.flags = vk::SwapchainCreateFlagsKHR();
+    chainInfo.surface = this->surface;
+    chainInfo.minImageCount = this->config.imageCount;
+    chainInfo.imageFormat = this->config.chosenFormat.format;
+    chainInfo.imageColorSpace = this->config.chosenFormat.colorSpace;
+    chainInfo.imageExtent = this->config.chosenExtent;
+    chainInfo.imageArrayLayers = 1;
+    chainInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
+
+    uint32_t queueFamilyIndeces[] = {
+        static_cast<uint32_t>(this->familyIndices.graphicsFamily),
+        static_cast<uint32_t>(this->familyIndices.presentFamily)};
+
+    if (this->familyIndices.graphicsFamily != this->familyIndices.presentFamily) {
+        chainInfo.imageSharingMode = vk::SharingMode::eConcurrent;
+        chainInfo.queueFamilyIndexCount = 2;
+        chainInfo.pQueueFamilyIndices = queueFamilyIndeces;
+    } else {
+        chainInfo.imageSharingMode = vk::SharingMode::eExclusive;
+        chainInfo.queueFamilyIndexCount = 0;
+        chainInfo.pQueueFamilyIndices = VK_NULL_HANDLE;
+    }
+
+    chainInfo.preTransform = this->config.capabilities.currentTransform;
+    chainInfo.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
+    chainInfo.presentMode = this->config.chosenPresentMode;
+    chainInfo.clipped = vk::True;
+    chainInfo.oldSwapchain = VK_NULL_HANDLE;
+
+    this->swapChain = vk::raii::SwapchainKHR{this->device, chainInfo};
+    this->swapchainResources.images = this->swapChain.getImages();
+};
+
+void VulkanInit::createViewImage() {
+    this->swapchainResources.imageViews.clear();
+
+    for (auto const &image : this->swapchainResources.images) {
+        vk::ImageViewCreateInfo imageInfo{};
+        imageInfo.image = image;
+        imageInfo.format = this->config.chosenFormat.format;
+        imageInfo.viewType = vk::ImageViewType::e2D;
+        imageInfo.components.r = vk::ComponentSwizzle::eIdentity;
+        imageInfo.components.g = vk::ComponentSwizzle::eIdentity;
+        imageInfo.components.b = vk::ComponentSwizzle::eIdentity;
+        imageInfo.components.a = vk::ComponentSwizzle::eIdentity;
+        imageInfo.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0,
+                                      1};
+
+        this->swapchainResources.imageViews.emplace_back(this->device, imageInfo);
+    }
+
+    this->swapchainResources.extent = this->config.chosenExtent;
+    this->swapchainResources.imageFormat = this->config.chosenFormat.format;
 };
