@@ -29,18 +29,6 @@ class VulkanInit {
         };
     } familyIndices;
 
-    struct SurfaceConfig {
-        vk::SurfaceCapabilitiesKHR capabilities;
-        std::vector<vk::SurfaceFormatKHR> formats;
-        std::vector<vk::PresentModeKHR> presentModes;
-
-        vk::SurfaceFormatKHR chosenFormat;
-        vk::PresentModeKHR chosenPresentMode;
-        vk::Extent2D chosenExtent;
-
-        uint32_t imageCount;
-    } config;
-
     struct SwapchainResources {
         std::vector<vk::Image> images;
         std::vector<vk::raii::ImageView> imageViews;
@@ -53,6 +41,18 @@ class VulkanInit {
     vk::raii::Instance instance = VK_NULL_HANDLE;
     vk::raii::SurfaceKHR surface = VK_NULL_HANDLE;
     vk::raii::PhysicalDevice physicalDevice = VK_NULL_HANDLE;
+
+    struct SurfaceConfig {
+        vk::SurfaceCapabilitiesKHR capabilities;
+        std::vector<vk::SurfaceFormatKHR> formats;
+        std::vector<vk::PresentModeKHR> presentModes;
+
+        vk::SurfaceFormatKHR chosenFormat;
+        vk::PresentModeKHR chosenPresentMode;
+        vk::Extent2D chosenExtent;
+
+        uint32_t imageCount;
+    } config;
 
     void initWindow();
 

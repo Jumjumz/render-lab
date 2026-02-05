@@ -7,8 +7,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(SOURCES
 src/main.cpp
-src/renderer/vulkan.cpp
-src/renderer/vulkan.h
+src/renderer/vulkan_config.cpp
+src/renderer/vulkan_config.hpp
 src/renderer/vulkan_init.cpp
 src/renderer/vulkan_init.hpp
 src/window/window.cpp

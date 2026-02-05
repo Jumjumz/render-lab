@@ -12,7 +12,6 @@
 #include <stdexcept>
 #include <utility>
 #include <vector>
-#include <vulkan/vulkan_enums.hpp>
 
 VulkanInit::VulkanInit() {
     initWindow();

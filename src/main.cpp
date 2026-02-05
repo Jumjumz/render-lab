@@ -1,11 +1,11 @@
-#include "renderer/vulkan.h"
+#include "renderer/vulkan_config.hpp"
 #include <cstdlib>
 #include <exception>
 #include <iostream>
 #include <ostream>
 
 int main() {
-    Vulkan app;
+    VulkanConfig app;
 
     try {
         app.run();
