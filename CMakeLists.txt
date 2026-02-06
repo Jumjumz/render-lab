@@ -64,10 +64,14 @@ Vulkan::Vulkan
 SDL2::SDL2)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  message(STATUS "Configuring for Debug mode...")
-  if(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
-  else()
-    target_compile_options(${PROJECT_NAME} PRIVATE -g -O0 -Wall)
-  endif()
+  target_compile_options(${PROJECT_NAME} PRIVATE
+  -fsanitize=address
+  -fno-omit-frame-pointer
+  -g3
+  -O0
+  -Wall
+  -Wextra
+)
+
+  target_link_options(${PROJECT_NAME} PRIVATE -fsanitize=address)
 endif()
