@@ -14,20 +14,17 @@ class VulkanInit {
 
     window appWindow;
 
+    vk::raii::Context context;
+    vk::raii::Instance instance = VK_NULL_HANDLE;
+    vk::raii::SurfaceKHR surface = VK_NULL_HANDLE;
+
+    vk::raii::PhysicalDevice physicalDevice = VK_NULL_HANDLE;
     vk::raii::Device device = VK_NULL_HANDLE;
 
     vk::raii::Queue graphicsQueue = VK_NULL_HANDLE;
     vk::raii::Queue presentQueue = VK_NULL_HANDLE;
+
     vk::raii::SwapchainKHR swapChain = VK_NULL_HANDLE;
-
-    struct QueueFamilyIndices {
-        int graphicsFamily = -1;
-        int presentFamily = -1;
-
-        bool isComplete() const {
-            return graphicsFamily >= 0 && presentFamily >= 0;
-        };
-    } familyIndices;
 
     struct SwapchainResources {
         std::vector<vk::Image> images;
@@ -35,12 +32,7 @@ class VulkanInit {
 
         vk::Format imageFormat;
         vk::Extent2D extent;
-    } swapchainResources;
-
-  private:
-    vk::raii::Instance instance = VK_NULL_HANDLE;
-    vk::raii::SurfaceKHR surface = VK_NULL_HANDLE;
-    vk::raii::PhysicalDevice physicalDevice = VK_NULL_HANDLE;
+    } resources;
 
     struct SurfaceConfig {
         vk::SurfaceCapabilitiesKHR capabilities;
@@ -54,6 +46,20 @@ class VulkanInit {
         uint32_t imageCount;
     } config;
 
+    struct QueueFamilyIndices {
+        int graphicsFamily = -1;
+        int presentFamily = -1;
+
+        bool isComplete() const {
+            return graphicsFamily >= 0 && presentFamily >= 0;
+        };
+    } familyIndices;
+
+    void createSwapChain();
+
+    void createViewImage();
+
+  private:
     void initWindow();
 
     void createInstance();
@@ -67,10 +73,6 @@ class VulkanInit {
     void createSurface();
 
     void surfaceConfig();
-
-    void createSwapChain();
-
-    void createViewImage();
 };
 
 #endif // !VULKAN_INIT

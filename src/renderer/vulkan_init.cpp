@@ -50,8 +50,7 @@ void VulkanInit::createInstance() {
     if (enableValidationLayers)
         requiredLayers.assign(validationLayers.begin(), validationLayers.end());
 
-    vk::raii::Context context;
-    auto layerProperties = context.enumerateInstanceLayerProperties();
+    auto layerProperties = this->context.enumerateInstanceLayerProperties();
 
     if (std::ranges::any_of(requiredLayers, [&layerProperties](
                                                 const auto &requiredLayer) {
@@ -77,7 +76,7 @@ void VulkanInit::createInstance() {
     instanceInfo.ppEnabledExtensionNames = extensions.data();
 
     // create instance
-    this->instance = vk::raii::Instance{context, instanceInfo, nullptr};
+    this->instance = vk::raii::Instance{this->context, instanceInfo, nullptr};
 
     VkInstance instance = *this->instance;
     VkSurfaceKHR surface;
@@ -166,15 +165,17 @@ void VulkanInit::createLogicalDevice() {
 
     vk::StructureChain<vk::PhysicalDeviceFeatures2, vk::PhysicalDeviceVulkan13Features,
                        vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT>
-        featureChain = {};
+        featureChain{};
 
     auto &features = featureChain.get<vk::PhysicalDeviceFeatures2>();
     features.features.geometryShader = vk::True;
     features.features.samplerAnisotropy = vk::True;
+    features.features.dualSrcBlend = vk::True;
 
     auto &dynamicRendering =
         featureChain.get<vk::PhysicalDeviceVulkan13Features>();
     dynamicRendering.dynamicRendering = vk::True;
+    dynamicRendering.synchronization2 = vk::True;
 
     auto &dynamicState =
         featureChain.get<vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT>();
@@ -182,7 +183,7 @@ void VulkanInit::createLogicalDevice() {
 
     // get swapchains extensions
     const std::vector<const char *> deviceExtensions = {
-        vk::KHRSwapchainExtensionName};
+        vk::KHRSwapchainExtensionName, vk::EXTExtendedDynamicState3ExtensionName};
 
     vk::DeviceCreateInfo deviceInfo{};
     deviceInfo.pNext = &features;
@@ -291,13 +292,13 @@ void VulkanInit::createSwapChain() {
     chainInfo.oldSwapchain = VK_NULL_HANDLE;
 
     this->swapChain = vk::raii::SwapchainKHR{this->device, chainInfo};
-    this->swapchainResources.images = this->swapChain.getImages();
+    this->resources.images = this->swapChain.getImages();
 };
 
 void VulkanInit::createViewImage() {
-    this->swapchainResources.imageViews.clear();
+    this->resources.imageViews.clear();
 
-    for (auto const &image : this->swapchainResources.images) {
+    for (auto const &image : this->resources.images) {
         vk::ImageViewCreateInfo imageInfo{};
         imageInfo.image = image;
         imageInfo.format = this->config.chosenFormat.format;
@@ -309,9 +310,9 @@ void VulkanInit::createViewImage() {
         imageInfo.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0,
                                       1};
 
-        this->swapchainResources.imageViews.emplace_back(this->device, imageInfo);
+        this->resources.imageViews.emplace_back(this->device, imageInfo);
     }
 
-    this->swapchainResources.extent = this->config.chosenExtent;
-    this->swapchainResources.imageFormat = this->config.chosenFormat.format;
+    this->resources.extent = this->config.chosenExtent;
+    this->resources.imageFormat = this->config.chosenFormat.format;
 };
