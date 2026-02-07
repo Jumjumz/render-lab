@@ -78,15 +78,14 @@ void VulkanInit::createInstance() {
     // create instance
     this->instance = vk::raii::Instance{this->context, instanceInfo, nullptr};
 
-    VkInstance instance = *this->instance;
-    VkSurfaceKHR surface;
+    this->vkInstance = *this->instance;
 
     // create sdl vulkan surface
-    if (SDL_Vulkan_CreateSurface(this->appWindow.sdl_window, instance,
-                                 &surface) != SDL_TRUE)
+    if (SDL_Vulkan_CreateSurface(this->appWindow.sdl_window, this->vkInstance,
+                                 &this->vkSurface) != SDL_TRUE)
         throw std::runtime_error("Failed to create SDL surface!");
 
-    this->surface = vk::raii::SurfaceKHR{this->instance, surface};
+    this->surface = vk::raii::SurfaceKHR{this->instance, this->vkSurface};
 };
 
 void VulkanInit::pickPhysicalDevice() {
@@ -315,4 +314,9 @@ void VulkanInit::createViewImage() {
 
     this->resources.extent = this->config.chosenExtent;
     this->resources.imageFormat = this->config.chosenFormat.format;
+};
+
+void VulkanInit::clearVk() const {
+    vkDestroySurfaceKHR(this->vkInstance, this->vkSurface, nullptr);
+    vkDestroyInstance(this->vkInstance, nullptr);
 };

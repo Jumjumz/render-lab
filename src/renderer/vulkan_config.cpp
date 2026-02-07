@@ -365,5 +365,6 @@ void VulkanConfig::cleanupSwapChain() {
 void VulkanConfig::cleanUp() {
     cleanupSwapChain();
 
+    this->vulkanInit.clearVk();
     this->vulkanInit.appWindow.destroy();
 };

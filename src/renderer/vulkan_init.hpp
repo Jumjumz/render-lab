@@ -13,6 +13,10 @@ class VulkanInit {
 
     window appWindow;
 
+    // c vulkan
+    VkInstance vkInstance;
+    VkSurfaceKHR vkSurface;
+
     vk::raii::Context context;
     vk::raii::Instance instance = nullptr;
     vk::raii::SurfaceKHR surface = nullptr;
@@ -57,6 +61,8 @@ class VulkanInit {
     void createSwapChain();
 
     void createViewImage();
+
+    void clearVk() const;
 
   private:
     void initWindow();
