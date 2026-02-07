@@ -17,8 +17,8 @@ VulkanInit::VulkanInit() {
     initWindow();
     createInstance();
     pickPhysicalDevice();
-    createLogicalDevice();
     createSurface();
+    createLogicalDevice();
     createSwapChain();
     createViewImage();
 };

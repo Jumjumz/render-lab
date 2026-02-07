@@ -1,8 +1,6 @@
 #include "vulkan_config.hpp"
 
 #include <fstream>
-#include <vulkan/vulkan_enums.hpp>
-#include <vulkan/vulkan_structs.hpp>
 
 void VulkanConfig::run() {
     initVulkan();
@@ -184,11 +182,9 @@ void VulkanConfig::drawFrame() {
     if (result == vk::Result::eErrorOutOfDateKHR) {
         recreateSwapChain();
         return;
-    }
-
-    if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR) {
+    } else if (result != vk::Result::eSuccess &&
+               result != vk::Result::eSuboptimalKHR) {
         assert(result == vk::Result::eTimeout || result == vk::Result::eNotReady);
-
         throw std::runtime_error("Failed to acquire swap chain image!");
     }
 
@@ -256,11 +252,11 @@ void VulkanConfig::transitionImageLayout(uint32_t imageIndex,
     dependencyInfo.imageMemoryBarrierCount = 1;
     dependencyInfo.pImageMemoryBarriers = &barrier;
 
-    this->commandBuffers[imageIndex].pipelineBarrier2(dependencyInfo);
+    this->commandBuffers[this->currentFrame].pipelineBarrier2(dependencyInfo);
 };
 
 void VulkanConfig::recordCommandBuffer(uint32_t imageIndex) {
-    auto &cmd = this->commandBuffers[imageIndex];
+    auto &cmd = this->commandBuffers[this->currentFrame];
 
     cmd.begin({});
 
@@ -336,15 +332,6 @@ void VulkanConfig::createSyncObjects() {
     }
 };
 
-void VulkanConfig::recreateSwapChain() {
-    this->vulkanInit.device.waitIdle();
-
-    cleanupSwapChain();
-
-    this->vulkanInit.createSwapChain();
-    this->vulkanInit.createViewImage();
-};
-
 void VulkanConfig::mainLoop() {
     while (this->vulkanInit.appWindow.running) {
         while (SDL_PollEvent(&this->vulkanInit.appWindow.event)) {
@@ -359,6 +346,15 @@ void VulkanConfig::mainLoop() {
     }
 
     this->vulkanInit.device.waitIdle();
+};
+
+void VulkanConfig::recreateSwapChain() {
+    this->vulkanInit.device.waitIdle();
+
+    cleanupSwapChain();
+
+    this->vulkanInit.createSwapChain();
+    this->vulkanInit.createViewImage();
 };
 
 void VulkanConfig::cleanupSwapChain() {

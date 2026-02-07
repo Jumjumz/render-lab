@@ -7,8 +7,6 @@
 
 #include <string>
 #include <vector>
-#include <vulkan/vulkan.hpp>
-#include <vulkan/vulkan_core.h>
 
 class VulkanConfig {
   public:
@@ -16,10 +14,10 @@ class VulkanConfig {
 
     VulkanInit vulkanInit;
 
-    vk::raii::PipelineLayout layout = VK_NULL_HANDLE;
-    vk::raii::Pipeline graphicsPipeline = VK_NULL_HANDLE;
+    vk::raii::Pipeline graphicsPipeline = nullptr;
+    vk::raii::PipelineLayout layout = nullptr;
 
-    vk::raii::CommandPool commandPool = VK_NULL_HANDLE;
+    vk::raii::CommandPool commandPool = nullptr;
 
     std::vector<vk::raii::CommandBuffer> commandBuffers;
     std::vector<vk::raii::Semaphore> availableSemaphores;

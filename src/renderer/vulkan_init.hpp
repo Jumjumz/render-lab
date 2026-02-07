@@ -5,7 +5,6 @@
 
 #include "window/window.h"
 
-#include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_raii.hpp>
 
 class VulkanInit {
@@ -15,16 +14,16 @@ class VulkanInit {
     window appWindow;
 
     vk::raii::Context context;
-    vk::raii::Instance instance = VK_NULL_HANDLE;
-    vk::raii::SurfaceKHR surface = VK_NULL_HANDLE;
+    vk::raii::Instance instance = nullptr;
+    vk::raii::SurfaceKHR surface = nullptr;
 
-    vk::raii::PhysicalDevice physicalDevice = VK_NULL_HANDLE;
-    vk::raii::Device device = VK_NULL_HANDLE;
+    vk::raii::PhysicalDevice physicalDevice = nullptr;
+    vk::raii::Device device = nullptr;
 
-    vk::raii::Queue graphicsQueue = VK_NULL_HANDLE;
-    vk::raii::Queue presentQueue = VK_NULL_HANDLE;
+    vk::raii::Queue graphicsQueue = nullptr;
+    vk::raii::Queue presentQueue = nullptr;
 
-    vk::raii::SwapchainKHR swapChain = VK_NULL_HANDLE;
+    vk::raii::SwapchainKHR swapChain = nullptr;
 
     struct SwapchainResources {
         std::vector<vk::Image> images;
