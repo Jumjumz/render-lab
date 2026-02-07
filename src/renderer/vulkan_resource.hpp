@@ -40,19 +40,6 @@ class VulkanResource {
         vk::Extent2D extent;
     } resources;
 
-    // surface
-    struct SurfaceConfig {
-        vk::SurfaceCapabilitiesKHR capabilities;
-        std::vector<vk::SurfaceFormatKHR> formats;
-        std::vector<vk::PresentModeKHR> presentModes;
-
-        vk::SurfaceFormatKHR chosenFormat;
-        vk::PresentModeKHR chosenPresentMode;
-        vk::Extent2D chosenExtent;
-
-        uint32_t imageCount;
-    } config;
-
     // pipeline
     vk::raii::Pipeline graphicsPipeline = nullptr;
     vk::raii::PipelineLayout layout = nullptr;
@@ -76,6 +63,19 @@ class VulkanResource {
             return graphicsFamily >= 0 && presentFamily >= 0;
         };
     } familyIndices;
+
+    // surface
+    struct SurfaceConfig {
+        vk::SurfaceCapabilitiesKHR capabilities;
+        std::vector<vk::SurfaceFormatKHR> formats;
+        std::vector<vk::PresentModeKHR> presentModes;
+
+        vk::SurfaceFormatKHR chosenFormat;
+        vk::PresentModeKHR chosenPresentMode;
+        vk::Extent2D chosenExtent;
+
+        uint32_t imageCount;
+    } config;
 
     static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
     uint32_t currentFrame = 0;

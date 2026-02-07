@@ -291,14 +291,14 @@ void VulkanResource::createSwapChain() {
     } else {
         chainInfo.imageSharingMode = vk::SharingMode::eExclusive;
         chainInfo.queueFamilyIndexCount = 0;
-        chainInfo.pQueueFamilyIndices = VK_NULL_HANDLE;
+        chainInfo.pQueueFamilyIndices = nullptr;
     }
 
     chainInfo.preTransform = this->config.capabilities.currentTransform;
     chainInfo.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
     chainInfo.presentMode = this->config.chosenPresentMode;
     chainInfo.clipped = vk::True;
-    chainInfo.oldSwapchain = VK_NULL_HANDLE;
+    chainInfo.oldSwapchain = nullptr;
 
     this->swapChain = vk::raii::SwapchainKHR{this->device, chainInfo};
     this->resources.images = this->swapChain.getImages();
@@ -446,12 +446,12 @@ void VulkanResource::createGraphicsPipeline() {
     pipelineInfo.pColorBlendState = &colorBlendInfo;
     pipelineInfo.pDynamicState = &dynamicStateInfo;
     pipelineInfo.layout = this->layout;
-    pipelineInfo.renderPass = VK_NULL_HANDLE;
-    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+    pipelineInfo.renderPass = nullptr;
+    pipelineInfo.basePipelineHandle = nullptr;
     pipelineInfo.basePipelineIndex = -1;
 
-    this->graphicsPipeline = vk::raii::Pipeline{this->device, VK_NULL_HANDLE,
-                                                pipelineInfo, VK_NULL_HANDLE};
+    this->graphicsPipeline =
+        vk::raii::Pipeline{this->device, nullptr, pipelineInfo, nullptr};
 };
 
 void VulkanResource::createCommandPool() {
@@ -460,8 +460,7 @@ void VulkanResource::createCommandPool() {
     poolInfo.queueFamilyIndex =
         static_cast<uint32_t>(this->familyIndices.graphicsFamily);
 
-    this->commandPool =
-        vk::raii::CommandPool{this->device, poolInfo, VK_NULL_HANDLE};
+    this->commandPool = vk::raii::CommandPool{this->device, poolInfo, nullptr};
 };
 
 void VulkanResource::createCommandBuffers() {
@@ -484,8 +483,7 @@ void VulkanResource::drawFrame() {
     }
 
     auto [result, imageIndex] = this->swapChain.acquireNextImage(
-        UINT64_MAX, *this->availableSemaphores[this->currentFrame],
-        VK_NULL_HANDLE);
+        UINT64_MAX, *this->availableSemaphores[this->currentFrame], nullptr);
 
     if (result == vk::Result::eErrorOutOfDateKHR) {
         recreateSwapChain();
@@ -661,7 +659,7 @@ void VulkanResource::recreateSwapChain() {
 
 void VulkanResource::cleanupSwapChain() {
     this->resources.imageViews.clear();
-    this->swapChain = VK_NULL_HANDLE;
+    this->swapChain = nullptr;
 };
 
 void VulkanResource::cleanUp() {
