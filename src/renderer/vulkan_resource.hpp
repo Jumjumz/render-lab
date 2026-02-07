@@ -14,10 +14,6 @@ class VulkanResource {
 
     window appWindow;
 
-    // c vulkan
-    VkInstance vkInstance;
-    VkSurfaceKHR vkSurface;
-
     // core
     vk::raii::Context context;
     vk::raii::Instance instance = nullptr;
@@ -39,6 +35,9 @@ class VulkanResource {
         vk::Format imageFormat;
         vk::Extent2D extent;
     } resources;
+
+    // shader module
+    vk::raii::ShaderModule shaderModule = nullptr;
 
     // pipeline
     vk::raii::Pipeline graphicsPipeline = nullptr;
@@ -82,6 +81,7 @@ class VulkanResource {
 
     bool framebufferResized = false;
 
+    // functions
     void initWindow();
 
     void createInstance();
@@ -103,7 +103,7 @@ class VulkanResource {
     static std::vector<char> readFile(const std::string &fileName);
 
     [[nodiscard]]
-    vk::raii::ShaderModule createShaderModule(const std::vector<char> &code);
+    vk::raii::ShaderModule createShaderModule(const std::vector<char> &code) const;
 
     void createGraphicsPipeline();
 

@@ -48,6 +48,7 @@ void VulkanResource::createInstance() {
     uint32_t extensionCount = 0;
     SDL_Vulkan_GetInstanceExtensions(this->appWindow.sdl_window,
                                      &extensionCount, nullptr);
+
     std::vector<const char *> extensions(extensionCount);
     if (SDL_Vulkan_GetInstanceExtensions(this->appWindow.sdl_window,
                                          &extensionCount,
@@ -88,14 +89,15 @@ void VulkanResource::createInstance() {
     // create instance
     this->instance = vk::raii::Instance{this->context, instanceInfo, nullptr};
 
-    this->vkInstance = *this->instance;
+    VkInstance instance = *this->instance;
+    VkSurfaceKHR surface = *this->surface;
 
     // create sdl vulkan surface
-    if (SDL_Vulkan_CreateSurface(this->appWindow.sdl_window, this->vkInstance,
-                                 &this->vkSurface) != SDL_TRUE)
+    if (SDL_Vulkan_CreateSurface(this->appWindow.sdl_window, instance,
+                                 &surface) != SDL_TRUE)
         throw std::runtime_error("Failed to create SDL surface!");
 
-    this->surface = vk::raii::SurfaceKHR{this->instance, this->vkSurface};
+    this->surface = vk::raii::SurfaceKHR{this->instance, surface};
 };
 
 void VulkanResource::pickPhysicalDevice() {
@@ -328,7 +330,7 @@ void VulkanResource::createViewImage() {
 
 [[nodiscard]]
 vk::raii::ShaderModule
-VulkanResource::createShaderModule(const std::vector<char> &code) {
+VulkanResource::createShaderModule(const std::vector<char> &code) const {
     vk::ShaderModuleCreateInfo shaderInfo{};
     shaderInfo.codeSize = code.size() * sizeof(char);
     shaderInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
@@ -353,16 +355,16 @@ std::vector<char> VulkanResource::readFile(const std::string &fileName) {
 };
 
 void VulkanResource::createGraphicsPipeline() {
-    auto shaderModule = createShaderModule(readFile("shaders/slang.spv"));
+    this->shaderModule = createShaderModule(readFile("shaders/slang.spv"));
 
     vk::PipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.stage = vk::ShaderStageFlagBits::eVertex;
-    vertShaderStageInfo.module = shaderModule;
+    vertShaderStageInfo.module = this->shaderModule;
     vertShaderStageInfo.pName = "vertMain";
 
     vk::PipelineShaderStageCreateInfo fragShaderStageInfo{};
     fragShaderStageInfo.stage = vk::ShaderStageFlagBits::eFragment;
-    fragShaderStageInfo.module = shaderModule;
+    fragShaderStageInfo.module = this->shaderModule;
     fragShaderStageInfo.pName = "fragMain";
 
     vk::PipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo,
@@ -653,8 +655,8 @@ void VulkanResource::recreateSwapChain() {
 
     cleanupSwapChain();
 
-    this->createSwapChain();
-    this->createViewImage();
+    createSwapChain();
+    createViewImage();
 };
 
 void VulkanResource::cleanupSwapChain() {
@@ -664,9 +666,6 @@ void VulkanResource::cleanupSwapChain() {
 
 void VulkanResource::cleanUp() {
     cleanupSwapChain();
-
-    vkDestroySurfaceKHR(this->vkInstance, this->vkSurface, nullptr);
-    vkDestroyInstance(this->vkInstance, nullptr);
 
     this->appWindow.destroy();
 };
