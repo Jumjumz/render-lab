@@ -7,6 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(SOURCES
 src/main.cpp
+src/renderer/vertex.hpp
 src/renderer/vulkan_resource.hpp
 src/renderer/vulkan_resource.cpp
 src/window/window.cpp

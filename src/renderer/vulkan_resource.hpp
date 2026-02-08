@@ -5,6 +5,7 @@
 
 #include "window/window.h"
 
+#include <cstdint>
 #include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_raii.hpp>
 
@@ -50,6 +51,9 @@ class VulkanResource {
     std::vector<vk::raii::Semaphore> availableSemaphores;
     std::vector<vk::raii::Semaphore> finishedSemaphores;
     std::vector<vk::raii::Fence> inFlightFences;
+
+    vk::raii::Buffer vertexBuffer = nullptr;
+    vk::raii::DeviceMemory vertextBufferMemory = nullptr;
 
     void run();
 
@@ -107,9 +111,14 @@ class VulkanResource {
 
     void createGraphicsPipeline();
 
+    void createVertexBuffer();
+
     void createCommandPool();
 
     void createCommandBuffers();
+
+    uint32_t findMemoryType(uint32_t typeFilter,
+                            vk::MemoryPropertyFlags properties);
 
     void drawFrame();
 

@@ -1,18 +1,22 @@
 #include "vulkan_resource.hpp"
-
 #include "ndebug.h"
+#include "vertex.hpp"
+
 #include <SDL_stdinc.h>
 #include <SDL_vulkan.h>
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <fstream>
 #include <iterator>
 #include <map>
+#include <pthread.h>
 #include <set>
 #include <stdexcept>
 #include <utility>
 #include <vector>
+#include <vulkan/vulkan_structs.hpp>
 
 VulkanResource::VulkanResource() {
     initWindow();
@@ -24,6 +28,7 @@ VulkanResource::VulkanResource() {
     createViewImage();
     createGraphicsPipeline();
     createCommandPool();
+    createVertexBuffer();
     createCommandBuffers();
     createSyncObjects();
 };
@@ -383,11 +388,14 @@ void VulkanResource::createGraphicsPipeline() {
         static_cast<uint32_t>(dynamicStates.size());
     dynamicStateInfo.pDynamicStates = dynamicStates.data();
 
+    auto bindingDescription = Vertex::getBindingDescription();
+    auto attributeDescription = Vertex::getAttributeDescription();
+
     vk::PipelineVertexInputStateCreateInfo vertexInfo{};
     vertexInfo.vertexBindingDescriptionCount = 0;
     vertexInfo.vertexAttributeDescriptionCount = 0;
-    vertexInfo.pVertexBindingDescriptions = nullptr;
-    vertexInfo.pVertexAttributeDescriptions = nullptr;
+    vertexInfo.pVertexBindingDescriptions = &bindingDescription;
+    vertexInfo.pVertexAttributeDescriptions = attributeDescription.data();
 
     vk::PipelineViewportStateCreateInfo viewportStateInfo{};
     viewportStateInfo.pViewports = nullptr; // use dynamic viewport state
@@ -474,6 +482,32 @@ void VulkanResource::createCommandBuffers() {
     allocInfo.commandBufferCount = VulkanResource::MAX_FRAMES_IN_FLIGHT;
 
     this->commandBuffers = vk::raii::CommandBuffers{this->device, allocInfo};
+};
+
+void VulkanResource::createVertexBuffer() {
+    vk::BufferCreateInfo bufferInfo{};
+    bufferInfo.size = sizeof(vertices[0]) * vertices.size();
+    bufferInfo.usage = vk::BufferUsageFlagBits::eVertexBuffer;
+    bufferInfo.sharingMode = vk::SharingMode::eExclusive;
+
+    this->vertexBuffer = vk::raii::Buffer{this->device, bufferInfo, nullptr};
+
+    vk::MemoryAllocateInfo memoryAllocateInfo{};
+    // wip
+};
+
+uint32_t VulkanResource::findMemoryType(uint32_t typeFilter,
+                                        vk::MemoryPropertyFlags properties) {
+    vk::PhysicalDeviceMemoryProperties memProperties =
+        this->physicalDevice.getMemoryProperties();
+
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+        if ((typeFilter & (1 << i)) &&
+            (memProperties.memoryTypes[i].propertyFlags) == properties)
+            return i;
+    }
+
+    throw std::runtime_error("Failed to find suitable memory type!");
 };
 
 void VulkanResource::drawFrame() {
