@@ -25,6 +25,7 @@ endif()
 
 find_package(Vulkan REQUIRED)
 find_package(SDL2 REQUIRED)
+find_package(glm CONFIG REQUIRED)
 
 function(add_slang_shader_target TARGET)
   cmake_parse_arguments("SHADER" "" "" "SOURCES" ${ARGN})
@@ -59,7 +60,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
 Vulkan::Vulkan
-SDL2::SDL2)
+SDL2::SDL2
+glm::glm)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_options(${PROJECT_NAME} PRIVATE
