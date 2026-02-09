@@ -15,8 +15,6 @@
 #include <set>
 #include <stdexcept>
 #include <utility>
-#include <vector>
-#include <vulkan/vulkan_structs.hpp>
 
 VulkanResource::VulkanResource() {
     initWindow();
@@ -392,8 +390,9 @@ void VulkanResource::createGraphicsPipeline() {
     auto attributeDescription = Vertex::getAttributeDescription();
 
     vk::PipelineVertexInputStateCreateInfo vertexInfo{};
-    vertexInfo.vertexBindingDescriptionCount = 0;
-    vertexInfo.vertexAttributeDescriptionCount = 0;
+    vertexInfo.vertexBindingDescriptionCount = 1;
+    vertexInfo.vertexAttributeDescriptionCount =
+        static_cast<uint32_t>(attributeDescription.size());
     vertexInfo.pVertexBindingDescriptions = &bindingDescription;
     vertexInfo.pVertexAttributeDescriptions = attributeDescription.data();
 
@@ -492,8 +491,25 @@ void VulkanResource::createVertexBuffer() {
 
     this->vertexBuffer = vk::raii::Buffer{this->device, bufferInfo, nullptr};
 
-    vk::MemoryAllocateInfo memoryAllocateInfo{};
-    // wip
+    vk::MemoryRequirements memRequirements =
+        this->vertexBuffer.getMemoryRequirements();
+
+    vk::MemoryAllocateInfo allocateInfo{};
+    allocateInfo.allocationSize = memRequirements.size;
+    allocateInfo.memoryTypeIndex =
+        findMemoryType(memRequirements.memoryTypeBits,
+                       vk::MemoryPropertyFlagBits::eHostVisible |
+                           vk::MemoryPropertyFlagBits::eHostCoherent);
+
+    this->bufferMemory =
+        vk::raii::DeviceMemory{this->device, allocateInfo, nullptr};
+
+    this->vertexBuffer.bindMemory(*this->bufferMemory, 0);
+
+    void *data = bufferMemory.mapMemory(0, bufferInfo.size);
+    memcpy(data, vertices.data(), static_cast<size_t>(bufferInfo.size));
+
+    this->bufferMemory.unmapMemory();
 };
 
 uint32_t VulkanResource::findMemoryType(uint32_t typeFilter,
@@ -503,7 +519,8 @@ uint32_t VulkanResource::findMemoryType(uint32_t typeFilter,
 
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
         if ((typeFilter & (1 << i)) &&
-            (memProperties.memoryTypes[i].propertyFlags) == properties)
+            (memProperties.memoryTypes[i].propertyFlags & properties) ==
+                properties)
             return i;
     }
 
@@ -628,6 +645,9 @@ void VulkanResource::recordCommandBuffer(uint32_t imageIndex) {
 
     // render commands
     cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, this->graphicsPipeline);
+
+    cmd.bindVertexBuffers(0, *this->vertexBuffer, {0});
+
     cmd.setViewport(
         0, vk::Viewport{
                0.0f, 0.0f, static_cast<float>(this->resources.extent.width),
@@ -635,7 +655,7 @@ void VulkanResource::recordCommandBuffer(uint32_t imageIndex) {
 
     cmd.setScissor(0, vk::Rect2D{vk::Offset2D{0, 0}, this->resources.extent});
 
-    cmd.draw(3, 1, 0, 0);
+    cmd.draw(static_cast<uint32_t>(vertices.size()), 1, 0, 0);
 
     cmd.endRendering();
 

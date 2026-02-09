@@ -22,11 +22,11 @@ struct Vertex {
         return {vk::VertexInputAttributeDescription{
                     0, 0, vk::Format::eR32G32Sfloat, offsetof(Vertex, pos)},
                 vk::VertexInputAttributeDescription{
-                    0, 0, vk::Format::eR32G32B32Sfloat, offsetof(Vertex, color)}};
+                    1, 0, vk::Format::eR32G32B32Sfloat, offsetof(Vertex, color)}};
     };
 };
 
-const std::vector<Vertex> vertices = {{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+const std::vector<Vertex> vertices = {{{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
                                       {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
                                       {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
 

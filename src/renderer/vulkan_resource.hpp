@@ -53,7 +53,7 @@ class VulkanResource {
     std::vector<vk::raii::Fence> inFlightFences;
 
     vk::raii::Buffer vertexBuffer = nullptr;
-    vk::raii::DeviceMemory vertextBufferMemory = nullptr;
+    vk::raii::DeviceMemory bufferMemory = nullptr;
 
     void run();
 
