@@ -55,6 +55,9 @@ class VulkanResource {
     vk::raii::Buffer vertexBuffer = nullptr;
     vk::raii::DeviceMemory bufferMemory = nullptr;
 
+    vk::raii::Buffer indexBuffer = nullptr;
+    vk::raii::DeviceMemory indexMemory = nullptr;
+
     void run();
 
   private:
@@ -113,12 +116,22 @@ class VulkanResource {
 
     void createVertexBuffer();
 
+    void createIndexBuffer();
+
     void createCommandPool();
 
     void createCommandBuffers();
 
     uint32_t findMemoryType(uint32_t typeFilter,
                             vk::MemoryPropertyFlags properties);
+
+    void createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage,
+                      vk::MemoryPropertyFlags properties,
+                      vk::raii::Buffer &buffer,
+                      vk::raii::DeviceMemory &bufferMemory);
+
+    void copyBuffer(vk::raii::Buffer &srcBuffer, vk::raii::Buffer &dstBuffer,
+                    vk::DeviceSize size);
 
     void drawFrame();
 
