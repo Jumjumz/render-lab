@@ -5,19 +5,19 @@
 #include <SDL_stdinc.h>
 #include <SDL_vulkan.h>
 #include <algorithm>
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <fstream>
+#include <glm/gtc/matrix_transform.hpp>
 #include <iterator>
 #include <map>
 #include <pthread.h>
 #include <set>
 #include <stdexcept>
 #include <utility>
-#include <vulkan/vulkan_enums.hpp>
-#include <vulkan/vulkan_raii.hpp>
-#include <vulkan/vulkan_structs.hpp>
+#include <vector>
 
 VulkanResource::VulkanResource() {
     initWindow();
@@ -27,10 +27,14 @@ VulkanResource::VulkanResource() {
     createLogicalDevice();
     createSwapChain();
     createViewImage();
+    createDescriptorSetLayout();
     createGraphicsPipeline();
     createCommandPool();
     createVertexBuffer();
     createIndexBuffer();
+    createUniformBuffers();
+    createDescriptorPool();
+    createDescriptorSets();
     createCommandBuffers();
     createSyncObjects();
 };
@@ -361,6 +365,19 @@ std::vector<char> VulkanResource::readFile(const std::string &fileName) {
     return buffer;
 };
 
+void VulkanResource::createDescriptorSetLayout() {
+    vk::DescriptorSetLayoutBinding uboLayoutBinding(
+        0, vk::DescriptorType::eUniformBuffer, 1,
+        vk::ShaderStageFlagBits::eVertex, nullptr);
+
+    vk::DescriptorSetLayoutCreateInfo layoutInfo{};
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &uboLayoutBinding;
+
+    this->descriptorSetLayout =
+        vk::raii::DescriptorSetLayout{this->device, layoutInfo, nullptr};
+};
+
 void VulkanResource::createGraphicsPipeline() {
     this->shaderModule = createShaderModule(readFile("shaders/slang.spv"));
 
@@ -411,7 +428,7 @@ void VulkanResource::createGraphicsPipeline() {
     rasterizationInfo.rasterizerDiscardEnable = vk::False;
     rasterizationInfo.polygonMode = vk::PolygonMode::eFill;
     rasterizationInfo.cullMode = vk::CullModeFlagBits::eBack;
-    rasterizationInfo.frontFace = vk::FrontFace::eClockwise;
+    rasterizationInfo.frontFace = vk::FrontFace::eCounterClockwise;
     rasterizationInfo.depthBiasEnable = vk::False;
     rasterizationInfo.depthBiasSlopeFactor = 1.0f;
     rasterizationInfo.lineWidth = 1.0f;
@@ -438,7 +455,8 @@ void VulkanResource::createGraphicsPipeline() {
     colorBlendInfo.pAttachments = &colorAttachment;
 
     vk::PipelineLayoutCreateInfo layoutInfo{};
-    layoutInfo.setLayoutCount = 0;
+    layoutInfo.setLayoutCount = 1;
+    layoutInfo.pSetLayouts = &*this->descriptorSetLayout;
     layoutInfo.pushConstantRangeCount = 0;
 
     this->layout = vk::raii::PipelineLayout{this->device, layoutInfo, nullptr};
@@ -630,6 +648,72 @@ void VulkanResource::createIndexBuffer() {
     copyBuffer(stagingBuffer, this->indexBuffer, bufferSize);
 };
 
+void VulkanResource::createUniformBuffers() {
+    this->uniformBuffers.clear();
+    this->uniformBuffersMemory.clear();
+    this->uniformBuffersMapped.clear();
+
+    for (size_t i = 0; i < VulkanResource::MAX_FRAMES_IN_FLIGHT; i++) {
+        vk::DeviceSize bufferSize = sizeof(UniformBufferObject);
+        vk::raii::Buffer buffer({});
+        vk::raii::DeviceMemory bufferMem({});
+
+        createBuffer(bufferSize, vk::BufferUsageFlagBits::eUniformBuffer,
+                     vk::MemoryPropertyFlagBits::eHostVisible |
+                         vk::MemoryPropertyFlagBits::eHostCoherent,
+                     buffer, bufferMem);
+
+        this->uniformBuffers.emplace_back(std::move(buffer));
+        this->uniformBuffersMemory.emplace_back(std::move(bufferMem));
+        this->uniformBuffersMapped.emplace_back(
+            this->uniformBuffersMemory[i].mapMemory(0, bufferSize));
+    }
+};
+
+void VulkanResource::createDescriptorPool() {
+    vk::DescriptorPoolSize poolSize(vk::DescriptorType::eUniformBuffer,
+                                    VulkanResource::MAX_FRAMES_IN_FLIGHT);
+
+    vk::DescriptorPoolCreateInfo poolInfo{};
+    poolInfo.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
+    poolInfo.maxSets = VulkanResource::MAX_FRAMES_IN_FLIGHT;
+    poolInfo.poolSizeCount = 1;
+    poolInfo.pPoolSizes = &poolSize;
+
+    this->descriptorPool =
+        vk::raii::DescriptorPool{this->device, poolInfo, nullptr};
+};
+
+void VulkanResource::createDescriptorSets() {
+    std::vector<vk::DescriptorSetLayout> layouts(
+        VulkanResource::MAX_FRAMES_IN_FLIGHT, *this->descriptorSetLayout);
+
+    vk::DescriptorSetAllocateInfo allocInfo{};
+    allocInfo.descriptorPool = this->descriptorPool;
+    allocInfo.descriptorSetCount = static_cast<uint32_t>(layouts.size());
+    allocInfo.pSetLayouts = layouts.data();
+
+    this->descriptorSets.clear();
+    this->descriptorSets = this->device.allocateDescriptorSets(allocInfo);
+
+    for (size_t i = 0; i < VulkanResource::MAX_FRAMES_IN_FLIGHT; i++) {
+        vk::DescriptorBufferInfo bufferInfo{};
+        bufferInfo.buffer = this->uniformBuffers[i];
+        bufferInfo.offset = 0;
+        bufferInfo.range = sizeof(UniformBufferObject);
+
+        vk::WriteDescriptorSet descriptorWrite{};
+        descriptorWrite.dstSet = this->descriptorSets[i];
+        descriptorWrite.dstBinding = 0;
+        descriptorWrite.dstArrayElement = 0;
+        descriptorWrite.descriptorCount = 1;
+        descriptorWrite.descriptorType = vk::DescriptorType::eUniformBuffer;
+        descriptorWrite.pBufferInfo = &bufferInfo;
+
+        this->device.updateDescriptorSets(descriptorWrite, {});
+    }
+};
+
 void VulkanResource::drawFrame() {
     auto fenceResult = this->device.waitForFences(
         *this->inFlightFences[this->currentFrame], vk::True, UINT64_MAX);
@@ -655,8 +739,11 @@ void VulkanResource::drawFrame() {
 
     recordCommandBuffer(imageIndex);
 
+    updateUniformBuffer();
+
     vk::PipelineStageFlags destinationStageMask(
         vk::PipelineStageFlagBits::eColorAttachmentOutput);
+
     vk::SubmitInfo submitInfo{};
     submitInfo.waitSemaphoreCount = 1,
     submitInfo.pWaitSemaphores = &*this->availableSemaphores[this->currentFrame];
@@ -713,6 +800,34 @@ void VulkanResource::transitionImageLayout(
     this->commandBuffers[this->currentFrame].pipelineBarrier2(dependencyInfo);
 };
 
+void VulkanResource::updateUniformBuffer() {
+    static auto startTime = std::chrono::high_resolution_clock::now();
+
+    auto currentTime = std::chrono::high_resolution_clock::now();
+
+    // delta time
+    float time = std::chrono::duration<float, std::chrono::seconds::period>(
+                     currentTime - startTime)
+                     .count();
+
+    // rotation and camera perspective
+    UniformBufferObject ubo{
+        .model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f),
+                             glm::vec3(0.0f, 0.0f, 1.0f)),
+        .view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f),
+                            glm::vec3(0.0f, 0.0f, 0.0f),
+                            glm::vec3(0.0f, 0.0f, 1.0f)),
+        .proj = glm::perspective(
+            glm::radians(45.0f),
+            static_cast<float>(this->resources.extent.width) /
+                static_cast<float>(this->resources.extent.height),
+            0.1f, 10.0f)};
+
+    ubo.proj[1][1] *= -1;
+
+    memcpy(this->uniformBuffersMapped[this->currentFrame], &ubo, sizeof(ubo));
+};
+
 void VulkanResource::recordCommandBuffer(uint32_t imageIndex) {
     auto &cmd = this->commandBuffers[this->currentFrame];
 
@@ -749,7 +864,11 @@ void VulkanResource::recordCommandBuffer(uint32_t imageIndex) {
     cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, this->graphicsPipeline);
 
     cmd.bindVertexBuffers(0, *this->vertexBuffer, {0});
+
     cmd.bindIndexBuffer(*this->indexBuffer, 0, vk::IndexType::eUint16);
+
+    cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, this->layout, 0,
+                           *this->descriptorSets[this->currentFrame], nullptr);
 
     cmd.setViewport(
         0, vk::Viewport{

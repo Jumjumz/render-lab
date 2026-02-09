@@ -1,6 +1,7 @@
 #ifndef VULKAN_RESOURCE
 #define VULKAN_RESOURCE
 
+#include <vector>
 #pragma once
 
 #include "window/window.h"
@@ -58,6 +59,16 @@ class VulkanResource {
     vk::raii::Buffer indexBuffer = nullptr;
     vk::raii::DeviceMemory indexMemory = nullptr;
 
+    vk::raii::DescriptorSetLayout descriptorSetLayout = nullptr;
+
+    std::vector<vk::raii::Buffer> uniformBuffers;
+    std::vector<vk::raii::DeviceMemory> uniformBuffersMemory;
+    std::vector<void *> uniformBuffersMapped;
+
+    vk::raii::DescriptorPool descriptorPool = nullptr;
+
+    std::vector<vk::raii::DescriptorSet> descriptorSets;
+
     void run();
 
   private:
@@ -112,15 +123,25 @@ class VulkanResource {
     [[nodiscard]]
     vk::raii::ShaderModule createShaderModule(const std::vector<char> &code) const;
 
+    void createDescriptorSetLayout();
+
     void createGraphicsPipeline();
 
     void createVertexBuffer();
 
     void createIndexBuffer();
 
+    void createUniformBuffers();
+
+    void createDescriptorPool();
+
+    void createDescriptorSets();
+
     void createCommandPool();
 
     void createCommandBuffers();
+
+    void updateUniformBuffer();
 
     uint32_t findMemoryType(uint32_t typeFilter,
                             vk::MemoryPropertyFlags properties);
