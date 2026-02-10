@@ -806,23 +806,21 @@ void VulkanResource::updateUniformBuffer() {
     auto currentTime = std::chrono::high_resolution_clock::now();
 
     // delta time
-    float time = std::chrono::duration<float, std::chrono::seconds::period>(
-                     currentTime - startTime)
-                     .count();
+    float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(
+                          currentTime - startTime)
+                          .count();
 
     // rotation and camera perspective
     UniformBufferObject ubo{
-        .model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f),
+        .model = glm::rotate(glm::mat4(1.0f), deltaTime * glm::radians(45.0f),
                              glm::vec3(0.0f, 0.0f, 1.0f)),
         .view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f),
                             glm::vec3(0.0f, 0.0f, 0.0f),
                             glm::vec3(0.0f, 0.0f, 1.0f)),
-        .proj = glm::perspective(
-            glm::radians(45.0f),
-            static_cast<float>(this->resources.extent.width) /
-                static_cast<float>(this->resources.extent.height),
-            0.1f, 10.0f)};
+        .proj = glm::perspective(glm::radians(45.0f),
+                                 this->appWindow.aspect_ratio, 0.1f, 10.0f)};
 
+    // y flip
     ubo.proj[1][1] *= -1;
 
     memcpy(this->uniformBuffersMapped[this->currentFrame], &ubo, sizeof(ubo));

@@ -1,7 +1,6 @@
 #ifndef VULKAN_RESOURCE
 #define VULKAN_RESOURCE
 
-#include <vector>
 #pragma once
 
 #include "window/window.h"
