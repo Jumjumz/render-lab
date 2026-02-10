@@ -6,9 +6,9 @@
 #include <SDL.h>
 #include <sys/types.h>
 
-class window {
+class Window {
   public:
-    window() = default;
+    Window() = default;
 
     uint window_width = 720;
     float aspect_ratio = 1.0;

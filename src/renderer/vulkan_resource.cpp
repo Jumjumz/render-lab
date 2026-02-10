@@ -52,9 +52,9 @@ void VulkanResource::initWindow() {
 };
 
 void VulkanResource::createInstance() {
-    constexpr vk::ApplicationInfo appInfo{"Rener Lab", VK_MAKE_VERSION(0, 0, 1),
-                                          "Jumz Engine", VK_MAKE_VERSION(0, 0, 1),
-                                          vk::ApiVersion13};
+    constexpr vk::ApplicationInfo appInfo{
+        "Render Lab", VK_MAKE_VERSION(0, 0, 1), "Jumz Engine",
+        VK_MAKE_VERSION(0, 0, 1), vk::ApiVersion13};
 
     uint32_t extensionCount = 0;
     SDL_Vulkan_GetInstanceExtensions(this->appWindow.sdl_window,

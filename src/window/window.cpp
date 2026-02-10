@@ -1,6 +1,6 @@
 #include "window.h"
 
-void window::init() {
+void Window::init() {
     this->window_height = uint(this->window_width / this->aspect_ratio);
     this->window_height =
         (this->window_height < 1)
@@ -14,7 +14,7 @@ void window::init() {
         this->window_width, this->window_height, SDL_WINDOW_VULKAN);
 };
 
-void window::destroy() const {
+void Window::destroy() const {
     SDL_DestroyWindow(this->sdl_window);
 
     SDL_Quit();

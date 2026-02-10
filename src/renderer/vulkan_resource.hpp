@@ -13,7 +13,7 @@ class VulkanResource {
   public:
     VulkanResource();
 
-    window appWindow;
+    Window appWindow;
 
     // core
     vk::raii::Context context;
