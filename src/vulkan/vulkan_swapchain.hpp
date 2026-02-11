@@ -4,7 +4,6 @@
 #pragma once
 
 #include <cstdint>
-#include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_raii.hpp>
 
 class VulkanSwapchain {
