@@ -11,6 +11,7 @@ VulkanContext::VulkanContext(SDL_Window *window) : window(window) {
     pickPhysicalDevice();
     createSurface();
     createLogicalDevice();
+    createCommandPool();
 };
 
 void VulkanContext::createInstance() {
@@ -239,4 +240,13 @@ void VulkanContext::surfaceConfig() {
 
     this->config.presentModes =
         this->physicalDevice.getSurfacePresentModesKHR(this->surface);
+};
+
+void VulkanContext::createCommandPool() {
+    vk::CommandPoolCreateInfo poolInfo{};
+    poolInfo.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
+    poolInfo.queueFamilyIndex =
+        static_cast<uint32_t>(this->familyIndices.graphicsFamily);
+
+    this->commandPool = vk::raii::CommandPool{this->device, poolInfo, nullptr};
 };

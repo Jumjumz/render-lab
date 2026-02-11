@@ -9,7 +9,7 @@
 
 class VulkanContext {
   public:
-    VulkanContext(SDL_Window *windo);
+    VulkanContext(SDL_Window *window);
 
     // core
     vk::raii::Context context;
@@ -21,6 +21,8 @@ class VulkanContext {
 
     vk::raii::Queue graphicsQueue = nullptr;
     vk::raii::Queue presentQueue = nullptr;
+
+    vk::raii::CommandPool commandPool = nullptr;
 
     struct QueueFamilyIndices {
         int graphicsFamily = -1;
@@ -58,6 +60,8 @@ class VulkanContext {
     void createSurface();
 
     void surfaceConfig();
+
+    void createCommandPool();
 };
 
 #endif // !VULKAN_CONTEXT_HPP
