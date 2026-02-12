@@ -1,7 +1,8 @@
 #include "window.h"
 
-void Window::init() {
-    this->window_height = uint(this->window_width / this->aspect_ratio);
+Window::Window(uint window_width, float aspect_ratio)
+    : window_width(window_width), aspect_ratio(aspect_ratio) {
+    this->window_height = uint(window_width / aspect_ratio);
     this->window_height =
         (this->window_height < 1)
             ? 1

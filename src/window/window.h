@@ -8,7 +8,7 @@
 
 class Window {
   public:
-    Window() = default;
+    Window(uint window_width, float aspect_ratio);
 
     uint window_width = 720;
     float aspect_ratio = 1.0;
@@ -18,8 +18,6 @@ class Window {
     SDL_Window *sdl_window;
 
     SDL_Event event;
-
-    void init();
 
     void destroy() const;
 

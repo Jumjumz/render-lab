@@ -1,6 +1,6 @@
 #include "vulkan_resource.hpp"
-#include "ndebug.h"
 #include "vertex.hpp"
+#include "vulkan/ndebug.hpp"
 
 #include <SDL_stdinc.h>
 #include <SDL_vulkan.h>
@@ -11,7 +11,6 @@
 #include <cstring>
 #include <fstream>
 #include <glm/gtc/matrix_transform.hpp>
-#include <iterator>
 #include <map>
 #include <pthread.h>
 #include <set>

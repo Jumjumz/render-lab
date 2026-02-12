@@ -8,6 +8,7 @@ VulkanGraphics::VulkanGraphics(const vk::raii::Device &device,
     : device(device), imageFormat(imageFormat), graphicsFamily(graphicsFamily) {
     createDescriptorSetLayout();
     createGraphicsPipeline();
+    createCommandPool();
 };
 
 [[nodiscard]]

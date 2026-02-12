@@ -14,6 +14,7 @@ VulkanCommands::VulkanCommands(
     createDescriptorPool();
     createDescriptorSets();
     createCommandBuffers();
+    createSyncObjects();
 };
 
 void VulkanCommands::createDescriptorPool() {
@@ -66,7 +67,7 @@ void VulkanCommands::createCommandBuffers() {
     vk::CommandBufferAllocateInfo allocInfo{};
     allocInfo.level = vk::CommandBufferLevel::ePrimary;
     allocInfo.commandPool = this->commandPool;
-    allocInfo.commandBufferCount = VulkanCommands::MAX_FRAMES_IN_FLIGHT;
+    allocInfo.commandBufferCount = this->MAX_FRAMES_IN_FLIGHT;
 
     this->commandBuffers = vk::raii::CommandBuffers{this->device, allocInfo};
 };
