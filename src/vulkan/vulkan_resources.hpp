@@ -14,11 +14,6 @@ class VulkanResources {
                     const vk::raii::CommandPool &commandPool,
                     const int &MAX_FRAMES_IN_FLIGHT);
 
-    std::vector<vk::raii::CommandBuffer> commandBuffers;
-    std::vector<vk::raii::Semaphore> availableSemaphores;
-    std::vector<vk::raii::Semaphore> finishedSemaphores;
-    std::vector<vk::raii::Fence> inFlightFences;
-
     vk::raii::Buffer vertexBuffer = nullptr;
     vk::raii::DeviceMemory vertexMemory = nullptr;
 
