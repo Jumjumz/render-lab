@@ -12,9 +12,6 @@ class VulkanGraphics {
     VulkanGraphics(const vk::raii::Device &device,
                    const vk::Format &imageFormat, const int &graphicsFamily);
 
-    // command pool
-    vk::raii::CommandPool commandPool = nullptr;
-
     // shader module
     vk::raii::ShaderModule shaderModule = nullptr;
 
@@ -24,12 +21,15 @@ class VulkanGraphics {
 
     vk::raii::DescriptorSetLayout descriptorSetLayout = nullptr;
 
+    // command pool
+    vk::raii::CommandPool commandPool = nullptr;
+
   private:
     const vk::raii::Device &device;
 
     const vk::Format &imageFormat;
 
-    const int graphicsFamily;
+    const int &graphicsFamily;
 
     void createDescriptorSetLayout();
 
