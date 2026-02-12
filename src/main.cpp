@@ -1,4 +1,4 @@
-#include "renderer/vulkan_resource.hpp"
+#include "renderer/render_lab.hpp"
 
 #include <cstdlib>
 #include <exception>
@@ -6,7 +6,7 @@
 #include <ostream>
 
 int main() {
-    VulkanResource app;
+    RenderLab app;
 
     try {
         app.run();

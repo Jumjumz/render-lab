@@ -8,8 +8,18 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(SOURCES
 src/main.cpp
 src/renderer/vertex.hpp
-src/renderer/vulkan_resource.hpp
-src/renderer/vulkan_resource.cpp
+src/renderer/render_lab.hpp
+src/renderer/render_lab.cpp
+src/vulkan/vulkan_commands.hpp
+src/vulkan/vulkan_commands.cpp
+src/vulkan/vulkan_context.hpp
+src/vulkan/vulkan_context.cpp
+src/vulkan/vulkan_graphics.hpp
+src/vulkan/vulkan_graphics.cpp
+src/vulkan/vulkan_resources.hpp
+src/vulkan/vulkan_resources.cpp
+src/vulkan/vulkan_swapchain.hpp
+src/vulkan/vulkan_swapchain.cpp
 src/window/window.cpp
 src/window/window.h)
 
