@@ -9,7 +9,11 @@
 
 class VulkanGraphics {
   public:
-    VulkanGraphics(const vk::raii::Device &device, const vk::Format &imageFormat);
+    VulkanGraphics(const vk::raii::Device &device,
+                   const vk::Format &imageFormat, const int &graphicsFamily);
+
+    // command pool
+    vk::raii::CommandPool commandPool = nullptr;
 
     // shader module
     vk::raii::ShaderModule shaderModule = nullptr;
@@ -25,9 +29,13 @@ class VulkanGraphics {
 
     const vk::Format &imageFormat;
 
+    const int graphicsFamily;
+
     void createDescriptorSetLayout();
 
     void createGraphicsPipeline();
+
+    void createCommandPool();
 
     static std::vector<char> readFile(const std::string &fileName);
 

@@ -22,8 +22,6 @@ class VulkanContext {
     vk::raii::Queue graphicsQueue = nullptr;
     vk::raii::Queue presentQueue = nullptr;
 
-    vk::raii::CommandPool commandPool = nullptr;
-
     struct QueueFamilyIndices {
         int graphicsFamily = -1;
         int presentFamily = -1;
@@ -60,8 +58,6 @@ class VulkanContext {
     void createSurface();
 
     void surfaceConfig();
-
-    void createCommandPool();
 };
 
 #endif // !VULKAN_CONTEXT_HPP
