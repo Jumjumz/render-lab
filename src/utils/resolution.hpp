@@ -1,14 +1,17 @@
 #ifndef RESOLUTION_HPP
 #define RESOLUTION_HPP
 
+#pragma once
+
 #include <sys/types.h>
+
 enum class Resolution {
     QHD,
     FHD,
     HD,
 };
 
-enum Aspect { R16_9, R16_10, R4_3 };
+enum class Aspect { R16_9, R16_10, R4_3 };
 
 // returns screen width
 inline uint getResolution(Resolution res) {
@@ -27,7 +30,7 @@ inline uint getResolution(Resolution res) {
     }
 
     return 1440;
-}
+};
 
 inline float getAspectRatio(Aspect aspect) {
     switch (aspect) {
@@ -45,6 +48,6 @@ inline float getAspectRatio(Aspect aspect) {
     }
 
     return 16.0 / 9.0;
-}
+};
 
 #endif // !RESOLUTION_HPP
