@@ -1,4 +1,5 @@
 #include "renderer/render_lab.hpp"
+#include "utils/resolution.hpp"
 
 #include <cstdlib>
 #include <exception>
@@ -6,7 +7,10 @@
 #include <ostream>
 
 int main() {
-    RenderLab app;
+    auto reso = Resolution::FHD;
+    auto aspect = Aspect::R16_9;
+
+    RenderLab app{reso, aspect};
 
     try {
         app.run();

@@ -3,8 +3,6 @@
 #include <chrono>
 #include <glm/gtc/matrix_transform.hpp>
 
-RenderLab::RenderLab() {};
-
 void RenderLab::run() {
     loop();
     cleanUp();

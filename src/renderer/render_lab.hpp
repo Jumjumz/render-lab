@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "utils/resolution.hpp"
 #include "vulkan/vulkan_commands.hpp"
 #include "vulkan/vulkan_context.hpp"
 #include "vulkan/vulkan_graphics.hpp"
@@ -14,12 +15,16 @@
 
 class RenderLab {
   public:
-    RenderLab();
+    RenderLab(Resolution &res, Aspect &aspect)
+        : width(getResolution(res)), aspectRatio(getAspectRatio(aspect)) {};
 
     void run();
 
   private:
-    Window window{1440, (16.0 / 9.0)};
+    uint width;
+    float aspectRatio;
+
+    Window window{width, aspectRatio};
 
     VulkanContext ctx{this->window.sdl_window};
 

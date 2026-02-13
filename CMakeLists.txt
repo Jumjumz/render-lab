@@ -10,6 +10,7 @@ src/main.cpp
 src/renderer/vertex.hpp
 src/renderer/render_lab.hpp
 src/renderer/render_lab.cpp
+src/utils/resolution.hpp
 src/vulkan/ndebug.hpp
 src/vulkan/vulkan_commands.hpp
 src/vulkan/vulkan_commands.cpp

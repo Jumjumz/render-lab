@@ -8,7 +8,7 @@
 
 class Window {
   public:
-    Window(uint window_width, float aspect_ratio);
+    Window(const uint &window_width, const float &aspect_ratio);
 
     uint window_width = 720;
     float aspect_ratio = 1.0;
