@@ -1,8 +1,9 @@
 #ifndef RENDER_HPP
 #define RENDER_HPP
 
-#include "renderer/vertex.hpp"
 #pragma once
+
+#include "renderer/vertex.hpp"
 
 #include "shapes/mesh.hpp"
 #include <memory>

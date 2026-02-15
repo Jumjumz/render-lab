@@ -1,6 +1,8 @@
 #ifndef MESH_HPP
 #define MESH_HPP
 
+#pragma once
+
 #include "renderer/vertex.hpp"
 #include <array>
 #include <cstddef>
@@ -15,7 +17,7 @@ class Mesh {
 
     virtual std::vector<Vertex> surfaceInterpolation(const size_t &subdivision) = 0;
 
-    virtual std::vector<from_to> surfaceGrids(size_t &subdivision) = 0;
+    virtual std::vector<from_to> surfaceGrids(const size_t &subdivision) = 0;
 };
 
 #endif // !MESH_HPP
