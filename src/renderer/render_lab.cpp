@@ -159,7 +159,7 @@ void RenderLab::recordCommandBuffer(uint32_t imageIndex) {
     cmd.setScissor(
         0, vk::Rect2D{vk::Offset2D{0, 0}, this->swapchain.resources.extent});
 
-    cmd.drawIndexed(indices.size(), 1, 0, 0, 0);
+    cmd.drawIndexed(this->shape.indices.size(), 1, 0, 0, 0);
 
     cmd.endRendering();
 

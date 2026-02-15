@@ -5,16 +5,18 @@ VulkanResources::VulkanResources(const vk::raii::PhysicalDevice &physDevice,
                                  const vk::raii::Device &device,
                                  const vk::raii::Queue &graphicsQueue,
                                  const vk::raii::CommandPool &commandPool,
-                                 const int &MAX_FRAMES_IN_FLIGHT)
+                                 const int &MAX_FRAMES_IN_FLIGHT, Render &shape)
     : physDevice(physDevice), device(device), graphicsQueue(graphicsQueue),
-      commandPool(commandPool), MAX_FRAMES_IN_FLIGHT(MAX_FRAMES_IN_FLIGHT) {
+      commandPool(commandPool), MAX_FRAMES_IN_FLIGHT(MAX_FRAMES_IN_FLIGHT),
+      shape(shape) {
     createVertexBuffer();
     createIndexBuffer();
     createUniformBuffers();
 };
 
 void VulkanResources::createVertexBuffer() {
-    vk::DeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+    vk::DeviceSize bufferSize =
+        sizeof(this->shape.vertices[0]) * this->shape.vertices.size();
 
     vk::BufferCreateInfo stagingInfo{};
     stagingInfo.size = bufferSize;
@@ -39,7 +41,8 @@ void VulkanResources::createVertexBuffer() {
     stagingBuffer.bindMemory(stagingBufferMemory, 0);
 
     void *dataStaging = stagingBufferMemory.mapMemory(0, stagingInfo.size);
-    memcpy(dataStaging, vertices.data(), static_cast<size_t>(stagingInfo.size));
+    memcpy(dataStaging, this->shape.vertices.data(),
+           static_cast<size_t>(stagingInfo.size));
 
     stagingBufferMemory.unmapMemory();
 
@@ -83,7 +86,8 @@ uint32_t VulkanResources::findMemoryType(uint32_t typeFilter,
 };
 
 void VulkanResources::createIndexBuffer() {
-    vk::DeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+    vk::DeviceSize bufferSize =
+        sizeof(this->shape.indices[0]) * this->shape.indices.size();
 
     vk::raii::Buffer stagingBuffer({});
     vk::raii::DeviceMemory stagingBufferMemory({});
@@ -94,7 +98,7 @@ void VulkanResources::createIndexBuffer() {
                  stagingBuffer, stagingBufferMemory);
 
     void *data = stagingBufferMemory.mapMemory(0, bufferSize);
-    memcpy(data, indices.data(), static_cast<size_t>(bufferSize));
+    memcpy(data, this->shape.indices.data(), static_cast<size_t>(bufferSize));
 
     stagingBufferMemory.unmapMemory();
 

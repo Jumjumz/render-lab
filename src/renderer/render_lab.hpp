@@ -1,8 +1,11 @@
 #ifndef RENDER_LAB_HPP
 #define RENDER_LAB_HPP
 
+#include "shapes/cube.hpp"
+#include <memory>
 #pragma once
 
+#include "renderer/render.hpp"
 #include "utils/resolution.hpp"
 #include "vulkan/vulkan_commands.hpp"
 #include "vulkan/vulkan_context.hpp"
@@ -24,6 +27,8 @@ class RenderLab {
     uint width;
     float aspectRatio;
 
+    Render shape{std::make_shared<Cube>(0.5)};
+
     Window window{width, aspectRatio};
 
     VulkanContext ctx{this->window.sdl_window};
@@ -42,9 +47,10 @@ class RenderLab {
                             this->swapchain.resources.imageFormat,
                             this->ctx.familyIndices.graphicsFamily};
 
-    VulkanResources resources{this->ctx.physicalDevice, this->ctx.device,
-                              this->ctx.graphicsQueue, this->graphics.commandPool,
-                              RenderLab::MAX_FRAMES_IN_FLIGHT};
+    VulkanResources resources{
+        this->ctx.physicalDevice,        this->ctx.device,
+        this->ctx.graphicsQueue,         this->graphics.commandPool,
+        RenderLab::MAX_FRAMES_IN_FLIGHT, shape};
 
     VulkanCommands commands{this->ctx.device,
                             this->swapchain.resources.images,

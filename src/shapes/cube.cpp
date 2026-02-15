@@ -1,6 +1,5 @@
 #include "cube.hpp"
 #include <glm/fwd.hpp>
-#include <utility>
 #include <vector>
 
 Cube::Cube(const float sides) {
@@ -73,5 +72,35 @@ std::vector<Vertex> Cube::surfaceInterpolation(const size_t &subdivision) {
 };
 
 std::vector<from_to> Cube::surfaceGrids(const size_t &subdivision) {
+    std::vector<from_to> lines;
 
+    uint points_per_face = (subdivision + 1) * (subdivision + 1);
+    uint points_per_row = subdivision + 1;
+    from_to pt;
+
+    for (size_t face = 0; face < faces; face++) {
+        uint face_start = face * points_per_face;
+
+        for (size_t i = 0; i < points_per_face; i++) {
+            uint n = face_start + i;
+            uint row = i / points_per_row;
+            uint col = i % points_per_row;
+
+            if (col < subdivision) {
+                pt[0] = n;
+                pt[1] = n + 1;
+
+                lines.push_back(pt);
+            }
+
+            if (row < subdivision) {
+                pt[0] = n;
+                pt[1] = n + points_per_row;
+
+                lines.push_back(pt);
+            }
+        }
+    }
+
+    return lines;
 };

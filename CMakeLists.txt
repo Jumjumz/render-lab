@@ -7,9 +7,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(SOURCES
 src/main.cpp
-src/renderer/vertex.hpp
+src/renderer/render.hpp
+src/renderer/render.cpp
 src/renderer/render_lab.hpp
 src/renderer/render_lab.cpp
+src/renderer/vertex.hpp
+src/shapes/mesh.hpp
+src/shapes/cube.hpp
+src/shapes/cube.cpp
 src/utils/resolution.hpp
 src/vulkan/ndebug.hpp
 src/vulkan/vulkan_commands.hpp

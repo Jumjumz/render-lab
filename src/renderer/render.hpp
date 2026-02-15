@@ -11,12 +11,12 @@
 class Render {
   public:
     Render(const std::shared_ptr<Mesh> &shape);
-    // accepts vertices and indices
 
     std::vector<Vertex> vertices;
     std::vector<from_to> indices;
 
   private:
+    static constexpr size_t subdivision = 8;
 };
 
 #endif // !RENDER_HPP
