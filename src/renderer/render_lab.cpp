@@ -23,7 +23,7 @@ void RenderLab::setup() {
     UniformBufferObject ubo{
         .model = glm::rotate(glm::mat4(1.0f), deltaTime * glm::radians(45.0f),
                              glm::vec3(0.0f, 0.0f, 1.0f)),
-        .view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f),
+        .view = glm::lookAt(glm::vec3(1.5f, 1.5f, 1.5f),
                             glm::vec3(0.0f, 0.0f, 0.0f),
                             glm::vec3(0.0f, 0.0f, 1.0f)),
         .proj = glm::perspective(glm::radians(45.0f), this->window.aspect_ratio,

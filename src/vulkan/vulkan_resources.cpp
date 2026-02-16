@@ -5,7 +5,8 @@ VulkanResources::VulkanResources(const vk::raii::PhysicalDevice &physDevice,
                                  const vk::raii::Device &device,
                                  const vk::raii::Queue &graphicsQueue,
                                  const vk::raii::CommandPool &commandPool,
-                                 const int &MAX_FRAMES_IN_FLIGHT, Render &shape)
+                                 const int &MAX_FRAMES_IN_FLIGHT,
+                                 const Render &shape)
     : physDevice(physDevice), device(device), graphicsQueue(graphicsQueue),
       commandPool(commandPool), MAX_FRAMES_IN_FLIGHT(MAX_FRAMES_IN_FLIGHT),
       shape(shape) {

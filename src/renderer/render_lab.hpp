@@ -1,8 +1,6 @@
 #ifndef RENDER_LAB_HPP
 #define RENDER_LAB_HPP
 
-#include "shapes/cube.hpp"
-#include <memory>
 #pragma once
 
 #include "renderer/render.hpp"
@@ -13,13 +11,13 @@
 #include "vulkan/vulkan_resources.hpp"
 #include "vulkan/vulkan_swapchain.hpp"
 #include "window/window.h"
-
 #include <cstdint>
 
 class RenderLab {
   public:
-    RenderLab(Resolution &res, Aspect &aspect)
-        : width(getResolution(res)), aspectRatio(getAspectRatio(aspect)) {};
+    RenderLab(Resolution &res, Aspect &aspect, const Render &shape)
+        : width(getResolution(res)), aspectRatio(getAspectRatio(aspect)),
+          shape(shape) {};
 
     void run();
 
@@ -27,7 +25,7 @@ class RenderLab {
     uint width;
     float aspectRatio;
 
-    Render shape{std::make_shared<Cube>(0.5)};
+    const Render &shape;
 
     Window window{width, aspectRatio};
 

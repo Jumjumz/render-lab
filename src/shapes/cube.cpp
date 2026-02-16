@@ -2,11 +2,11 @@
 #include <glm/fwd.hpp>
 #include <vector>
 
-Cube::Cube(const float sides) {
+Cube::Cube(const float &sides) {
     for (size_t i = 0; i < Cube::numVtx; i++) {
         glm::vec3 val;
-        for (size_t j = 0; j < val.length(); j++) {
-            auto axis = i & (1 << j);
+        for (size_t j = 0; j < static_cast<size_t>(val.length()); j++) {
+            int axis = i & (1 << j);
 
             if (axis == (1 << j)) {
                 val[j] = -sides / 2;
@@ -22,7 +22,7 @@ Cube::Cube(const float sides) {
 std::vector<Vertex> Cube::surfaceInterpolation(const size_t &subdivision) {
     std::vector<Vertex> surfacePoints;
 
-    for (size_t face = 0; face < faces; face++) {
+    for (size_t face = 0; face < Cube::faces; face++) {
         uint axis = face / 2;  // x = 0; y; 1; z; 2
         uint value = face % 2; // min = 0; max = 1 -> identify the face of
                                // which axis we are in the loop
@@ -30,9 +30,9 @@ std::vector<Vertex> Cube::surfaceInterpolation(const size_t &subdivision) {
         std::vector<glm::vec3> corners;
 
         // find each corners
-        for (size_t i = 0; i < vertices.size(); i++) {
+        for (size_t i = 0; i < this->vertices.size(); i++) {
             if (((i >> axis) & 1) == value) {
-                corners.push_back(vertices[i]);
+                corners.push_back(this->vertices[i]);
             }
         }
 
@@ -63,7 +63,7 @@ std::vector<Vertex> Cube::surfaceInterpolation(const size_t &subdivision) {
 
                 glm::vec3 color = {0.0f, 0.1f, 0.0f};
 
-                surfacePoints.push_back({.pos = pt, .color = color});
+                surfacePoints.push_back({pt, color});
             }
         }
     }
@@ -78,7 +78,7 @@ std::vector<from_to> Cube::surfaceGrids(const size_t &subdivision) {
     uint points_per_row = subdivision + 1;
     from_to pt;
 
-    for (size_t face = 0; face < faces; face++) {
+    for (size_t face = 0; face < Cube::faces; face++) {
         uint face_start = face * points_per_face;
 
         for (size_t i = 0; i < points_per_face; i++) {

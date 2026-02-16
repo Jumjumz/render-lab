@@ -14,7 +14,7 @@ class VulkanResources {
                     const vk::raii::Device &device,
                     const vk::raii::Queue &graphicsQueue,
                     const vk::raii::CommandPool &commandPool,
-                    const int &MAX_FRAMES_IN_FLIGHT, Render &shape);
+                    const int &MAX_FRAMES_IN_FLIGHT, const Render &shape);
 
     vk::raii::Buffer vertexBuffer = nullptr;
     vk::raii::DeviceMemory vertexMemory = nullptr;
@@ -34,7 +34,7 @@ class VulkanResources {
 
     const int MAX_FRAMES_IN_FLIGHT;
 
-    Render shape;
+    const Render &shape;
 
     void createVertexBuffer();
 

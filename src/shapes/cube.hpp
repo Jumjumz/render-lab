@@ -7,7 +7,7 @@
 
 class Cube : public Mesh {
   public:
-    Cube(const float sides);
+    Cube(const float &sides);
 
     std::vector<Vertex> surfaceInterpolation(const size_t &subdivision) override;
 
