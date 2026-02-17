@@ -197,13 +197,15 @@ void VulkanContext::createSurface() {
         }
     }
 
-    this->config.chosenPresentMode = vk::PresentModeKHR::eFifo;
-    for (const auto &mode : this->config.presentModes) {
-        if (mode == vk::PresentModeKHR::eMailbox) {
-            this->config.chosenPresentMode = mode;
-            break;
-        }
-    }
+    this->config.chosenPresentMode =
+        vk::PresentModeKHR::eFifo; // V-Sync capped at 60fps
+    // loop commented out as it takes too much resources in CPU (almost 70%)
+    // for (const auto &mode : this->config.presentModes) {
+    //     if (mode == vk::PresentModeKHR::eMailbox) {
+    //         this->config.chosenPresentMode = mode;
+    //         break;
+    //     }
+    // }
 
     // choose extent
     if (this->config.capabilities.currentExtent.width != UINT32_MAX) {

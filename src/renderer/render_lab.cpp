@@ -100,8 +100,8 @@ void RenderLab::drawFrame() {
     result = this->ctx.presentQueue.presentKHR(presentInfo);
 
     if ((result == vk::Result::eSuboptimalKHR) ||
-        (result == vk::Result::eErrorOutOfDateKHR) || framebufferResized) {
-        this->framebufferResized = false;
+        (result == vk::Result::eErrorOutOfDateKHR) || frameBufferResize) {
+        this->frameBufferResize = false;
         recreateSwapchain();
     } else {
         assert(result == vk::Result::eSuccess);
@@ -236,7 +236,7 @@ void RenderLab::loop() {
                 this->window.running = false;
 
             if (this->window.event.type == SDL_WINDOWEVENT_RESIZED)
-                this->framebufferResized = true;
+                this->frameBufferResize = true;
         }
 
         drawFrame();

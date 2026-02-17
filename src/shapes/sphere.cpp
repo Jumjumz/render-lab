@@ -14,7 +14,7 @@ std::vector<Vertex> Sphere::surfaceInterpolation(const size_t &subdivision) {
         val[1] = this->radius - ((2.0 * i) / num_points - this->radius);
 
         float radius_at_y = std::sqrt((this->radius - (val[1] * val[1])));
-        float theta = glm::radians(360.0f) * (i / this->phi);
+        float theta = glm::radians(180.0f * 2) * (i / this->phi);
 
         val[0] = std::cos(theta) * radius_at_y;
         val[2] = std::sin(theta) * radius_at_y;
@@ -29,7 +29,7 @@ std::vector<Vertex> Sphere::surfaceInterpolation(const size_t &subdivision) {
 
 std::vector<uint16_t> Sphere::surfaceGrids(const size_t &subdivision) {
     float avg_threshold =
-        std::sqrt((glm::radians(360.0f * 4) * this->radius * this->radius) /
+        std::sqrt((glm::radians(180.0f * 4) * this->radius * this->radius) /
                   this->points.size());
     float d_threshold = avg_threshold * (subdivision - 3); // threshold
     std::vector<uint16_t> arcs;

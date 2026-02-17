@@ -61,7 +61,7 @@ class RenderLab {
     static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
     uint32_t currentFrame = 0;
 
-    bool framebufferResized = false;
+    bool frameBufferResize = false;
 
     void loop();
 
