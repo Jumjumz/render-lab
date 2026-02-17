@@ -14,7 +14,7 @@ class Sphere : public Mesh {
     std::vector<uint16_t> surfaceGrids(const size_t &subdivision) override;
 
   private:
-    double radius = 0.5;
+    float radius = 0.5;
 
     std::vector<Vertex> points;
 
