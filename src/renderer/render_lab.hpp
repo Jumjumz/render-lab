@@ -15,9 +15,7 @@
 
 class RenderLab {
   public:
-    RenderLab(Resolution &res, Aspect &aspect, const Render &shape)
-        : width(getResolution(res)), aspectRatio(getAspectRatio(aspect)),
-          shape(shape) {};
+    RenderLab(Resolution &res, Aspect &aspect, const Render &shape);
 
     void run();
 

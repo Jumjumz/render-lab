@@ -3,6 +3,10 @@
 #include <chrono>
 #include <glm/gtc/matrix_transform.hpp>
 
+RenderLab::RenderLab(Resolution &res, Aspect &aspect, const Render &shape)
+    : width(getResolution(res)), aspectRatio(getAspectRatio(aspect)),
+      shape(shape) {};
+
 void RenderLab::run() {
     loop();
     cleanUp();
@@ -118,8 +122,7 @@ void RenderLab::recordCommandBuffer(uint32_t imageIndex) {
                           vk::PipelineStageFlagBits2::eColorAttachmentOutput,
                           vk::ImageAspectFlagBits::eColor);
 
-    transitionImageLayout(*this->resources.depthImage,
-                          vk::ImageLayout::eUndefined,
+    transitionImageLayout(this->resources.depthImage, vk::ImageLayout::eUndefined,
                           vk::ImageLayout::eDepthAttachmentOptimal,
                           vk::AccessFlagBits2::eDepthStencilAttachmentWrite,
                           vk::AccessFlagBits2::eDepthStencilAttachmentWrite,
@@ -145,7 +148,7 @@ void RenderLab::recordCommandBuffer(uint32_t imageIndex) {
     depthInfo.imageLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
     depthInfo.loadOp = vk::AttachmentLoadOp::eClear;
     depthInfo.storeOp = vk::AttachmentStoreOp::eDontCare;
-    attachmentInfo.clearValue = clearDepth;
+    depthInfo.clearValue = clearDepth;
 
     vk::Offset2D offset = {0, 0};
 

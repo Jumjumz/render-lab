@@ -43,6 +43,7 @@ class VulkanResources {
     const int MAX_FRAMES_IN_FLIGHT;
 
     const Render &shape;
+
     void createDepthResources();
 
     void createVertexBuffer();

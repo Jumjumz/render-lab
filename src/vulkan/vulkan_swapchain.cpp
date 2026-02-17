@@ -1,6 +1,4 @@
 #include "vulkan_swapchain.hpp"
-#include <vulkan/vulkan_raii.hpp>
-#include <vulkan/vulkan_structs.hpp>
 
 VulkanSwapchain::VulkanSwapchain(
     const vk::raii::SurfaceKHR &surface,
@@ -90,7 +88,7 @@ VulkanSwapchain::supportedFormat(const std::vector<vk::Format> &candidates,
         vk::FormatProperties props = this->physDevice.getFormatProperties(format);
 
         if (tiling == vk::ImageTiling::eLinear &&
-            (props.optimalTilingFeatures & features) == features)
+            (props.linearTilingFeatures & features) == features)
             return format;
 
         if (tiling == vk::ImageTiling::eOptimal &&

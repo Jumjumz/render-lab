@@ -2,7 +2,7 @@
 #include <cstdint>
 
 Cube::Cube(const float &sides) {
-    for (size_t i = 0; i < Cube::numVtx; i++) {
+    for (size_t i = 0; i < Cube::NUM_VTX; i++) {
         glm::vec3 val;
         for (size_t j = 0; j < static_cast<size_t>(val.length()); j++) {
             int axis = i & (1 << j);
@@ -21,10 +21,10 @@ Cube::Cube(const float &sides) {
 std::vector<Vertex> Cube::surfaceInterpolation(const size_t &subdivision) {
     std::vector<Vertex> surfacePoints;
 
-    for (size_t face = 0; face < Cube::faces; face++) {
-        uint axis = face / 2;  // x = 0; y; 1; z; 2
-        uint value = face % 2; // min = 0; max = 1 -> identify the face of
-                               // which axis we are in the loop
+    for (size_t i = 0; i < Cube::FACES; i++) {
+        uint axis = i / 2;  // x = 0; y; 1; z; 2
+        uint value = i % 2; // min = 0; max = 1 -> identify the i of
+                            // which axis we are in the loop
 
         std::vector<glm::vec3> corners;
 
@@ -60,9 +60,7 @@ std::vector<Vertex> Cube::surfaceInterpolation(const size_t &subdivision) {
                                u * (1 - v) * corners[1] + u * v * corners[2] +
                                (1 - u) * v * corners[3];
 
-                glm::vec3 color = {0.0f, 0.1f, 0.0f};
-
-                surfacePoints.push_back({pt, color});
+                surfacePoints.push_back({pt, Cube::COLOR});
             }
         }
     }
@@ -71,18 +69,17 @@ std::vector<Vertex> Cube::surfaceInterpolation(const size_t &subdivision) {
 };
 
 std::vector<uint16_t> Cube::surfaceGrids(const size_t &subdivision) {
-    std::vector<uint16_t> lines;
-
-    uint pointsPerFace = (subdivision) * (subdivision);
+    uint pointsPerFace = (subdivision + 1) * (subdivision + 1);
     uint pointsPerRow = subdivision + 1;
 
-    for (size_t face = 0; face < Cube::faces; face++) {
-        uint faceStart = face * pointsPerFace;
+    std::vector<uint16_t> lines;
+    for (size_t i = 0; i < Cube::FACES; i++) {
+        uint faceStart = i * pointsPerFace;
 
-        for (size_t i = 0; i < pointsPerFace; i++) {
-            uint n = faceStart + i;
-            uint row = i / pointsPerRow;
-            uint col = i % pointsPerRow;
+        for (size_t j = 0; j < pointsPerFace; j++) {
+            uint n = faceStart + j;
+            uint row = j / pointsPerRow;
+            uint col = j % pointsPerRow;
 
             if (col < subdivision) {
                 lines.push_back(n);

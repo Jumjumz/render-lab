@@ -6,7 +6,8 @@
 VulkanGraphics::VulkanGraphics(const vk::raii::PhysicalDevice &physDevice,
                                const vk::raii::Device &device,
                                const vk::Format &imageFormat,
-                               vk::Format depthFormat, const int &graphicsFamily)
+                               const vk::Format &depthFormat,
+                               const int &graphicsFamily)
     : physDevice(physDevice), device(device), imageFormat(imageFormat),
       depthFormat(depthFormat), graphicsFamily(graphicsFamily) {
     createDescriptorSetLayout();
