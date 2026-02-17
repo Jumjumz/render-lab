@@ -1,17 +1,21 @@
 #include "vulkan_swapchain.hpp"
+#include <vulkan/vulkan_raii.hpp>
+#include <vulkan/vulkan_structs.hpp>
 
 VulkanSwapchain::VulkanSwapchain(
-    const vk::raii::SurfaceKHR &surface, const vk::raii::Device &device,
+    const vk::raii::SurfaceKHR &surface,
+    const vk::raii::PhysicalDevice &physDevice, const vk::raii::Device &device,
     const vk::SurfaceCapabilitiesKHR &capabilities,
     const vk::SurfaceFormatKHR &format, const vk::PresentModeKHR &presentMode,
     const vk::Extent2D &extent, const int &graphicsFamily,
     const int &presentFamily, const uint32_t &imageCount)
-    : surface(surface), device(device), capabilities(capabilities),
-      format(format), presentMode(presentMode), extent(extent),
-      graphicsFamily(graphicsFamily), presentFamily(presentFamily),
-      imageCount(imageCount) {
+    : surface(surface), physDevice(physDevice), device(device),
+      capabilities(capabilities), format(format), presentMode(presentMode),
+      extent(extent), graphicsFamily(graphicsFamily),
+      presentFamily(presentFamily), imageCount(imageCount) {
     createSwapchain();
-    createImageView();
+    createImageViews();
+    findDepthFormat();
 };
 
 void VulkanSwapchain::createSwapchain() {
@@ -48,7 +52,7 @@ void VulkanSwapchain::createSwapchain() {
     this->resources.images = this->swapchain.getImages();
 };
 
-void VulkanSwapchain::createImageView() {
+void VulkanSwapchain::createImageViews() {
     this->resources.imageViews.clear();
 
     for (auto const &image : this->resources.images) {
@@ -63,11 +67,43 @@ void VulkanSwapchain::createImageView() {
         imageInfo.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0,
                                       1};
 
-        this->resources.imageViews.emplace_back(this->device, imageInfo);
+        this->resources.imageViews.emplace_back(this->device, imageInfo, nullptr);
     }
 
     this->resources.extent = this->extent;
     this->resources.imageFormat = this->format.format;
+};
+
+void VulkanSwapchain::findDepthFormat() {
+    this->depthFormat =
+        supportedFormat({vk::Format::eD32Sfloat, vk::Format::eD32SfloatS8Uint,
+                         vk::Format::eD24UnormS8Uint},
+                        vk::ImageTiling::eOptimal,
+                        vk::FormatFeatureFlagBits::eDepthStencilAttachment);
+};
+
+vk::Format
+VulkanSwapchain::supportedFormat(const std::vector<vk::Format> &candidates,
+                                 vk::ImageTiling tiling,
+                                 vk::FormatFeatureFlags features) {
+    for (const auto format : candidates) {
+        vk::FormatProperties props = this->physDevice.getFormatProperties(format);
+
+        if (tiling == vk::ImageTiling::eLinear &&
+            (props.optimalTilingFeatures & features) == features)
+            return format;
+
+        if (tiling == vk::ImageTiling::eOptimal &&
+            (props.optimalTilingFeatures & features) == features)
+            return format;
+    }
+
+    throw std::runtime_error("Failed to find supported format!");
+};
+
+bool VulkanSwapchain::hasStencilComponents(vk::Format format) {
+    return format == vk::Format::eD32SfloatS8Uint ||
+           format == vk::Format::eD24UnormS8Uint;
 };
 
 void VulkanSwapchain::recreateSwapChain() {
@@ -76,7 +112,7 @@ void VulkanSwapchain::recreateSwapChain() {
     cleanupSwapchain();
 
     createSwapchain();
-    createImageView();
+    createImageViews();
 };
 
 void VulkanSwapchain::cleanupSwapchain() {

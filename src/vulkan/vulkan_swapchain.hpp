@@ -9,6 +9,7 @@
 class VulkanSwapchain {
   public:
     VulkanSwapchain(const vk::raii::SurfaceKHR &surface,
+                    const vk::raii::PhysicalDevice &physDeivice,
                     const vk::raii::Device &device,
                     const vk::SurfaceCapabilitiesKHR &capabilities,
                     const vk::SurfaceFormatKHR &format,
@@ -27,12 +28,16 @@ class VulkanSwapchain {
         vk::Extent2D extent;
     } resources;
 
+    vk::Format depthFormat;
+
     void recreateSwapChain();
 
     void cleanupSwapchain();
 
   private:
     const vk::raii::SurfaceKHR &surface;
+
+    const vk::raii::PhysicalDevice &physDevice;
 
     const vk::raii::Device &device;
 
@@ -48,7 +53,15 @@ class VulkanSwapchain {
 
     void createSwapchain();
 
-    void createImageView();
+    void createImageViews();
+
+    void findDepthFormat();
+
+    vk::Format supportedFormat(const std::vector<vk::Format> &candidates,
+                               vk::ImageTiling tiling,
+                               vk::FormatFeatureFlags features);
+
+    bool hasStencilComponents(vk::Format format);
 };
 
 #endif // !VULKAN_SWAPCHAIN_HPP

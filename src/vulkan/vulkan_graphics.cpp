@@ -1,11 +1,14 @@
 #include "vulkan_graphics.hpp"
 #include "renderer/vertex.hpp"
 #include <fstream>
+#include <stdexcept>
 
-VulkanGraphics::VulkanGraphics(const vk::raii::Device &device,
+VulkanGraphics::VulkanGraphics(const vk::raii::PhysicalDevice &physDevice,
+                               const vk::raii::Device &device,
                                const vk::Format &imageFormat,
-                               const int &graphicsFamily)
-    : device(device), imageFormat(imageFormat), graphicsFamily(graphicsFamily) {
+                               vk::Format depthFormat, const int &graphicsFamily)
+    : physDevice(physDevice), device(device), imageFormat(imageFormat),
+      depthFormat(depthFormat), graphicsFamily(graphicsFamily) {
     createDescriptorSetLayout();
     createGraphicsPipeline();
     createCommandPool();
@@ -109,6 +112,13 @@ void VulkanGraphics::createGraphicsPipeline() {
     multiSamplingInfo.rasterizationSamples = vk::SampleCountFlagBits::e1;
     multiSamplingInfo.sampleShadingEnable = vk::False;
 
+    vk::PipelineDepthStencilStateCreateInfo stencilState{};
+    stencilState.depthTestEnable = vk::True;
+    stencilState.depthWriteEnable = vk::True;
+    stencilState.depthCompareOp = vk::CompareOp::eLess;
+    stencilState.depthBoundsTestEnable = vk::False;
+    stencilState.stencilTestEnable = vk::False;
+
     vk::PipelineColorBlendAttachmentState colorAttachment{};
     colorAttachment.blendEnable = vk::False;
     colorAttachment.colorWriteMask =
@@ -136,6 +146,7 @@ void VulkanGraphics::createGraphicsPipeline() {
     vk::PipelineRenderingCreateInfo renderingInfo{};
     renderingInfo.colorAttachmentCount = 1;
     renderingInfo.pColorAttachmentFormats = &this->imageFormat;
+    renderingInfo.depthAttachmentFormat = this->depthFormat;
 
     vk::GraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.stageCount = 2;
@@ -148,6 +159,7 @@ void VulkanGraphics::createGraphicsPipeline() {
     pipelineInfo.pMultisampleState = &multiSamplingInfo;
     pipelineInfo.pColorBlendState = &colorBlendInfo;
     pipelineInfo.pDynamicState = &dynamicStateInfo;
+    pipelineInfo.pDepthStencilState = &stencilState;
     pipelineInfo.layout = this->layout;
     pipelineInfo.renderPass = nullptr;
     pipelineInfo.basePipelineHandle = nullptr;

@@ -1,6 +1,5 @@
 #include "cube.hpp"
-#include <glm/fwd.hpp>
-#include <vector>
+#include <cstdint>
 
 Cube::Cube(const float &sides) {
     for (size_t i = 0; i < Cube::numVtx; i++) {
@@ -71,33 +70,28 @@ std::vector<Vertex> Cube::surfaceInterpolation(const size_t &subdivision) {
     return surfacePoints;
 };
 
-std::vector<from_to> Cube::surfaceGrids(const size_t &subdivision) {
-    std::vector<from_to> lines;
+std::vector<uint16_t> Cube::surfaceGrids(const size_t &subdivision) {
+    std::vector<uint16_t> lines;
 
-    uint points_per_face = (subdivision + 1) * (subdivision + 1);
-    uint points_per_row = subdivision + 1;
-    from_to pt;
+    uint pointsPerFace = (subdivision) * (subdivision);
+    uint pointsPerRow = subdivision + 1;
 
     for (size_t face = 0; face < Cube::faces; face++) {
-        uint face_start = face * points_per_face;
+        uint faceStart = face * pointsPerFace;
 
-        for (size_t i = 0; i < points_per_face; i++) {
-            uint n = face_start + i;
-            uint row = i / points_per_row;
-            uint col = i % points_per_row;
+        for (size_t i = 0; i < pointsPerFace; i++) {
+            uint n = faceStart + i;
+            uint row = i / pointsPerRow;
+            uint col = i % pointsPerRow;
 
             if (col < subdivision) {
-                pt[0] = n;
-                pt[1] = n + 1;
-
-                lines.push_back(pt);
+                lines.push_back(n);
+                lines.push_back(n + 1);
             }
 
             if (row < subdivision) {
-                pt[0] = n;
-                pt[1] = n + points_per_row;
-
-                lines.push_back(pt);
+                lines.push_back(n);
+                lines.push_back(n + pointsPerRow);
             }
         }
     }

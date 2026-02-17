@@ -32,6 +32,7 @@ class RenderLab {
     VulkanContext ctx{this->window.sdl_window};
 
     VulkanSwapchain swapchain{this->ctx.surface,
+                              this->ctx.physicalDevice,
                               this->ctx.device,
                               this->ctx.config.capabilities,
                               this->ctx.config.chosenFormat,
@@ -41,13 +42,15 @@ class RenderLab {
                               this->ctx.familyIndices.presentFamily,
                               this->ctx.config.imageCount};
 
-    VulkanGraphics graphics{this->ctx.device,
+    VulkanGraphics graphics{this->ctx.physicalDevice, this->ctx.device,
                             this->swapchain.resources.imageFormat,
+                            this->swapchain.depthFormat,
                             this->ctx.familyIndices.graphicsFamily};
 
     VulkanResources resources{
         this->ctx.physicalDevice,        this->ctx.device,
         this->ctx.graphicsQueue,         this->graphics.commandPool,
+        this->ctx.config.chosenExtent,   this->swapchain.depthFormat,
         RenderLab::MAX_FRAMES_IN_FLIGHT, shape};
 
     VulkanCommands commands{this->ctx.device,
@@ -70,12 +73,13 @@ class RenderLab {
 
     void recordCommandBuffer(uint32_t imageIndex);
 
-    void transitionImageLayout(uint32_t imageIndex, vk::ImageLayout oldLayout,
+    void transitionImageLayout(vk::Image image, vk::ImageLayout oldLayout,
                                vk::ImageLayout newLayout,
                                vk::AccessFlags2 srcAccessMask,
                                vk::AccessFlags2 dstAccessMask,
                                vk::PipelineStageFlags2 srcStageMask,
-                               vk::PipelineStageFlags2 dstStageMask);
+                               vk::PipelineStageFlags2 dstStageMask,
+                               vk::ImageAspectFlags imageAspectFlags);
 
     void cleanSwapchain();
 

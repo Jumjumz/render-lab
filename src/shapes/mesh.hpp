@@ -17,7 +17,7 @@ class Mesh {
 
     virtual std::vector<Vertex> surfaceInterpolation(const size_t &subdivision) = 0;
 
-    virtual std::vector<from_to> surfaceGrids(const size_t &subdivision) = 0;
+    virtual std::vector<uint16_t> surfaceGrids(const size_t &subdivision) = 0;
 };
 
 #endif // !MESH_HPP

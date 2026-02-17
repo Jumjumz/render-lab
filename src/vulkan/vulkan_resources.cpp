@@ -5,14 +5,53 @@ VulkanResources::VulkanResources(const vk::raii::PhysicalDevice &physDevice,
                                  const vk::raii::Device &device,
                                  const vk::raii::Queue &graphicsQueue,
                                  const vk::raii::CommandPool &commandPool,
+                                 const vk::Extent2D &extent,
+                                 const vk::Format &depthFormat,
                                  const int &MAX_FRAMES_IN_FLIGHT,
                                  const Render &shape)
     : physDevice(physDevice), device(device), graphicsQueue(graphicsQueue),
-      commandPool(commandPool), MAX_FRAMES_IN_FLIGHT(MAX_FRAMES_IN_FLIGHT),
-      shape(shape) {
+      commandPool(commandPool), extent(extent), depthFormat(depthFormat),
+      MAX_FRAMES_IN_FLIGHT(MAX_FRAMES_IN_FLIGHT), shape(shape) {
+    createDepthResources();
     createVertexBuffer();
     createIndexBuffer();
     createUniformBuffers();
+};
+
+void VulkanResources::createDepthResources() {
+    vk::ImageCreateInfo imageInfo{};
+    imageInfo.imageType = vk::ImageType::e2D;
+    imageInfo.format = this->depthFormat;
+    imageInfo.extent.width = this->extent.width;
+    imageInfo.extent.height = this->extent.height;
+    imageInfo.extent.depth = 1;
+    imageInfo.mipLevels = 1;
+    imageInfo.arrayLayers = 1;
+    imageInfo.samples = vk::SampleCountFlagBits::e1;
+    imageInfo.tiling = vk::ImageTiling::eOptimal;
+    imageInfo.usage = vk::ImageUsageFlagBits::eDepthStencilAttachment;
+
+    this->depthImage = vk::raii::Image{this->device, imageInfo, nullptr};
+
+    vk::MemoryRequirements memReqs = this->depthImage.getMemoryRequirements();
+
+    vk::MemoryAllocateInfo memInfo{};
+    memInfo.allocationSize = memReqs.size;
+    memInfo.memoryTypeIndex = findMemoryType(
+        memReqs.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal);
+
+    this->depthImageMemory =
+        vk::raii::DeviceMemory{this->device, memInfo, nullptr};
+
+    this->depthImage.bindMemory(this->depthImageMemory, 0);
+
+    vk::ImageViewCreateInfo viewInfo{};
+    viewInfo.image = this->depthImage;
+    viewInfo.viewType = vk::ImageViewType::e2D;
+    viewInfo.format = this->depthFormat;
+    viewInfo.subresourceRange = {vk::ImageAspectFlagBits::eDepth, 0, 1, 0, 1};
+
+    this->depthImageView = vk::raii::ImageView{this->device, viewInfo, nullptr};
 };
 
 void VulkanResources::createVertexBuffer() {

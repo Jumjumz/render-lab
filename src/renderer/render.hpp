@@ -13,10 +13,10 @@ class Render {
     Render(const std::shared_ptr<Mesh> &shape);
 
     std::vector<Vertex> vertices;
-    std::vector<from_to> indices;
+    std::vector<uint16_t> indices;
 
   private:
-    static constexpr size_t subdivision = 8;
+    static constexpr size_t SUBDIVISION = 8;
 };
 
 #endif // !RENDER_HPP

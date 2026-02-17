@@ -11,7 +11,7 @@ class Cube : public Mesh {
 
     std::vector<Vertex> surfaceInterpolation(const size_t &subdivision) override;
 
-    std::vector<from_to> surfaceGrids(const size_t &subdivision) override;
+    std::vector<uint16_t> surfaceGrids(const size_t &subdivision) override;
 
   private:
     static constexpr size_t numVtx = 8;

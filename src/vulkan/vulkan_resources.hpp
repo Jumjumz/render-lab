@@ -14,6 +14,7 @@ class VulkanResources {
                     const vk::raii::Device &device,
                     const vk::raii::Queue &graphicsQueue,
                     const vk::raii::CommandPool &commandPool,
+                    const vk::Extent2D &extent, const vk::Format &depthFormat,
                     const int &MAX_FRAMES_IN_FLIGHT, const Render &shape);
 
     vk::raii::Buffer vertexBuffer = nullptr;
@@ -26,15 +27,23 @@ class VulkanResources {
     std::vector<vk::raii::DeviceMemory> uniformBuffersMemory;
     std::vector<void *> uniformBuffersMapped;
 
+    vk::raii::Image depthImage = nullptr;
+    vk::raii::DeviceMemory depthImageMemory = nullptr;
+    vk::raii::ImageView depthImageView = nullptr;
+
   private:
     const vk::raii::PhysicalDevice &physDevice;
     const vk::raii::Device &device;
     const vk::raii::Queue &graphicsQueue;
     const vk::raii::CommandPool &commandPool;
 
+    const vk::Extent2D &extent;
+    const vk::Format &depthFormat;
+
     const int MAX_FRAMES_IN_FLIGHT;
 
     const Render &shape;
+    void createDepthResources();
 
     void createVertexBuffer();
 
