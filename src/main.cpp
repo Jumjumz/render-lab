@@ -12,7 +12,7 @@ int main() {
     auto reso = Resolution::FHD;
     auto aspect = Aspect::R16_9;
 
-    Render shape{std::make_shared<Cube>(0.5)};
+    const Render shape{std::make_shared<Cube>(0.5)};
 
     RenderLab app{reso, aspect, shape};
 

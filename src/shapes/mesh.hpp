@@ -4,12 +4,11 @@
 #pragma once
 
 #include "renderer/vertex.hpp"
-#include <array>
+
 #include <cstddef>
+#include <glm/fwd.hpp>
 #include <sys/types.h>
 #include <vector>
-
-typedef std::array<uint16_t, 2> from_to;
 
 class Mesh {
   public:
@@ -18,6 +17,11 @@ class Mesh {
     virtual std::vector<Vertex> surfaceInterpolation(const size_t &subdivision) = 0;
 
     virtual std::vector<uint16_t> surfaceGrids(const size_t &subdivision) = 0;
+
+  protected:
+    std::vector<glm::vec3> vertices;
+
+    static constexpr glm::vec3 COLOR = {0.0f, 1.0f, 0.0f};
 };
 
 #endif // !MESH_HPP

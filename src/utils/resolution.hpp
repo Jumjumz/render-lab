@@ -5,11 +5,7 @@
 
 #include <sys/types.h>
 
-enum class Resolution {
-    QHD,
-    FHD,
-    HD,
-};
+enum class Resolution { QHD, FHD, HD };
 
 enum class Aspect { R16_9, R16_10, R4_3 };
 

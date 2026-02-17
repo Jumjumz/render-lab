@@ -15,7 +15,7 @@
 
 class RenderLab {
   public:
-    RenderLab(Resolution &res, Aspect &aspect, const Render &shape);
+    RenderLab(const Resolution &res, const Aspect &aspect, const Render &shape);
 
     void run();
 
@@ -49,7 +49,7 @@ class RenderLab {
         this->ctx.physicalDevice,        this->ctx.device,
         this->ctx.graphicsQueue,         this->graphics.commandPool,
         this->ctx.config.chosenExtent,   this->swapchain.depthFormat,
-        RenderLab::MAX_FRAMES_IN_FLIGHT, shape};
+        RenderLab::MAX_FRAMES_IN_FLIGHT, this->shape};
 
     VulkanCommands commands{this->ctx.device,
                             this->swapchain.resources.images,

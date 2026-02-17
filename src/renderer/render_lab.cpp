@@ -4,7 +4,8 @@
 #include <chrono>
 #include <glm/gtc/matrix_transform.hpp>
 
-RenderLab::RenderLab(Resolution &res, Aspect &aspect, const Render &shape)
+RenderLab::RenderLab(const Resolution &res, const Aspect &aspect,
+                     const Render &shape)
     : width(getResolution(res)), aspectRatio(getAspectRatio(aspect)),
       shape(shape) {};
 
@@ -123,7 +124,8 @@ void RenderLab::recordCommandBuffer(uint32_t imageIndex) {
                           vk::PipelineStageFlagBits2::eColorAttachmentOutput,
                           vk::ImageAspectFlagBits::eColor);
 
-    transitionImageLayout(this->resources.depthImage, vk::ImageLayout::eUndefined,
+    transitionImageLayout(*this->resources.depthImage,
+                          vk::ImageLayout::eUndefined,
                           vk::ImageLayout::eDepthAttachmentOptimal,
                           vk::AccessFlagBits2::eDepthStencilAttachmentWrite,
                           vk::AccessFlagBits2::eDepthStencilAttachmentWrite,
