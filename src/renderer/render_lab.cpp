@@ -1,4 +1,5 @@
 #include "render_lab.hpp"
+
 #include "vertex.hpp"
 #include <chrono>
 #include <glm/gtc/matrix_transform.hpp>
@@ -52,7 +53,7 @@ void RenderLab::drawFrame() {
         nullptr);
 
     if (result == vk::Result::eErrorOutOfDateKHR) {
-        this->swapchain.recreateSwapChain();
+        recreateSwapchain();
         return;
     } else if (result != vk::Result::eSuccess &&
                result != vk::Result::eSuboptimalKHR) {
@@ -100,7 +101,7 @@ void RenderLab::drawFrame() {
     if ((result == vk::Result::eSuboptimalKHR) ||
         (result == vk::Result::eErrorOutOfDateKHR) || framebufferResized) {
         this->framebufferResized = false;
-        this->swapchain.recreateSwapChain();
+        recreateSwapchain();
     } else {
         assert(result == vk::Result::eSuccess);
     }
@@ -240,6 +241,17 @@ void RenderLab::loop() {
     }
 
     this->ctx.device.waitIdle();
+};
+
+void RenderLab::recreateSwapchain() {
+    this->ctx.device.waitIdle();
+
+    cleanSwapchain();
+
+    this->swapchain.createSwapchain();
+    this->swapchain.createImageViews();
+
+    this->resources.createDepthResources();
 };
 
 void RenderLab::cleanSwapchain() {

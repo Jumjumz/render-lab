@@ -13,7 +13,7 @@ class VulkanCommands {
                    const vk::raii::CommandPool &commandPool,
                    const vk::raii::DescriptorSetLayout &descriptorSetLayout,
                    const std::vector<vk::raii::Buffer> &uniformBuffers,
-                   const int MAX_FRAMES_IN_FLIGHT);
+                   const int &MAX_FRAMES_IN_FLIGHT);
 
     std::vector<vk::raii::CommandBuffer> commandBuffers;
     std::vector<vk::raii::Semaphore> availableSemaphores;
@@ -35,7 +35,7 @@ class VulkanCommands {
 
     const std::vector<vk::raii::Buffer> &uniformBuffers;
 
-    const int MAX_FRAMES_IN_FLIGHT;
+    const int &MAX_FRAMES_IN_FLIGHT;
 
     void createDescriptorPool();
 

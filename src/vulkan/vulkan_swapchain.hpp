@@ -30,9 +30,9 @@ class VulkanSwapchain {
 
     vk::Format depthFormat;
 
-    void recreateSwapChain();
+    void createSwapchain();
 
-    void cleanupSwapchain();
+    void createImageViews();
 
   private:
     const vk::raii::SurfaceKHR &surface;
@@ -50,10 +50,6 @@ class VulkanSwapchain {
     const int presentFamily;
 
     const uint32_t imageCount;
-
-    void createSwapchain();
-
-    void createImageViews();
 
     void findDepthFormat();
 

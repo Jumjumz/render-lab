@@ -31,6 +31,8 @@ class VulkanResources {
     vk::raii::DeviceMemory depthImageMemory = nullptr;
     vk::raii::ImageView depthImageView = nullptr;
 
+    void createDepthResources();
+
   private:
     const vk::raii::PhysicalDevice &physDevice;
     const vk::raii::Device &device;
@@ -40,11 +42,9 @@ class VulkanResources {
     const vk::Extent2D &extent;
     const vk::Format &depthFormat;
 
-    const int MAX_FRAMES_IN_FLIGHT;
+    const int &MAX_FRAMES_IN_FLIGHT;
 
     const Render &shape;
-
-    void createDepthResources();
 
     void createVertexBuffer();
 

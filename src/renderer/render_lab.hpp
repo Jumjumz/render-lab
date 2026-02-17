@@ -79,6 +79,8 @@ class RenderLab {
                                vk::PipelineStageFlags2 dstStageMask,
                                vk::ImageAspectFlags imageAspectFlags);
 
+    void recreateSwapchain();
+
     void cleanSwapchain();
 
     void cleanUp();

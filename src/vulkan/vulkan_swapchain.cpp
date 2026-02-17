@@ -103,17 +103,3 @@ bool VulkanSwapchain::hasStencilComponents(vk::Format format) {
     return format == vk::Format::eD32SfloatS8Uint ||
            format == vk::Format::eD24UnormS8Uint;
 };
-
-void VulkanSwapchain::recreateSwapChain() {
-    this->device.waitIdle();
-
-    cleanupSwapchain();
-
-    createSwapchain();
-    createImageViews();
-};
-
-void VulkanSwapchain::cleanupSwapchain() {
-    this->resources.imageViews.clear();
-    this->swapchain = nullptr;
-};

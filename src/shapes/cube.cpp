@@ -74,7 +74,7 @@ std::vector<uint16_t> Cube::surfaceGrids(const size_t &subdivision) {
 
     std::vector<uint16_t> lines;
     for (size_t i = 0; i < Cube::FACES; i++) {
-        uint faceStart = i * pointsPerFace;
+        uint faceStart = i * pointsPerFace; // offset to this face vertices
 
         for (size_t j = 0; j < pointsPerFace; j++) {
             uint n = faceStart + j;
@@ -83,12 +83,12 @@ std::vector<uint16_t> Cube::surfaceGrids(const size_t &subdivision) {
 
             if (col < subdivision) {
                 lines.push_back(n);
-                lines.push_back(n + 1);
+                lines.push_back(n + 1); // point to the right
             }
 
             if (row < subdivision) {
                 lines.push_back(n);
-                lines.push_back(n + pointsPerRow);
+                lines.push_back(n + pointsPerRow); // point below
             }
         }
     }

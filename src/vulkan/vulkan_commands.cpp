@@ -7,7 +7,7 @@ VulkanCommands::VulkanCommands(
     const vk::raii::CommandPool &commandPool,
     const vk::raii::DescriptorSetLayout &descriptorSetLayout,
     const std::vector<vk::raii::Buffer> &uniformBuffers,
-    const int MAX_FRAMES_IN_FLIGHT)
+    const int &MAX_FRAMES_IN_FLIGHT)
     : device(device), images(images), commandPool(commandPool),
       descriptorSetLayout(descriptorSetLayout), uniformBuffers(uniformBuffers),
       MAX_FRAMES_IN_FLIGHT(MAX_FRAMES_IN_FLIGHT) {
