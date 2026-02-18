@@ -8,9 +8,9 @@ Cube::Cube(const float &sides) {
             int axis = i & (1 << j);
 
             if (axis == (1 << j)) {
-                val[j] = -sides / 2;
+                val[j] = -sides;
             } else {
-                val[j] = sides / 2;
+                val[j] = sides;
             }
         }
 

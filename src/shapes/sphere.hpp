@@ -7,14 +7,14 @@
 
 class Sphere : public Mesh {
   public:
-    Sphere(const float &diameter);
+    Sphere(const float &radius);
 
     std::vector<Vertex> surfaceInterpolation(const size_t &subdivision) override;
 
     std::vector<uint16_t> surfaceGrids(const size_t &subdivision) override;
 
   private:
-    float radius = 0.5;
+    const float radius;
 
     std::vector<Vertex> points;
 

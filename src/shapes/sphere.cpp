@@ -1,25 +1,26 @@
 #include "sphere.hpp"
-#include <vector>
 
-Sphere::Sphere(const float &diameter) { this->radius = diameter / 2; };
+Sphere::Sphere(const float &radius) : radius(radius) {};
 
 std::vector<Vertex> Sphere::surfaceInterpolation(const size_t &subdivision) {
-    size_t num_points = subdivision * Sphere::MULTIPLIER;
+    size_t numPoints = subdivision * Sphere::MULTIPLIER;
 
     std::vector<Vertex> points;
-    glm::vec3 val;
+    glm::vec3 node;
 
     // fibonacci sphere
-    for (size_t i = 0; i < num_points; i++) {
-        val[1] = this->radius - ((2.0 * i) / num_points - this->radius);
+    for (size_t i = 0; i < numPoints; i++) {
+        node.y = 1 - (float(i) / (numPoints - 1)) * 2;
 
-        float radius_at_y = std::sqrt((this->radius - (val[1] * val[1])));
-        float theta = glm::radians(180.0f * 2) * (i / this->phi);
+        float radiusAtY = std::sqrt(1 - (node.y * node.y));
+        float theta = (glm::radians(180.0f * 2) / (this->phi * this->phi)) * i;
 
-        val[0] = std::cos(theta) * radius_at_y;
-        val[2] = std::sin(theta) * radius_at_y;
+        node.x = std::cos(theta) * radiusAtY;
+        node.z = std::sin(theta) * radiusAtY;
 
-        points.push_back({val, Sphere::COLOR});
+        node *= this->radius;
+
+        points.push_back({node, Sphere::COLOR});
     }
 
     this->points = points;
@@ -28,11 +29,12 @@ std::vector<Vertex> Sphere::surfaceInterpolation(const size_t &subdivision) {
 };
 
 std::vector<uint16_t> Sphere::surfaceGrids(const size_t &subdivision) {
-    float avg_threshold =
-        std::sqrt((glm::radians(180.0f * 4) * this->radius * this->radius) /
-                  this->points.size());
-    float d_threshold = avg_threshold * (subdivision - 3); // threshold
     std::vector<uint16_t> arcs;
+
+    float dThreshold =
+        1.5 *
+        std::sqrt((glm::radians(180.0f * 4) * (this->radius * this->radius)) /
+                  this->points.size());
 
     for (size_t i = 0; i < this->points.size(); i++) {
         for (size_t j = i + 1; j < this->points.size(); j++) {
@@ -40,7 +42,7 @@ std::vector<uint16_t> Sphere::surfaceGrids(const size_t &subdivision) {
             double dist =
                 std::sqrt(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
 
-            if (dist < d_threshold) {
+            if (dist < dThreshold) {
                 arcs.push_back(i);
                 arcs.push_back(j);
             }
