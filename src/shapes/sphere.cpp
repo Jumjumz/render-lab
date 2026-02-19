@@ -88,8 +88,6 @@ std::vector<Vertex> Sphere::surfaceInterpolation(const size_t &subdivision) {
         sp[i].pos[2] = zP * this->radius;
     }
 
-    this->points = sp;
-
     return sp;
 };
 
@@ -97,7 +95,7 @@ std::vector<uint16_t> Sphere::surfaceGrids(const size_t &subdivision) {
     uint pointsPerFace = (subdivision + 1) * (subdivision + 1);
     uint pointsPerRow = subdivision + 1;
 
-    // similar to searching grid in cube.. can be change
+    // similar to searching grid in cube
     std::vector<uint16_t> arcs;
     for (size_t i = 0; i < Sphere::FACES; i++) {
         uint faceStart = i * pointsPerFace; // offset to this face vertices
