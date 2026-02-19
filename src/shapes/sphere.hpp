@@ -18,6 +18,10 @@ class Sphere : public Mesh {
 
     std::vector<Vertex> points;
 
+    // create a cube first then transform to sphere
+    static constexpr size_t NUM_VTX = 8;
+    static constexpr size_t FACES = 6;
+
     const float phi = (1 + std::sqrt(5)) / 2; // golden ratio
     static constexpr uint MULTIPLIER = 200;
 };
