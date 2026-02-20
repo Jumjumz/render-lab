@@ -78,14 +78,17 @@ std::vector<Vertex> Sphere::surfaceInterpolation(const size_t &subdivision) {
         float y2 = y * y;
         float z2 = z * z;
 
-        float xP = x * std::sqrt(1.0f - (y2 / 2) - (z2 / 2) + (y2 * z2 / 3));
-        float yP = y * std::sqrt(1.0f - (x2 / 2) - (z2 / 2) + (x2 * z2 / 3));
-        float zP = z * std::sqrt(1.0f - (x2 / 2) - (y2 / 2) + (x2 * y2 / 3));
+        float xP = x * std::sqrt(1 - (y2 / 2) - (z2 / 2) + (y2 * z2 / 3));
+        float yP = y * std::sqrt(1 - (x2 / 2) - (z2 / 2) + (x2 * z2 / 3));
+        float zP = z * std::sqrt(1 - (x2 / 2) - (y2 / 2) + (x2 * y2 / 3));
 
-        // new values and normalized with radiues
-        sp[i].pos[0] = xP * this->radius;
-        sp[i].pos[1] = yP * this->radius;
-        sp[i].pos[2] = zP * this->radius;
+        // new values
+        sp[i].pos[0] = xP;
+        sp[i].pos[1] = yP;
+        sp[i].pos[2] = zP;
+
+        // and normalized with radius
+        sp[i].pos *= this->radius;
     }
 
     return sp;
