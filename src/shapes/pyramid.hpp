@@ -14,6 +14,7 @@ class Pyramid : public Mesh {
     std::vector<uint16_t> surfaceGrids(const size_t &subdivision) override;
 
   private:
+    float size;
     static constexpr size_t NUM_VTX = 5;
     static constexpr size_t FACES = 5;
 };

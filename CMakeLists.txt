@@ -15,6 +15,8 @@ src/renderer/vertex.hpp
 src/shapes/mesh.hpp
 src/shapes/cube.hpp
 src/shapes/cube.cpp
+src/shapes/pyramid.hpp
+src/shapes/pyramid.cpp
 src/shapes/sphere.hpp
 src/shapes/sphere.cpp
 src/utils/resolution.hpp
