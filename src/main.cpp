@@ -5,7 +5,6 @@
 #include "shapes/sphere.hpp"
 #include "utils/resolution.hpp"
 
-#include <cstdlib>
 #include <exception>
 #include <iostream>
 #include <ostream>

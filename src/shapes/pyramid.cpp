@@ -28,6 +28,8 @@ Pyramid::Pyramid(const float &size) : size(size) {
 
 std::vector<Vertex> Pyramid::surfaceInterpolation(const size_t &subdivision) {
     std::vector<Vertex> points;
+    size_t grid = subdivision + 1;
+
     for (size_t i = 0; i < Pyramid::FACES; i++) {
         uint cA = i + 1;
         uint cB = i + 2;
@@ -41,8 +43,6 @@ std::vector<Vertex> Pyramid::surfaceInterpolation(const size_t &subdivision) {
             cA = 3;
             cB = 1;
         }
-
-        size_t grid = subdivision + 1;
 
         for (size_t j = 0; j < grid; j++) {
             glm::vec3 pt;

@@ -14,6 +14,7 @@ class Render {
 
     std::vector<Vertex> vertices;
     std::vector<uint16_t> indices;
+    static constexpr glm::vec3 CAMERA = {1.5f, 1.5f, 1.5f};
 
   private:
     static constexpr size_t SUBDIVISION = 8;
