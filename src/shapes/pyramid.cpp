@@ -5,9 +5,8 @@ Pyramid::Pyramid(const float &size) : size(size) {
         glm::vec3 val;
 
         // top vertex of pyramid
-        if (i == 0) {
+        if (i == 0)
             val = {0, 1, 0};
-        }
 
         // find the base vertices
         for (size_t j = 0; j < static_cast<size_t>(val.length()); j++) {
@@ -29,25 +28,38 @@ Pyramid::Pyramid(const float &size) : size(size) {
 
 std::vector<Vertex> Pyramid::surfaceInterpolation(const size_t &subdivision) {
     std::vector<Vertex> points;
-    // TODO: wip and NOT working as intended
     for (size_t i = 0; i < Pyramid::FACES; i++) {
         uint cA = i + 1;
-        uint cB = i == 3 ? 1 : i + 2;
-        for (size_t j = 0; j < subdivision; j++) {
+        uint cB = i + 2;
+
+        // arranged to correct order of base vertices
+        if (i == 1) {
+            cB = 4;
+        }
+
+        if (i == 3) {
+            cA = 3;
+            cB = 1;
+        }
+
+        size_t grid = subdivision + 1;
+
+        for (size_t j = 0; j < grid; j++) {
             glm::vec3 pt;
-            for (size_t k = 0; k < subdivision; k++) {
+            for (size_t k = 0; k < grid; k++) {
                 float u = (float)j / subdivision;
                 float v = (float)k / subdivision;
 
+                // calculate for the base
                 if (i == 4) {
                     glm::vec3 tE =
-                        ((1 - u) * this->vertices[1]) + (u * this->vertices[3]);
+                        ((1 - u) * this->vertices[1]) + (u * this->vertices[2]);
                     glm::vec3 bE =
-                        ((1 - u) * this->vertices[2]) + (u * this->vertices[4]);
+                        ((1 - u) * this->vertices[3]) + (u * this->vertices[4]);
 
                     pt = ((1 - v) * tE) + (v * bE);
                 } else {
-                    if (u + v <= 1.0f) {
+                    if (u + v < 1.0f) {
                         pt = ((1 - u - v) * this->vertices[0]) +
                              (u * this->vertices[cA]) + (v * this->vertices[cB]);
                     } else {
