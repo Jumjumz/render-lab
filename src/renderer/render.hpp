@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "renderer/vertex.hpp"
 #include "shapes/mesh.hpp"
+#include "vertex.hpp"
 
 #include <memory>
 

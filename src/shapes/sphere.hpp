@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "shapes/mesh.hpp"
+#include "mesh.hpp"
 
 class Sphere : public Mesh {
   public:

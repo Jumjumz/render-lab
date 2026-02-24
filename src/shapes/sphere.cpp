@@ -1,7 +1,7 @@
 #include "sphere.hpp"
 
 Sphere::Sphere(const float &radius) : radius(radius) {
-    // find the sides of the cube
+    // find the sides of a cube first
     for (size_t i = 0; i < Sphere::NUM_VTX; i++) {
         glm::vec3 val;
         for (size_t j = 0; j < static_cast<size_t>(val.length()); j++) {
@@ -21,7 +21,6 @@ Sphere::Sphere(const float &radius) : radius(radius) {
 std::vector<Vertex> Sphere::surfaceInterpolation(const size_t &subdivision) {
     std::vector<Vertex> points;
 
-    // interpolate the cube
     for (size_t i = 0; i < Sphere::FACES; i++) {
         uint axis = i / 2;  // x = 0; y; 1; z; 2
         uint value = i % 2; // min = 0; max = 1 -> identify the i of
@@ -66,7 +65,7 @@ std::vector<Vertex> Sphere::surfaceInterpolation(const size_t &subdivision) {
         }
     }
 
-    // turn cube into sphere
+    // transform cube into sphere
     std::vector<Vertex> sp = points;
 
     for (size_t i = 0; i < sp.size(); i++) {
@@ -78,44 +77,38 @@ std::vector<Vertex> Sphere::surfaceInterpolation(const size_t &subdivision) {
         float y2 = y * y;
         float z2 = z * z;
 
-        float xP = x * std::sqrt(1 - (y2 / 2) - (z2 / 2) + (y2 * z2 / 3));
-        float yP = y * std::sqrt(1 - (x2 / 2) - (z2 / 2) + (x2 * z2 / 3));
-        float zP = z * std::sqrt(1 - (x2 / 2) - (y2 / 2) + (x2 * y2 / 3));
+        float xP = x * std::sqrt(1.0f - (y2 / 2) - (z2 / 2) + (y2 * z2 / 3));
+        float yP = y * std::sqrt(1.0f - (x2 / 2) - (z2 / 2) + (x2 * z2 / 3));
+        float zP = z * std::sqrt(1.0f - (x2 / 2) - (y2 / 2) + (x2 * y2 / 3));
 
-        // new values
-        sp[i].pos[0] = xP;
-        sp[i].pos[1] = yP;
-        sp[i].pos[2] = zP;
-
-        // and normalized with radius
-        sp[i].pos *= this->radius;
+        sp[i].pos[0] = xP * this->radius;
+        sp[i].pos[1] = yP * this->radius;
+        sp[i].pos[2] = zP * this->radius;
     }
 
     return sp;
 };
 
 std::vector<uint16_t> Sphere::surfaceGrids(const size_t &subdivision) {
-    uint pointsPerFace = (subdivision + 1) * (subdivision + 1);
-    uint pointsPerRow = subdivision + 1;
-
-    // similar to searching grid in cube
+    uint ptPerFace = (subdivision + 1) * (subdivision + 1);
+    uint ptPerRow = subdivision + 1;
     std::vector<uint16_t> arcs;
-    for (size_t i = 0; i < Sphere::FACES; i++) {
-        uint faceStart = i * pointsPerFace; // offset to this face vertices
 
-        for (size_t j = 0; j < pointsPerFace; j++) {
-            uint n = faceStart + j;
-            uint row = j / pointsPerRow;
-            uint col = j % pointsPerRow;
+    for (size_t i = 0; i < Sphere::FACES; i++) {
+        uint faceStart = i * ptPerFace;
+        for (size_t j = 0; j < ptPerFace; j++) {
+            uint n = j + faceStart;
+            uint row = j / ptPerRow;
+            uint col = j & ptPerRow;
 
             if (col < subdivision) {
                 arcs.push_back(n);
-                arcs.push_back(n + 1); // point to the right
+                arcs.push_back(n + 1);
             }
 
             if (row < subdivision) {
                 arcs.push_back(n);
-                arcs.push_back(n + pointsPerRow); // point below
+                arcs.push_back(n + ptPerRow);
             }
         }
     }
