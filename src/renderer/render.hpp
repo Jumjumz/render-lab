@@ -3,21 +3,26 @@
 
 #pragma once
 
-#include "shapes/mesh.hpp"
 #include "vertex.hpp"
 
-#include <memory>
+enum class Shapes { CUBE, SPHERE, PYRAMID };
 
 class Render {
   public:
-    Render(const std::shared_ptr<Mesh> &shape);
+    Render();
 
-    std::vector<Vertex> vertices;
-    std::vector<uint16_t> indices;
+    struct RenderData {
+        std::vector<Vertex> vertices;
+        std::vector<uint16_t> indices;
+    } renderData;
+
     static constexpr glm::vec3 CAMERA = {1.5f, 1.5f, 1.5f};
+
+    RenderData renderShape(const Shapes &render);
 
   private:
     static constexpr size_t SUBDIVISION = 8;
+    static constexpr float SIZE = 0.5;
 };
 
 #endif // !RENDER_HPP

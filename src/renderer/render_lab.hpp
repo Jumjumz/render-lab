@@ -15,7 +15,7 @@
 
 class RenderLab {
   public:
-    RenderLab(const Resolution &res, const Aspect &aspect, const Render &shape);
+    RenderLab(const Resolution &res, const Aspect &aspect, Render shape);
 
     void run();
 
@@ -23,7 +23,7 @@ class RenderLab {
     uint width;
     float aspectRatio;
 
-    const Render &shape;
+    Render shape;
 
     Window window{width, aspectRatio};
 
@@ -49,7 +49,7 @@ class RenderLab {
         this->ctx.physicalDevice,        this->ctx.device,
         this->ctx.graphicsQueue,         this->graphics.commandPool,
         this->ctx.config.chosenExtent,   this->swapchain.depthFormat,
-        RenderLab::MAX_FRAMES_IN_FLIGHT, this->shape};
+        RenderLab::MAX_FRAMES_IN_FLIGHT, shape};
 
     VulkanCommands commands{this->ctx.device,
                             this->swapchain.resources.images,
@@ -61,7 +61,7 @@ class RenderLab {
     static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
     uint32_t currentFrame = 0;
 
-    bool frameBufferResize = false;
+    bool framebufferResize = false;
 
     void loop();
 

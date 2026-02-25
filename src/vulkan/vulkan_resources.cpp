@@ -55,8 +55,8 @@ void VulkanResources::createDepthResources() {
 };
 
 void VulkanResources::createVertexBuffer() {
-    vk::DeviceSize bufferSize =
-        sizeof(this->shape.vertices[0]) * this->shape.vertices.size();
+    vk::DeviceSize bufferSize = sizeof(this->shape.renderData.vertices[0]) *
+                                this->shape.renderData.vertices.size();
 
     vk::BufferCreateInfo stagingInfo{};
     stagingInfo.size = bufferSize;
@@ -81,7 +81,7 @@ void VulkanResources::createVertexBuffer() {
     stagingBuffer.bindMemory(stagingBufferMemory, 0);
 
     void *dataStaging = stagingBufferMemory.mapMemory(0, stagingInfo.size);
-    memcpy(dataStaging, this->shape.vertices.data(),
+    memcpy(dataStaging, this->shape.renderData.vertices.data(),
            static_cast<size_t>(stagingInfo.size));
 
     stagingBufferMemory.unmapMemory();
@@ -126,8 +126,8 @@ uint32_t VulkanResources::findMemoryType(uint32_t typeFilter,
 };
 
 void VulkanResources::createIndexBuffer() {
-    vk::DeviceSize bufferSize =
-        sizeof(this->shape.indices[0]) * this->shape.indices.size();
+    vk::DeviceSize bufferSize = sizeof(this->shape.renderData.indices[0]) *
+                                this->shape.renderData.indices.size();
 
     vk::raii::Buffer stagingBuffer({});
     vk::raii::DeviceMemory stagingBufferMemory({});
@@ -138,7 +138,8 @@ void VulkanResources::createIndexBuffer() {
                  stagingBuffer, stagingBufferMemory);
 
     void *data = stagingBufferMemory.mapMemory(0, bufferSize);
-    memcpy(data, this->shape.indices.data(), static_cast<size_t>(bufferSize));
+    memcpy(data, this->shape.renderData.indices.data(),
+           static_cast<size_t>(bufferSize));
 
     stagingBufferMemory.unmapMemory();
 

@@ -1,11 +1,10 @@
 #include "render_lab.hpp"
-
 #include "vertex.hpp"
+
 #include <chrono>
 #include <glm/gtc/matrix_transform.hpp>
 
-RenderLab::RenderLab(const Resolution &res, const Aspect &aspect,
-                     const Render &shape)
+RenderLab::RenderLab(const Resolution &res, const Aspect &aspect, Render shape)
     : width(getResolution(res)), aspectRatio(getAspectRatio(aspect)),
       shape(shape) {};
 
@@ -14,7 +13,7 @@ void RenderLab::run() {
     cleanUp();
 };
 
-// camera/model/projection setup
+// camera, model, projection setup
 void RenderLab::setup() {
     static auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -99,8 +98,8 @@ void RenderLab::drawFrame() {
     result = this->ctx.presentQueue.presentKHR(presentInfo);
 
     if ((result == vk::Result::eSuboptimalKHR) ||
-        (result == vk::Result::eErrorOutOfDateKHR) || frameBufferResize) {
-        this->frameBufferResize = false;
+        (result == vk::Result::eErrorOutOfDateKHR) || framebufferResize) {
+        this->framebufferResize = false;
         recreateSwapchain();
     } else {
         assert(result == vk::Result::eSuccess);
@@ -186,7 +185,7 @@ void RenderLab::recordCommandBuffer(uint32_t imageIndex) {
     cmd.setScissor(
         0, vk::Rect2D{vk::Offset2D{0, 0}, this->swapchain.resources.extent});
 
-    cmd.drawIndexed(this->shape.indices.size(), 1, 0, 0, 0);
+    cmd.drawIndexed(this->shape.renderData.indices.size(), 1, 0, 0, 0);
 
     cmd.endRendering();
 
@@ -231,11 +230,29 @@ void RenderLab::transitionImageLayout(vk::Image image, vk::ImageLayout oldLayout
 void RenderLab::loop() {
     while (this->window.running) {
         while (SDL_PollEvent(&this->window.event)) {
-            if (this->window.event.type == SDL_QUIT)
+            switch (this->window.event.type) {
+            case SDL_QUIT:
                 this->window.running = false;
+            case SDL_WINDOWEVENT_RESIZED:
+                this->framebufferResize = true;
 
-            if (this->window.event.type == SDL_WINDOWEVENT_RESIZED)
-                this->frameBufferResize = true;
+            case SDL_KEYDOWN: {
+                if (this->window.event.key.keysym.sym == SDLK_w) {
+                    this->shape.renderData =
+                        this->shape.renderShape(Shapes::CUBE);
+                }
+
+                if (this->window.event.key.keysym.sym == SDLK_s) {
+                    this->shape.renderData =
+                        this->shape.renderShape(Shapes::SPHERE);
+                }
+
+                if (this->window.event.key.keysym.sym == SDLK_e) {
+                    this->shape.renderData =
+                        this->shape.renderShape(Shapes::PYRAMID);
+                }
+            }
+            };
         }
 
         drawFrame();

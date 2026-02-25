@@ -132,6 +132,7 @@ void VulkanContext::createLogicalDevice() {
     features.features.geometryShader = vk::True;
     features.features.samplerAnisotropy = vk::True;
     features.features.dualSrcBlend = vk::True;
+    features.features.robustBufferAccess = vk::True;
 
     auto &dynamicRendering =
         featureChain.get<vk::PhysicalDeviceVulkan13Features>();
