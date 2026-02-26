@@ -33,9 +33,9 @@ class VulkanResources {
 
     void createDepthResources();
 
-    void updateVertexBuffer();
+    void createVertexBuffer();
 
-    void updateIndexBuffer();
+    void createIndexBuffer();
 
   private:
     const vk::raii::PhysicalDevice &physDevice;
@@ -49,10 +49,6 @@ class VulkanResources {
     const int &MAX_FRAMES_IN_FLIGHT;
 
     const Render &shape;
-
-    void createVertexBuffer();
-
-    void createIndexBuffer();
 
     void createUniformBuffers();
 

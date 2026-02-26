@@ -17,6 +17,7 @@ Render::RenderData Render::renderShape(const Shapes &render) const {
         return RenderData{
             shape->surfaceInterpolation(Render::SUBDIVISION),
             shape->surfaceGrids(Render::SUBDIVISION),
+            true,
         };
     }
 
@@ -26,6 +27,7 @@ Render::RenderData Render::renderShape(const Shapes &render) const {
         return RenderData{
             shape->surfaceInterpolation(Render::SUBDIVISION),
             shape->surfaceGrids(Render::SUBDIVISION),
+            true,
         };
     }
 
@@ -35,6 +37,7 @@ Render::RenderData Render::renderShape(const Shapes &render) const {
         return RenderData{
             shape->surfaceInterpolation(Render::SUBDIVISION),
             shape->surfaceGrids(Render::SUBDIVISION),
+            true,
         };
     }
 
@@ -44,6 +47,7 @@ Render::RenderData Render::renderShape(const Shapes &render) const {
         return RenderData{
             shape->surfaceInterpolation(Render::SUBDIVISION),
             shape->surfaceGrids(Render::SUBDIVISION),
+            true,
         };
     }
     }

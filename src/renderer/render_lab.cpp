@@ -245,8 +245,8 @@ void RenderLab::loop() {
                     this->shape.renderData =
                         this->shape.renderShape(Shapes::CUBE);
 
-                    this->resources.updateVertexBuffer();
-                    this->resources.updateIndexBuffer();
+                    this->resources.createVertexBuffer();
+                    this->resources.createIndexBuffer();
                 }
 
                 if (this->window.event.key.keysym.sym == SDLK_s) {
@@ -255,8 +255,8 @@ void RenderLab::loop() {
                     this->shape.renderData =
                         this->shape.renderShape(Shapes::SPHERE);
 
-                    this->resources.updateVertexBuffer();
-                    this->resources.updateIndexBuffer();
+                    this->resources.createVertexBuffer();
+                    this->resources.createIndexBuffer();
                 }
 
                 if (this->window.event.key.keysym.sym == SDLK_e) {
@@ -265,8 +265,8 @@ void RenderLab::loop() {
                     this->shape.renderData =
                         this->shape.renderShape(Shapes::PYRAMID);
 
-                    this->resources.updateVertexBuffer();
-                    this->resources.updateIndexBuffer();
+                    this->resources.createVertexBuffer();
+                    this->resources.createIndexBuffer();
                 }
             }
             };

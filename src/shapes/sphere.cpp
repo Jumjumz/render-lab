@@ -99,7 +99,7 @@ std::vector<uint16_t> Sphere::surfaceGrids(const size_t &subdivision) {
         for (size_t j = 0; j < ptPerFace; j++) {
             uint n = j + faceStart;
             uint row = j / ptPerRow;
-            uint col = j & ptPerRow;
+            uint col = j % ptPerRow;
 
             if (col < subdivision) {
                 arcs.push_back(n);

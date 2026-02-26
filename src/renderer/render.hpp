@@ -14,6 +14,8 @@ class Render {
     struct RenderData {
         std::vector<Vertex> vertices;
         std::vector<uint16_t> indices;
+
+        bool render = false;
     } renderData;
 
     static constexpr glm::vec3 CAMERA = {1.5f, 1.5f, 1.5f};
