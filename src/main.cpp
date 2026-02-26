@@ -10,7 +10,7 @@ int main() {
     auto reso = Resolution::FHD;
     auto aspect = Aspect::R16_9;
 
-    Render shape;
+    const Render shape;
 
     RenderLab app{reso, aspect, shape};
 

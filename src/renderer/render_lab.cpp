@@ -4,7 +4,8 @@
 #include <chrono>
 #include <glm/gtc/matrix_transform.hpp>
 
-RenderLab::RenderLab(const Resolution &res, const Aspect &aspect, Render shape)
+RenderLab::RenderLab(const Resolution &res, const Aspect &aspect,
+                     const Render &shape)
     : width(getResolution(res)), aspectRatio(getAspectRatio(aspect)),
       shape(shape) {};
 
@@ -233,9 +234,11 @@ void RenderLab::loop() {
             switch (this->window.event.type) {
             case SDL_QUIT: {
                 this->window.running = false;
+                break;
             }
             case SDL_WINDOWEVENT_RESIZED: {
                 this->framebufferResize = true;
+                break;
             }
 
             case SDL_KEYDOWN: {
@@ -268,6 +271,7 @@ void RenderLab::loop() {
                     this->resources.createVertexBuffer();
                     this->resources.createIndexBuffer();
                 }
+                break;
             }
             };
         }

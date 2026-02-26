@@ -7,16 +7,18 @@
 
 enum class Shapes { CUBE, SPHERE, PYRAMID };
 
+struct RenderData {
+    std::vector<Vertex> vertices;
+    std::vector<uint16_t> indices;
+
+    bool render = false;
+};
+
 class Render {
   public:
     Render();
 
-    struct RenderData {
-        std::vector<Vertex> vertices;
-        std::vector<uint16_t> indices;
-
-        bool render = false;
-    } renderData;
+    mutable RenderData renderData;
 
     static constexpr glm::vec3 CAMERA = {1.5f, 1.5f, 1.5f};
 

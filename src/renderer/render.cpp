@@ -1,18 +1,15 @@
 #include "render.hpp"
 #include "shapes/cube.hpp"
-#include "shapes/mesh.hpp"
 #include "shapes/pyramid.hpp"
 #include "shapes/sphere.hpp"
 #include <memory>
 
 Render::Render() { this->renderData = renderShape(Shapes::CUBE); };
 
-Render::RenderData Render::renderShape(const Shapes &render) const {
-    auto shape = std::shared_ptr<Mesh>();
-
+RenderData Render::renderShape(const Shapes &render) const {
     switch (render) {
     case Shapes::CUBE: {
-        shape = std::make_shared<Cube>(Render::SIZE);
+        auto shape = std::make_unique<Cube>(Render::SIZE);
 
         return RenderData{
             shape->surfaceInterpolation(Render::SUBDIVISION),
@@ -22,7 +19,7 @@ Render::RenderData Render::renderShape(const Shapes &render) const {
     }
 
     case Shapes::SPHERE: {
-        shape = std::make_shared<Sphere>(Render::SIZE);
+        auto shape = std::make_unique<Sphere>(Render::SIZE);
 
         return RenderData{
             shape->surfaceInterpolation(Render::SUBDIVISION),
@@ -32,7 +29,7 @@ Render::RenderData Render::renderShape(const Shapes &render) const {
     }
 
     case Shapes::PYRAMID: {
-        shape = std::make_shared<Pyramid>(Render::SIZE);
+        auto shape = std::make_unique<Pyramid>(Render::SIZE);
 
         return RenderData{
             shape->surfaceInterpolation(Render::SUBDIVISION),
@@ -42,7 +39,7 @@ Render::RenderData Render::renderShape(const Shapes &render) const {
     }
 
     default: {
-        shape = std::make_shared<Cube>(Render::SIZE);
+        auto shape = std::make_unique<Cube>(Render::SIZE);
 
         return RenderData{
             shape->surfaceInterpolation(Render::SUBDIVISION),

@@ -8,7 +8,7 @@ VulkanResources::VulkanResources(const vk::raii::PhysicalDevice &physDevice,
                                  const vk::Extent2D &extent,
                                  const vk::Format &depthFormat,
                                  const int &MAX_FRAMES_IN_FLIGHT,
-                                 const Render &shape)
+                                 const RenderData &shape)
     : physDevice(physDevice), device(device), graphicsQueue(graphicsQueue),
       commandPool(commandPool), extent(extent), depthFormat(depthFormat),
       MAX_FRAMES_IN_FLIGHT(MAX_FRAMES_IN_FLIGHT), shape(shape) {
@@ -55,13 +55,13 @@ void VulkanResources::createDepthResources() {
 };
 
 void VulkanResources::createVertexBuffer() {
-    if (this->shape.renderData.render == true) {
+    if (this->shape.render == true) {
         this->vertexMemory = nullptr;
         this->vertexBuffer = nullptr;
     }
 
-    vk::DeviceSize bufferSize = sizeof(this->shape.renderData.vertices[0]) *
-                                this->shape.renderData.vertices.size();
+    vk::DeviceSize bufferSize =
+        sizeof(this->shape.vertices[0]) * this->shape.vertices.size();
 
     vk::BufferCreateInfo stagingInfo{};
     stagingInfo.size = bufferSize;
@@ -86,7 +86,7 @@ void VulkanResources::createVertexBuffer() {
     stagingBuffer.bindMemory(stagingBufferMemory, 0);
 
     void *dataStaging = stagingBufferMemory.mapMemory(0, stagingInfo.size);
-    memcpy(dataStaging, this->shape.renderData.vertices.data(),
+    memcpy(dataStaging, this->shape.vertices.data(),
            static_cast<size_t>(stagingInfo.size));
 
     stagingBufferMemory.unmapMemory();
@@ -131,11 +131,11 @@ uint32_t VulkanResources::findMemoryType(uint32_t typeFilter,
 };
 
 void VulkanResources::createIndexBuffer() {
-    if (this->shape.renderData.render == true)
+    if (this->shape.render == true)
         this->indexBuffer = nullptr;
 
-    vk::DeviceSize bufferSize = sizeof(this->shape.renderData.indices[0]) *
-                                this->shape.renderData.indices.size();
+    vk::DeviceSize bufferSize =
+        sizeof(this->shape.indices[0]) * this->shape.indices.size();
 
     vk::raii::Buffer stagingBuffer({});
     vk::raii::DeviceMemory stagingBufferMemory({});
@@ -146,8 +146,7 @@ void VulkanResources::createIndexBuffer() {
                  stagingBuffer, stagingBufferMemory);
 
     void *data = stagingBufferMemory.mapMemory(0, bufferSize);
-    memcpy(data, this->shape.renderData.indices.data(),
-           static_cast<size_t>(bufferSize));
+    memcpy(data, this->shape.indices.data(), static_cast<size_t>(bufferSize));
 
     stagingBufferMemory.unmapMemory();
 
