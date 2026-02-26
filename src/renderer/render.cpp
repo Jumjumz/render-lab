@@ -7,7 +7,7 @@
 
 Render::Render() { this->renderData = renderShape(Shapes::CUBE); };
 
-Render::RenderData Render::renderShape(const Shapes &render) {
+Render::RenderData Render::renderShape(const Shapes &render) const {
     auto shape = std::shared_ptr<Mesh>();
 
     switch (render) {

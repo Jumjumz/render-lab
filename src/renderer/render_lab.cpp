@@ -231,25 +231,42 @@ void RenderLab::loop() {
     while (this->window.running) {
         while (SDL_PollEvent(&this->window.event)) {
             switch (this->window.event.type) {
-            case SDL_QUIT:
+            case SDL_QUIT: {
                 this->window.running = false;
-            case SDL_WINDOWEVENT_RESIZED:
+            }
+            case SDL_WINDOWEVENT_RESIZED: {
                 this->framebufferResize = true;
+            }
 
             case SDL_KEYDOWN: {
                 if (this->window.event.key.keysym.sym == SDLK_w) {
+                    this->ctx.device.waitIdle();
+
                     this->shape.renderData =
                         this->shape.renderShape(Shapes::CUBE);
+
+                    this->resources.updateVertexBuffer();
+                    this->resources.updateIndexBuffer();
                 }
 
                 if (this->window.event.key.keysym.sym == SDLK_s) {
+                    this->ctx.device.waitIdle();
+
                     this->shape.renderData =
                         this->shape.renderShape(Shapes::SPHERE);
+
+                    this->resources.updateVertexBuffer();
+                    this->resources.updateIndexBuffer();
                 }
 
                 if (this->window.event.key.keysym.sym == SDLK_e) {
+                    this->ctx.device.waitIdle();
+
                     this->shape.renderData =
                         this->shape.renderShape(Shapes::PYRAMID);
+
+                    this->resources.updateVertexBuffer();
+                    this->resources.updateIndexBuffer();
                 }
             }
             };

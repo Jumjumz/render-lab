@@ -18,7 +18,7 @@ class Render {
 
     static constexpr glm::vec3 CAMERA = {1.5f, 1.5f, 1.5f};
 
-    RenderData renderShape(const Shapes &render);
+    RenderData renderShape(const Shapes &render) const;
 
   private:
     static constexpr size_t SUBDIVISION = 8;

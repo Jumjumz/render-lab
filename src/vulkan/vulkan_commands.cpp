@@ -69,7 +69,10 @@ void VulkanCommands::createCommandBuffers() {
     allocInfo.commandPool = this->commandPool;
     allocInfo.commandBufferCount = this->MAX_FRAMES_IN_FLIGHT;
 
-    this->commandBuffers = vk::raii::CommandBuffers{this->device, allocInfo};
+    this->commandBuffers = vk::raii::CommandBuffers{
+        this->device,
+        allocInfo,
+    };
 };
 
 void VulkanCommands::createSyncObjects() {

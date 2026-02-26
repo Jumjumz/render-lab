@@ -33,6 +33,10 @@ class VulkanResources {
 
     void createDepthResources();
 
+    void updateVertexBuffer();
+
+    void updateIndexBuffer();
+
   private:
     const vk::raii::PhysicalDevice &physDevice;
     const vk::raii::Device &device;

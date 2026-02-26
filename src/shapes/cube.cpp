@@ -8,11 +8,13 @@ Cube::Cube(const float &sides) {
             int axis = i & (1 << j);
 
             if (axis == (1 << j)) {
-                val[j] = -sides;
+                val[j] = -1;
             } else {
-                val[j] = sides;
+                val[j] = 1;
             }
         }
+
+        val *= sides;
 
         this->vertices.push_back(val);
     }
