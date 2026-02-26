@@ -4,7 +4,6 @@
 #pragma once
 
 #include "renderer/render.hpp"
-#include "utils/resolution.hpp"
 #include "vulkan/vulkan_commands.hpp"
 #include "vulkan/vulkan_context.hpp"
 #include "vulkan/vulkan_graphics.hpp"
@@ -15,15 +14,15 @@
 
 class RenderLab {
   public:
-    RenderLab(const Resolution &res, const Aspect &aspect, const Render &shape);
+    RenderLab();
 
     void run();
 
   private:
-    uint width;
-    float aspectRatio;
+    const uint width;
+    const float aspectRatio;
 
-    const Render shape;
+    Render shape;
 
     Window window{width, aspectRatio};
 

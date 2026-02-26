@@ -1,18 +1,11 @@
-#include "renderer/render.hpp"
 #include "renderer/render_lab.hpp"
-#include "utils/resolution.hpp"
 
 #include <exception>
 #include <iostream>
 #include <ostream>
 
 int main() {
-    auto reso = Resolution::FHD;
-    auto aspect = Aspect::R16_9;
-
-    const Render shape;
-
-    RenderLab app{reso, aspect, shape};
+    RenderLab app;
 
     try {
         app.run();

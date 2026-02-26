@@ -1,13 +1,13 @@
 #include "render_lab.hpp"
+#include "utils/resolution.hpp"
 #include "vertex.hpp"
 
 #include <chrono>
 #include <glm/gtc/matrix_transform.hpp>
 
-RenderLab::RenderLab(const Resolution &res, const Aspect &aspect,
-                     const Render &shape)
-    : width(getResolution(res)), aspectRatio(getAspectRatio(aspect)),
-      shape(shape) {};
+RenderLab::RenderLab()
+    : width(getResolution(Resolution::FHD)),
+      aspectRatio(getAspectRatio(Aspect::R16_9)) {};
 
 void RenderLab::run() {
     loop();

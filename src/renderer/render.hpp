@@ -18,7 +18,7 @@ class Render {
   public:
     Render();
 
-    mutable RenderData renderData;
+    RenderData renderData;
 
     static constexpr glm::vec3 CAMERA = {1.5f, 1.5f, 1.5f};
 
