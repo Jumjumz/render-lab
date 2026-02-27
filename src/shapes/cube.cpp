@@ -1,17 +1,6 @@
 #include "cube.hpp"
 
-Cube::Cube(const float &sides) {
-    for (auto vtx : Cube::CAGE_BOUNDARY) {
-        vtx *= sides;
-
-        this->vertices.push_back(vtx);
-    }
-
-    const int numVtxPerFace = this->vertices.size() / 2;
-    // process half edge
-    for (int i = 0; i < (int)Cube::FACES; i++) {
-    }
-};
+Cube::Cube(const float &sides) {};
 
 std::vector<Vertex> Cube::surfaceInterpolation(const size_t &subdivision) {
     std::vector<Vertex> surfacePoints;
