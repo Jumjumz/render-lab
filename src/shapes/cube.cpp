@@ -1,22 +1,15 @@
 #include "cube.hpp"
-#include <cstdint>
 
 Cube::Cube(const float &sides) {
-    for (size_t i = 0; i < Cube::NUM_VTX; i++) {
-        glm::vec3 val;
-        for (size_t j = 0; j < static_cast<size_t>(val.length()); j++) {
-            int axis = i & (1 << j);
+    for (auto vtx : Cube::CAGE_BOUNDARY) {
+        vtx *= sides;
 
-            if (axis == (1 << j)) {
-                val[j] = -1;
-            } else {
-                val[j] = 1;
-            }
-        }
+        this->vertices.push_back(vtx);
+    }
 
-        val *= sides;
-
-        this->vertices.push_back(val);
+    const int numVtxPerFace = this->vertices.size() / 2;
+    // process half edge
+    for (int i = 0; i < (int)Cube::FACES; i++) {
     }
 };
 
