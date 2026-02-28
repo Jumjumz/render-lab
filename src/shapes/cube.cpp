@@ -1,11 +1,31 @@
 #include "cube.hpp"
+#include "control_cage.hpp"
 
-Cube::Cube(const float &sides) {};
+Cube::Cube(const float &sides) {
+    for (size_t i = 0; i < ControlCage::CAGE_FACES.size(); i++) {
+        int h = ControlCage::FACE_START[i];
+        int start = h;
+
+        do {
+            this->vertices.push_back(
+                ControlCage::CAGE_BOUNDARY[ControlCage::HALF_EDGES[h].vertex]);
+            this->indices.push_back(ControlCage::HALF_EDGES[h].vertex);
+
+            h = ControlCage::HALF_EDGES[h].next;
+        } while (h != start);
+    }
+};
 
 std::vector<Vertex> Cube::surfaceInterpolation(const size_t &subdivision) {
     std::vector<Vertex> surfacePoints;
 
-    for (size_t i = 0; i < Cube::FACES; i++) {
+    for (auto v : this->vertices) {
+        v *= 0.5;
+
+        surfacePoints.push_back({v, Cube::COLOR});
+    }
+
+    /*for (size_t i = 0; i < Cube::FACES; i++) {
         uint axis = i / 2;  // x = 0; y; 1; z; 2
         uint value = i % 2; // min = 0; max = 1 -> identify the i of
                             // which axis we are in the loop
@@ -47,13 +67,13 @@ std::vector<Vertex> Cube::surfaceInterpolation(const size_t &subdivision) {
                 surfacePoints.push_back({pt, Cube::COLOR});
             }
         }
-    }
+    }*/
 
     return surfacePoints;
 };
 
 std::vector<uint16_t> Cube::surfaceGrids(const size_t &subdivision) {
-    uint pointsPerFace = (subdivision + 1) * (subdivision + 1);
+    /*uint pointsPerFace = (subdivision + 1) * (subdivision + 1);
     uint pointsPerRow = subdivision + 1;
 
     std::vector<uint16_t> lines;
@@ -77,5 +97,6 @@ std::vector<uint16_t> Cube::surfaceGrids(const size_t &subdivision) {
         }
     }
 
-    return lines;
+    return lines;*/
+    return this->indices;
 };

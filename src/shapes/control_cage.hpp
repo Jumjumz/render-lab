@@ -9,10 +9,10 @@
 #include <sys/types.h>
 
 struct HalfEdgeData {
-    uint16_t vertex;
-    uint16_t twin;
-    uint16_t next;
-    uint16_t face;
+    const uint16_t vertex;
+    const uint16_t twin;
+    const uint16_t next;
+    const uint16_t face;
 };
 
 // predefined cube as guide
@@ -25,36 +25,51 @@ struct ControlCage {
                                                                 {1, -1, 1},
                                                                 {1, 1, 1},
                                                                 {-1, 1, 1}}};
-    static constexpr std::array<std::array<uint16_t, 4>, 6> CAGE_FACES = {{
-        {0, 1, 3, 2}, // front
-        {4, 5, 7, 6}, // back
-        {2, 3, 6, 7}, // top
-        {0, 1, 4, 5}, // bot
-        {1, 2, 5, 6}, // right
-        {0, 3, 4, 7}, // left
-    }};
 
+    static constexpr std::array<std::array<uint16_t, 4>, 6> CAGE_FACES = {{
+        {0, 1, 2, 3}, // front
+        {5, 4, 7, 6}, // back
+        {3, 2, 6, 7}, // top
+        {1, 0, 4, 5}, // bot
+        {1, 5, 6, 2}, // right
+        {3, 7, 4, 0}, // left
+    }};
+    // TODO: update to correct vertices and next
     static constexpr std::array<HalfEdgeData, 24> HALF_EDGES = {{// front face
-                                                                 {1, 20, 1, 0},
-                                                                 {2, 12, 2, 0},
-                                                                 {3, 23, 3, 0},
-                                                                 {0, 8, 0, 0},
+                                                                 {0, 12, 1, 0},
+                                                                 {2, 19, 2, 0},
+                                                                 {3, 8, 3, 0},
+                                                                 {1, 23, 0, 0},
 
                                                                  // back face
-                                                                 {5, 16, 5, 1},
-                                                                 {6, 15, 6, 1},
-                                                                 {7, 13, 7, 1},
-                                                                 {4, 21, 4, 1},
+                                                                 {5, 14, 5, 1},
+                                                                 {7, 21, 6, 1},
+                                                                 {6, 10, 7, 1},
+                                                                 {4, 17, 4, 1},
 
                                                                  // top face
-                                                                 {2, 3, 2, 2},
-                                                                 {6, 22, 10, 2},
-                                                                 {7, 6, 13, 2},
-                                                                 {3, 5, 3, 2},
+                                                                 {2, 2, 9, 2},
+                                                                 {6, 18, 10, 2},
+                                                                 {7, 6, 11, 2},
+                                                                 {3, 20, 8, 2},
 
                                                                  // bot face
-                                                                 {5, 1, 13, 3},
-                                                                 {}}};
+                                                                 {0, 0, 13, 3},
+                                                                 {4, 22, 14, 3},
+                                                                 {5, 4, 15, 3},
+                                                                 {1, 1, 12, 3},
+
+                                                                 // right face
+                                                                 {5, 15, 17, 4},
+                                                                 {6, 7, 18, 4},
+                                                                 {2, 9, 19, 4},
+                                                                 {1, 1, 16, 4},
+
+                                                                 // left face
+                                                                 {7, 11, 21, 5},
+                                                                 {4, 5, 22, 5},
+                                                                 {0, 13, 23, 5},
+                                                                 {3, 3, 20, 5}}};
 
     static constexpr std::array<uint16_t, 6> FACE_START = {{0, 4, 8, 12, 16, 20}};
 };

@@ -21,6 +21,8 @@ class Mesh {
   protected:
     std::vector<glm::vec3> vertices;
 
+    std::vector<uint16_t> indices;
+
     static constexpr glm::vec3 COLOR = {0.0f, 1.0f, 0.0f};
 };
 

@@ -12,6 +12,7 @@ src/renderer/render.cpp
 src/renderer/render_lab.hpp
 src/renderer/render_lab.cpp
 src/renderer/vertex.hpp
+src/shapes/control_cage.hpp
 src/shapes/mesh.hpp
 src/shapes/cube.hpp
 src/shapes/cube.cpp
