@@ -15,7 +15,7 @@ class Cube : public Mesh {
     std::vector<uint16_t> surfaceGrids(const size_t &subdivision) override;
 
   private:
-    static constexpr size_t FACES = 6;
+    float sides;
 
     std::vector<HalfEdgeVertex> vertex;
 
