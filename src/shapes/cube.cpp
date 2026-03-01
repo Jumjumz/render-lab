@@ -2,26 +2,34 @@
 #include "control_cage.hpp"
 
 Cube::Cube(const float &sides) {
+    for (auto v : ControlCage::CAGE_BOUNDARY) {
+        this->vertices.push_back(v * sides);
+    }
+
     for (size_t i = 0; i < ControlCage::CAGE_FACES.size(); i++) {
         int h = ControlCage::FACE_START[i];
         int start = h;
 
+        std::vector<uint16_t> faceVerts;
         do {
-            this->vertices.push_back(
-                ControlCage::CAGE_BOUNDARY[ControlCage::HALF_EDGES[h].vertex]);
-            this->indices.push_back(ControlCage::HALF_EDGES[h].vertex);
+            faceVerts.push_back(ControlCage::HALF_EDGES[h].vertex);
 
             h = ControlCage::HALF_EDGES[h].next;
         } while (h != start);
+
+        // get the num of vertices on a face
+        size_t numFaces = ControlCage::CAGE_FACES[0].size();
+        for (size_t j = 0; j < numFaces; j++) {
+            this->indices.push_back(faceVerts[j]);
+            this->indices.push_back(faceVerts[(j + 1) % numFaces]);
+        }
     }
 };
 
 std::vector<Vertex> Cube::surfaceInterpolation(const size_t &subdivision) {
     std::vector<Vertex> surfacePoints;
 
-    for (auto v : this->vertices) {
-        v *= 0.5;
-
+    for (const auto &v : this->vertices) {
         surfacePoints.push_back({v, Cube::COLOR});
     }
 

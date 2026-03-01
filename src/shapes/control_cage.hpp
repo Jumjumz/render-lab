@@ -34,18 +34,18 @@ struct ControlCage {
         {1, 5, 6, 2}, // right
         {3, 7, 4, 0}, // left
     }};
-    // TODO: update to correct vertices and next
+
     static constexpr std::array<HalfEdgeData, 24> HALF_EDGES = {{// front face
-                                                                 {0, 12, 1, 0},
+                                                                 {1, 12, 1, 0},
                                                                  {2, 19, 2, 0},
                                                                  {3, 8, 3, 0},
-                                                                 {1, 23, 0, 0},
+                                                                 {0, 23, 0, 0},
 
                                                                  // back face
-                                                                 {5, 14, 5, 1},
+                                                                 {4, 14, 5, 1},
                                                                  {7, 21, 6, 1},
                                                                  {6, 10, 7, 1},
-                                                                 {4, 17, 4, 1},
+                                                                 {5, 17, 4, 1},
 
                                                                  // top face
                                                                  {2, 2, 9, 2},
@@ -57,7 +57,7 @@ struct ControlCage {
                                                                  {0, 0, 13, 3},
                                                                  {4, 22, 14, 3},
                                                                  {5, 4, 15, 3},
-                                                                 {1, 1, 12, 3},
+                                                                 {1, 16, 12, 3},
 
                                                                  // right face
                                                                  {5, 15, 17, 4},
