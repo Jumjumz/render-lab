@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "half_edge.hpp"
 #include "mesh.hpp"
 
 class Cube : public Mesh {
@@ -14,14 +13,10 @@ class Cube : public Mesh {
 
     std::vector<uint16_t> surfaceGrids(const size_t &subdivision) override;
 
+    MeshData surface(const size_t &subdivision) override;
+
   private:
-    float sides;
-
-    std::vector<HalfEdgeVertex> vertex;
-
-    std::vector<Face> face;
-
-    std::vector<HalfEdge> halfEdge;
+    const float sides;
 };
 
 #endif // !CUBE_HPP
