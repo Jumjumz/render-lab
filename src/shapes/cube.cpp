@@ -16,13 +16,6 @@ Cube::Cube(const float &sides) : sides(sides) {
 
             h = ControlCage::HALF_EDGES[h].next;
         } while (h != start);
-
-        // get the num of vertices on a face
-        size_t numFaces = ControlCage::CAGE_FACES[0].size();
-        for (size_t j = 0; j < numFaces; j++) {
-            this->indices.push_back(faceVerts[j]);
-            this->indices.push_back(faceVerts[(j + 1) % numFaces]);
-        }
     }
 };
 
@@ -58,24 +51,28 @@ std::vector<Vertex> Cube::surfaceInterpolation(const size_t &subdivision) {
 };
 
 std::vector<uint16_t> Cube::surfaceGrids(const size_t &subdivision) {
-    /*for (size_t i = 0; i < ControlCage::CAGE_FACES.size(); i++) {
+    auto n = subdivision + 1;
+    for (size_t i = 0; i < ControlCage::CAGE_FACES.size(); i++) {
         // build indices
-        uint16_t n = subdivision + 1;
-        for (size_t j = 0; j < subdivision; j++) {
-            for (size_t k = 0; k < subdivision; k++) {
-                auto bI = this->vertices.size();
-                uint16_t v0 = bI + j * n + k;
-                uint16_t v1 = bI + j * n + k + 1;
-                uint16_t v2 = bI + (j + 1) * n + k;
-                uint16_t v3 = bI + (j + 1) * n + k + 1;
+        uint16_t faceOffset = i * (n * n);
+        for (size_t j = 0; j < n; j++) {
+            for (size_t k = 0; k < n; k++) {
+                auto current = faceOffset + (j * n) + k;
 
-                this->indices.push_back(v0);
-                this->indices.push_back(v1);
-                this->indices.push_back(v2);
-                this->indices.push_back(v3);
+                if (k < subdivision) {
+                    auto right = current + 1;
+                    this->indices.push_back(current);
+                    this->indices.push_back(right);
+                }
+
+                if (j < subdivision) {
+                    auto bottom = current + n;
+                    this->indices.push_back(current);
+                    this->indices.push_back(bottom);
+                }
             }
         }
-    }*/
+    }
 
     return this->indices;
 };

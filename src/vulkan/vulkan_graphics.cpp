@@ -70,7 +70,7 @@ void VulkanGraphics::createGraphicsPipeline() {
                                                         fragShaderStageInfo};
 
     vk::PipelineInputAssemblyStateCreateInfo assemblyInfo{};
-    assemblyInfo.topology = vk::PrimitiveTopology::ePointList;
+    assemblyInfo.topology = vk::PrimitiveTopology::eLineList;
 
     std::vector<vk::DynamicState> dynamicStates = {
         vk::DynamicState::eViewport,
