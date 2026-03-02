@@ -23,18 +23,19 @@ RenderData Render::renderShape(const Shapes &render) const {
         auto shape = std::make_unique<Sphere>(Render::SIZE);
 
         return RenderData{
-            shape->surfaceInterpolation(Render::SUBDIVISION),
-            shape->surfaceGrids(Render::SUBDIVISION),
+            shape->surface(Render::SUBDIVISION).vertices,
+            shape->surface(Render::SUBDIVISION).indices,
             true,
         };
     }
 
     case Shapes::PYRAMID: {
-        auto shape = std::make_unique<Pyramid>(Render::SIZE);
+        // update to pyramid
+        auto shape = std::make_unique<Sphere>(Render::SIZE);
 
         return RenderData{
-            shape->surfaceInterpolation(Render::SUBDIVISION),
-            shape->surfaceGrids(Render::SUBDIVISION),
+            shape->surface(Render::SUBDIVISION).vertices,
+            shape->surface(Render::SUBDIVISION).indices,
             true,
         };
     }

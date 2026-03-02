@@ -72,6 +72,22 @@ struct ControlCage {
                                                                  {3, 3, 20, 5}}};
 
     static constexpr std::array<uint16_t, 6> FACE_START = {{0, 4, 8, 12, 16, 20}};
+
+    static glm::vec3 bilinear(const std::array<uint16_t, 4> &corners,
+                              const float &j, const float &k,
+                              const size_t &subdivision) {
+        float u = j / subdivision;
+        float v = k / subdivision;
+
+        auto p0 = ControlCage::CAGE_BOUNDARY[corners[0]];
+        auto p1 = ControlCage::CAGE_BOUNDARY[corners[1]];
+        auto p2 = ControlCage::CAGE_BOUNDARY[corners[2]];
+        auto p3 = ControlCage::CAGE_BOUNDARY[corners[3]];
+
+        // Bilinear interpolation
+        return (1 - u) * (1 - v) * p0 + u * (1 - v) * p1 + u * v * p2 +
+               (1 - u) * v * p3;
+    };
 };
 
 #endif // !CONTROL_CAGE_HPP

@@ -1,6 +1,6 @@
 #include "pyramid.hpp"
 
-Pyramid::Pyramid(const float &size) : size(size) {
+/*Pyramid::Pyramid(const float &size) : size(size) {
     for (size_t i = 0; i < Pyramid::NUM_VTX; i++) {
         glm::vec3 val;
 
@@ -61,9 +61,8 @@ std::vector<Vertex> Pyramid::surfaceInterpolation(const size_t &subdivision) {
                 } else {
                     if (u + v < 1.0f) {
                         pt = ((1 - u - v) * this->vertices[0]) +
-                             (u * this->vertices[cA]) + (v * this->vertices[cB]);
-                    } else {
-                        continue;
+                             (u * this->vertices[cA]) + (v *
+this->vertices[cB]); } else { continue;
                     }
                 }
 
@@ -104,4 +103,4 @@ std::vector<uint16_t> Pyramid::surfaceGrids(const size_t &subdivision) {
     }
 
     return lines;
-};
+};*/

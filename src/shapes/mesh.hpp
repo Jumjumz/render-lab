@@ -16,17 +16,9 @@ class Mesh {
   public:
     virtual ~Mesh() = default;
 
-    virtual std::vector<Vertex> surfaceInterpolation(const size_t &subdivision) = 0;
-
-    virtual std::vector<uint16_t> surfaceGrids(const size_t &subdivision) = 0;
-
     virtual MeshData surface(const size_t &subdivision) = 0;
 
   protected:
-    std::vector<glm::vec3> vertices;
-
-    std::vector<uint16_t> indices;
-
     static constexpr glm::vec3 COLOR = {0.0f, 1.0f, 0.0f};
 };
 

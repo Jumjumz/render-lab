@@ -13,17 +13,7 @@ MeshData Cube::surface(const size_t &subdivision) {
         // interpolate and get points
         for (size_t j = 0; j < n; j++) {
             for (size_t k = 0; k < n; k++) {
-                float u = static_cast<float>(j) / subdivision;
-                float v = static_cast<float>(k) / subdivision;
-
-                auto p0 = ControlCage::CAGE_BOUNDARY[corners[0]];
-                auto p1 = ControlCage::CAGE_BOUNDARY[corners[1]];
-                auto p2 = ControlCage::CAGE_BOUNDARY[corners[2]];
-                auto p3 = ControlCage::CAGE_BOUNDARY[corners[3]];
-
-                // Bilinear interpolation
-                glm::vec3 pt = (1 - u) * (1 - v) * p0 + u * (1 - v) * p1 +
-                               u * v * p2 + (1 - u) * v * p3;
+                auto pt = ControlCage::bilinear(corners, j, k, subdivision);
 
                 pt *= this->sides;
 
