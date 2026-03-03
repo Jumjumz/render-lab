@@ -6,15 +6,14 @@ Sphere::Sphere(const float &radius) : radius(radius) {};
 MeshData Sphere::surface(const size_t &subdivision) const {
     MeshData mesh;
 
-    for (size_t i = 0; i < ControlCage::CAGE_FACES.size(); i++) {
-        std::array<uint16_t, 4> corners = ControlCage::CAGE_FACES[i];
+    for (size_t i = 0; i < ControlCage::CubeCage::CAGE_FACES.size(); i++) {
+        std::array<uint16_t, 4> corners = ControlCage::CubeCage::CAGE_FACES[i];
         auto n = subdivision + 1;
 
         // interpolate and get points
         for (size_t j = 0; j < n; j++) {
             for (size_t k = 0; k < n; k++) {
-                auto pt = ControlCage::bilinear(corners, (float)j, (float)k,
-                                                subdivision);
+                auto pt = Geometry::bilinear(corners, j, k, subdivision);
 
                 // transform to a sphere
                 pt = glm::normalize(pt) * this->radius;
