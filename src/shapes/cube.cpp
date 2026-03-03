@@ -9,35 +9,31 @@ MeshData Cube::surface(const size_t &subdivision) const {
     for (size_t i = 0; i < ControlCage::CubeCage::CAGE_FACES.size(); i++) {
         std::array<uint16_t, 4> corners = ControlCage::CubeCage::CAGE_FACES[i];
         auto n = subdivision + 1;
+        // get surface grids
+        uint16_t faceOffset = i * (n * n);
 
         // interpolate and get points
         for (size_t j = 0; j < n; j++) {
             for (size_t k = 0; k < n; k++) {
                 auto pt = Geometry::bilinear(corners, j, k, subdivision);
 
-                pt *= this->sides;
+                pt *= this->sides; // multiply to size of sides
 
                 mesh.vertices.push_back({pt, Cube::COLOR});
-            }
-        }
 
-        // get surface grids
-        uint16_t faceOffset = i * (n * n);
+                // find and connect grid
+                auto current = faceOffset + (j * n) + k;
 
-        for (size_t j = 0; j < n; j++) {
-            for (size_t k = 0; k < n; k++) {
-                size_t current = faceOffset + (j * n) + k;
-
+                // connect to right
                 if (k < subdivision) {
-                    auto right = current + 1;
                     mesh.indices.push_back(current);
-                    mesh.indices.push_back(right);
+                    mesh.indices.push_back(current + 1);
                 }
 
+                // connect to bottom
                 if (j < subdivision) {
-                    auto bottom = current + n;
                     mesh.indices.push_back(current);
-                    mesh.indices.push_back(bottom);
+                    mesh.indices.push_back(current + n);
                 }
             }
         }
