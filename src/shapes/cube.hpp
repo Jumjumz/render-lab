@@ -9,7 +9,7 @@ class Cube : public Mesh {
   public:
     Cube(const float &sides);
 
-    MeshData surface(const size_t &subdivision) override;
+    MeshData surface(const size_t &subdivision) const override;
 
   private:
     const float &sides;

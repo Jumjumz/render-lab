@@ -1,9 +1,9 @@
-#include "sphere.hpp"
+#include "cylinder.hpp"
 #include "control_cage.hpp"
 
-Sphere::Sphere(const float &radius) : radius(radius) {};
+Cylinder::Cylinder(const float &radius) : radius(radius) {};
 
-MeshData Sphere::surface(const size_t &subdivision) const {
+MeshData Cylinder::surface(const size_t &subdivision) const {
     MeshData mesh;
 
     for (size_t i = 0; i < ControlCage::CAGE_FACES.size(); i++) {
@@ -16,10 +16,15 @@ MeshData Sphere::surface(const size_t &subdivision) const {
                 auto pt = ControlCage::bilinear(corners, (float)j, (float)k,
                                                 subdivision);
 
-                // transform to a sphere
-                pt = glm::normalize(pt) * this->radius;
+                // transform to cylinder
+                float d = glm::length(glm::vec2(pt.x, pt.z));
 
-                mesh.vertices.push_back({pt, Sphere::COLOR});
+                // calculate for x and z
+                pt.x = (pt.x / d) * this->radius;
+                pt.y *= this->radius;
+                pt.z = (pt.z / d) * this->radius;
+
+                mesh.vertices.push_back({pt, Cylinder::COLOR});
             }
         }
 
@@ -46,4 +51,4 @@ MeshData Sphere::surface(const size_t &subdivision) const {
     }
 
     return mesh;
-}
+};

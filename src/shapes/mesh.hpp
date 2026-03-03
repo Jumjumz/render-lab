@@ -16,7 +16,7 @@ class Mesh {
   public:
     virtual ~Mesh() = default;
 
-    virtual MeshData surface(const size_t &subdivision) = 0;
+    virtual MeshData surface(const size_t &subdivision) const = 0;
 
   protected:
     static constexpr glm::vec3 COLOR = {0.0f, 1.0f, 0.0f};

@@ -3,7 +3,7 @@
 
 Cube::Cube(const float &sides) : sides(sides) {};
 
-MeshData Cube::surface(const size_t &subdivision) {
+MeshData Cube::surface(const size_t &subdivision) const {
     MeshData mesh;
 
     for (size_t i = 0; i < ControlCage::CAGE_FACES.size(); i++) {
@@ -13,7 +13,8 @@ MeshData Cube::surface(const size_t &subdivision) {
         // interpolate and get points
         for (size_t j = 0; j < n; j++) {
             for (size_t k = 0; k < n; k++) {
-                auto pt = ControlCage::bilinear(corners, j, k, subdivision);
+                auto pt = ControlCage::bilinear(corners, (float)j, (float)k,
+                                                subdivision);
 
                 pt *= this->sides;
 

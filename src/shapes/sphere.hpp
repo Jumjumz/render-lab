@@ -9,7 +9,7 @@ class Sphere : public Mesh {
   public:
     Sphere(const float &radius);
 
-    MeshData surface(const size_t &subdivision) override;
+    MeshData surface(const size_t &subdivision) const override;
 
   private:
     const float &radius;

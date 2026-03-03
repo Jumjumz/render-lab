@@ -262,6 +262,16 @@ void RenderLab::loop() {
                     this->resources.createIndexBuffer();
                 }
 
+                if (this->window.event.key.keysym.sym == SDLK_d) {
+                    this->ctx.device.waitIdle();
+
+                    this->shape.renderData =
+                        this->shape.renderShape(Shapes::CYLINDER);
+
+                    this->resources.createVertexBuffer();
+                    this->resources.createIndexBuffer();
+                }
+
                 if (this->window.event.key.keysym.sym == SDLK_e) {
                     this->ctx.device.waitIdle();
 

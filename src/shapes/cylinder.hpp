@@ -3,15 +3,16 @@
 
 #pragma once
 
-#include "hittable.hpp"
+#include "mesh.hpp"
 
-class Cylinder : public Hittable {
+class Cylinder : public Mesh {
   public:
-    Cylinder();
+    Cylinder(const float &radius);
 
-    std::vector<glm::vec3> points() override;
+    MeshData surface(const size_t &subdivision) const override;
 
   private:
+    const float &radius;
 };
 
 #endif // !CYLINDER_HPP

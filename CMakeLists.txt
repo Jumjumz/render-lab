@@ -16,6 +16,8 @@ src/shapes/control_cage.hpp
 src/shapes/mesh.hpp
 src/shapes/cube.hpp
 src/shapes/cube.cpp
+src/shapes/cylinder.hpp
+src/shapes/cylinder.cpp
 src/shapes/sphere.hpp
 src/shapes/sphere.cpp
 src/utils/resolution.hpp
