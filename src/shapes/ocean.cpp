@@ -17,12 +17,11 @@ MeshData Ocean::surface(const size_t &subdivision) const {
                 auto pt = Geometry::bilinear(corners, j, k, subdivision);
 
                 pt.x *= this->size;
-                pt.y *= this->size / 50;
-                pt.z *= this->size * 2;
+                pt.y *= this->size / 50; // squish the cube to look like a plane
+                pt.z *= this->size * 2;  // extend to make it a rectangle
 
                 mesh.vertices.push_back({pt, Ocean::COLOR});
 
-                // find and connect grid
                 auto current = faceOffset + (j * n) + k;
 
                 // connect to right
