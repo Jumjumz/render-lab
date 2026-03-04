@@ -18,6 +18,8 @@ src/shapes/cube.hpp
 src/shapes/cube.cpp
 src/shapes/cylinder.hpp
 src/shapes/cylinder.cpp
+src/shapes/ocean.hpp
+src/shapes/ocean.cpp
 src/shapes/pyramid.hpp
 src/shapes/pyramid.cpp
 src/shapes/sphere.hpp

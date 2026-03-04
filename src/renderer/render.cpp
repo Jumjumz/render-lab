@@ -1,6 +1,7 @@
 #include "render.hpp"
 #include "shapes/cube.hpp"
 #include "shapes/cylinder.hpp"
+#include "shapes/ocean.hpp"
 #include "shapes/pyramid.hpp"
 #include "shapes/sphere.hpp"
 #include <memory>
@@ -37,8 +38,17 @@ RenderData Render::renderShape(const Shapes &render) const {
     }
 
     case Shapes::PYRAMID: {
-        // update to pyramid
         auto shape = std::make_unique<Pyramid>(Render::SIZE);
+
+        return RenderData{
+            shape->surface(Render::SUBDIVISION).vertices,
+            shape->surface(Render::SUBDIVISION).indices,
+            true,
+        };
+    }
+
+    case Shapes::OCEAN: {
+        auto shape = std::make_unique<Ocean>(Render::SIZE);
 
         return RenderData{
             shape->surface(Render::SUBDIVISION).vertices,

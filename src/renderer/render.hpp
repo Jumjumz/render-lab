@@ -5,7 +5,7 @@
 
 #include "vertex.hpp"
 
-enum class Shapes { CUBE, SPHERE, PYRAMID, CYLINDER };
+enum class Shapes { CUBE, SPHERE, PYRAMID, CYLINDER, OCEAN };
 
 struct RenderData {
     std::vector<Vertex> vertices;

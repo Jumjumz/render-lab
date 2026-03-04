@@ -281,6 +281,17 @@ void RenderLab::loop() {
                     this->resources.createVertexBuffer();
                     this->resources.createIndexBuffer();
                 }
+
+                if (this->window.event.key.keysym.sym == SDLK_a) {
+                    this->ctx.device.waitIdle();
+
+                    this->shape.renderData =
+                        this->shape.renderShape(Shapes::OCEAN);
+
+                    this->resources.createVertexBuffer();
+                    this->resources.createIndexBuffer();
+                }
+
                 break;
             }
             };
