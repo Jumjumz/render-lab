@@ -36,10 +36,9 @@ RenderData Render::renderShape(const Shapes &render) const {
                           shape->surface(Render::SUBDIVISION).indices, true};
     }
 
-    // TODO: update the rest of shapes to the new implementation
     case Shapes::PYRAMID: {
         // update to pyramid
-        auto shape = std::make_unique<Sphere>(Render::SIZE);
+        auto shape = std::make_unique<Pyramid>(Render::SIZE);
 
         return RenderData{
             shape->surface(Render::SUBDIVISION).vertices,

@@ -76,23 +76,87 @@ struct ControlCage {
         static constexpr std::array<uint16_t, 6> FACE_START = {
             {0, 4, 8, 12, 16, 20}};
     };
+
+    struct PyramidCage {
+        static constexpr std::array<glm::vec3, 5> CAGE_BOUNDARY = {
+            {{0, 1, 0}, {-1, 0, -1}, {1, 0, -1}, {1, 0, 1}, {-1, 0, 1}}};
+
+        static constexpr std::array<std::array<uint16_t, 3>, 6> CAGE_FACES = {{
+            {0, 2, 1}, // front
+            {0, 3, 2}, // right
+            {0, 4, 3}, // back
+            {0, 1, 4}, // left
+            {4, 3, 1}, // base upper side
+            {2, 3, 1}, // base lower side
+        }};
+
+        static constexpr std::array<HalfEdgeData, 18> HALF_EDGES = {{
+            // front
+            {2, 15, 2, 0},
+            {1, 11, 1, 0},
+            {0, 3, 0, 0},
+
+            // right
+            {3, 16, 5, 1},
+            {2, 2, 4, 1},
+            {0, 6, 3, 1},
+
+            // back
+            {4, 13, 8, 2},
+            {3, 5, 7, 2},
+            {0, 9, 6, 2},
+
+            // left
+            {1, 14, 11, 3},
+            {4, 8, 10, 3},
+            {0, 0, 9, 3},
+
+            // base upper
+            {4, 7, 14, 4},
+            {3, 17, 13, 4},
+            {1, 10, 12, 4},
+
+            // base lower
+            {3, 4, 17, 5},
+            {2, 1, 16, 5},
+            {1, 12, 15, 5},
+        }};
+
+        static constexpr std::array<uint16_t, 6> FACE_START = {
+            {0, 3, 6, 9, 12, 15}};
+    };
 };
 
 struct Geometry {
+    // for quads
     static glm::vec3 bilinear(const std::array<uint16_t, 4> &corners,
-                              const size_t &j, const size_t &k,
+                              const size_t &column, const size_t &row,
                               const size_t &subdivision) {
-        float u = (float)j / subdivision;
-        float v = (float)k / subdivision;
+        float u = (float)column / subdivision;
+        float v = (float)row / subdivision;
 
-        auto p0 = ControlCage::CubeCage::CAGE_BOUNDARY[corners[0]];
-        auto p1 = ControlCage::CubeCage::CAGE_BOUNDARY[corners[1]];
-        auto p2 = ControlCage::CubeCage::CAGE_BOUNDARY[corners[2]];
+        auto apex = ControlCage::CubeCage::CAGE_BOUNDARY[corners[0]];
+        auto c1 = ControlCage::CubeCage::CAGE_BOUNDARY[corners[1]];
+        auto c2 = ControlCage::CubeCage::CAGE_BOUNDARY[corners[2]];
         auto p3 = ControlCage::CubeCage::CAGE_BOUNDARY[corners[3]];
 
         // Bilinear interpolation
-        return (1 - u) * (1 - v) * p0 + u * (1 - v) * p1 + u * v * p2 +
+        return (1 - u) * (1 - v) * apex + u * (1 - v) * c1 + u * v * c2 +
                (1 - u) * v * p3;
+    };
+
+    // for triangles
+    static glm::vec3 barycentric(const std::array<uint16_t, 3> &corners,
+                                 const size_t &column, const size_t &row,
+                                 const size_t &subdivision) {
+        float u = (float)column / subdivision;
+        float v = (float)row / subdivision;
+
+        auto apex = ControlCage::PyramidCage::CAGE_BOUNDARY[corners[0]];
+        auto c1 = ControlCage::PyramidCage::CAGE_BOUNDARY[corners[1]];
+        auto c2 = ControlCage::PyramidCage::CAGE_BOUNDARY[corners[2]];
+
+        return (1.0f - u - v) * apex + (u * c1) + (v * c2);
     };
 };
 
