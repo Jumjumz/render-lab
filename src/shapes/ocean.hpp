@@ -13,6 +13,8 @@ class Ocean : public Mesh {
 
   private:
     const float &size;
+
+    float wave(const float &x) const;
 };
 
 #endif // !OCEAN_HPP
