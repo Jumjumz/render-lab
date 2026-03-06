@@ -7,10 +7,11 @@ MeshData Cylinder::surface(const size_t &subdivision) const {
     MeshData mesh;
 
     for (size_t i = 0; i < ControlCage::CubeCage::CAGE_FACES.size(); i++) {
-        std::array<uint16_t, 4> corners = ControlCage::CubeCage::CAGE_FACES[i];
-        auto n = subdivision + 1;
+        const std::array<uint16_t, 4> corners =
+            ControlCage::CubeCage::CAGE_FACES[i];
+        const auto n = subdivision + 1;
         // get surface grids
-        uint16_t faceOffset = i * (n * n);
+        const uint16_t faceOffset = i * (n * n);
 
         // interpolate and get grid connection
         for (size_t j = 0; j < n; j++) {
@@ -18,7 +19,7 @@ MeshData Cylinder::surface(const size_t &subdivision) const {
                 auto pt = Geometry::bilinear(corners, j, k, subdivision);
 
                 // transform to cylinder
-                float d = glm::length(glm::vec2(pt.x, pt.z));
+                const float d = glm::length(glm::vec2(pt.x, pt.z));
 
                 // calculate for x and z
                 pt.x = (pt.x / d) * this->radius;
@@ -28,7 +29,7 @@ MeshData Cylinder::surface(const size_t &subdivision) const {
                 mesh.vertices.push_back({pt, Cylinder::COLOR});
 
                 // find and connect grid
-                auto current = faceOffset + (j * n) + k;
+                const auto current = faceOffset + (j * n) + k;
 
                 // connect to right
                 if (k < subdivision) {

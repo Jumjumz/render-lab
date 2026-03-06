@@ -8,10 +8,11 @@ MeshData Ocean::surface(const size_t &subdivision) const {
     MeshData mesh;
 
     for (size_t i = 0; i < ControlCage::CubeCage::CAGE_FACES.size(); i++) {
-        auto corners = ControlCage::CubeCage::CAGE_FACES[3]; // only use bot face
-        auto n = subdivision + 1;
+        const auto corners =
+            ControlCage::CubeCage::CAGE_FACES[3]; // only use bot face
+        const auto n = subdivision + 1;
 
-        uint16_t faceOffset = i * (n * n);
+        const uint16_t faceOffset = i * (n * n);
 
         for (size_t j = 0; j < n; j++) {
             for (size_t k = 0; k < n; k++) {
@@ -23,7 +24,7 @@ MeshData Ocean::surface(const size_t &subdivision) const {
 
                 mesh.vertices.push_back({pt, Ocean::COLOR});
 
-                auto current = faceOffset + (j * n) + k;
+                const auto current = faceOffset + (j * n) + k;
 
                 // connect to right
                 if (k < subdivision) {

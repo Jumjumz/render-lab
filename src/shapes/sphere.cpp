@@ -7,10 +7,11 @@ MeshData Sphere::surface(const size_t &subdivision) const {
     MeshData mesh;
 
     for (size_t i = 0; i < ControlCage::CubeCage::CAGE_FACES.size(); i++) {
-        std::array<uint16_t, 4> corners = ControlCage::CubeCage::CAGE_FACES[i];
-        auto n = subdivision + 1;
+        const std::array<uint16_t, 4> corners =
+            ControlCage::CubeCage::CAGE_FACES[i];
+        const auto n = subdivision + 1;
         // get surface grids
-        uint16_t faceOffset = i * (n * n);
+        const uint16_t faceOffset = i * (n * n);
 
         // interpolate and get points
         for (size_t j = 0; j < n; j++) {
@@ -23,7 +24,7 @@ MeshData Sphere::surface(const size_t &subdivision) const {
                 mesh.vertices.push_back({pt, Sphere::COLOR});
 
                 // find and connect grid
-                auto current = faceOffset + (j * n) + k;
+                const auto current = faceOffset + (j * n) + k;
 
                 // connect to right
                 if (k < subdivision) {

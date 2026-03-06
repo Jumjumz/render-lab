@@ -9,9 +9,10 @@ MeshData Pyramid::surface(const size_t &subdivision) const {
     for (size_t i = 0; i < ControlCage::PyramidCage::CAGE_FACES.size(); i++) {
         const auto corners = ControlCage::PyramidCage::CAGE_FACES[i];
         const auto n = subdivision + 1;
+
         // get surface grids
-        auto pointsPerFace = n * (subdivision + 2) / 2;
-        uint16_t faceOffset = i * pointsPerFace;
+        const auto pointsPerFace = n * (subdivision + 2) / 2;
+        const uint16_t faceOffset = i * pointsPerFace;
 
         // interpolate and get grid connection
         for (size_t j = 0; j < n; j++) {
