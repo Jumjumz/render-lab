@@ -8,7 +8,7 @@ MeshData Ocean::surface(const size_t &subdivision) const {
     MeshData mesh;
 
     for (size_t i = 0; i < ControlCage::CubeCage::CAGE_FACES.size(); i++) {
-        auto corners = ControlCage::CubeCage::CAGE_FACES[3];
+        auto corners = ControlCage::CubeCage::CAGE_FACES[3]; // only use bot face
         auto n = subdivision + 1;
 
         uint16_t faceOffset = i * (n * n);
@@ -17,12 +17,9 @@ MeshData Ocean::surface(const size_t &subdivision) const {
             for (size_t k = 0; k < n; k++) {
                 auto pt = Geometry::bilinear(corners, j, k, subdivision);
 
-                pt.y *= 0; // multiply to zero to center the plane
-                pt.x *= this->size * 5;
-                pt.y += wave(pt.x);     // squish the cube to look like a plane
-                pt.z *= this->size * 2; // extend to make it a rectangle
+                pt.x *= 3; // transform to rectangle
 
-                pt *= this->size;
+                pt = oceanWaves(pt) * this->size;
 
                 mesh.vertices.push_back({pt, Ocean::COLOR});
 
@@ -46,14 +43,29 @@ MeshData Ocean::surface(const size_t &subdivision) const {
     return mesh;
 };
 
-float Ocean::wave(const float &x) const {
+glm::vec3 Ocean::oceanWaves(glm::vec3 &points) const {
     static auto start = std::chrono::high_resolution_clock::now();
 
     auto current = std::chrono::high_resolution_clock::now();
 
-    float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(
-                          current - start)
-                          .count();
+    const float deltaTime =
+        std::chrono::duration<float, std::chrono::seconds::period>(current - start)
+            .count();
 
-    return std::sin(x + deltaTime);
+    const float wavelength = this->size * 2;                           // L
+    const float speed = 0.3f;                                          // S
+    const glm::vec2 direction = glm::normalize(glm::vec2(1.0f, 0.5f)); // D
+    const float amplitude = 0.3f;                                      // A
+    const float steepness = 0.3f;                                      // Q
+
+    const float k = glm::radians(360.0f) / wavelength;
+    const float f = k * (glm::dot(direction, glm::vec2(points.x, points.z)) -
+                         speed * deltaTime);
+
+    // calculate
+    points.x += steepness * amplitude * direction.x * std::cos(f);
+    points.y = amplitude * std::sin(f);
+    points.z += steepness * amplitude * direction.y * std::cos(f);
+
+    return points;
 };

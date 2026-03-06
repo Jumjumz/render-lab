@@ -27,7 +27,7 @@ void RenderLab::setup() {
 
     // rotation and camera perspective
     UniformBufferObject ubo{
-        .model = glm::rotate(glm::mat4(1.0f), deltaTime * glm::radians(45.0f),
+        .model = glm::rotate(glm::mat4(1.0f), deltaTime * glm::radians(20.0f),
                              glm::vec3(0.0f, 1.0f, 0.0f)),
         .view = glm::lookAt(Render::CAMERA, glm::vec3(0.0f, 0.0f, 0.0f),
                             glm::vec3(0.0f, 1.0f, 0.0f)),

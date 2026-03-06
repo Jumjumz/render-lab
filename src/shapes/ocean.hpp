@@ -14,7 +14,7 @@ class Ocean : public Mesh {
   private:
     const float &size;
 
-    float wave(const float &x) const;
+    glm::vec3 oceanWaves(glm::vec3 &points) const;
 };
 
 #endif // !OCEAN_HPP
