@@ -18,7 +18,6 @@ class Mesh {
 
     virtual MeshData surface(const size_t &subdivision) const = 0;
 
-  protected:
     static constexpr glm::vec3 COLOR = {0.0f, 1.0f, 0.0f};
 };
 

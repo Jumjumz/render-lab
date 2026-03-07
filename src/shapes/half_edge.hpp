@@ -10,18 +10,18 @@ struct HalfEdge;
 
 struct HalfEdgeVertex {
     glm::vec3 position;
-    HalfEdge *outEdge;
+    HalfEdge *outEdge = nullptr;
 };
 
 struct Face {
-    HalfEdge *halfEdge;
+    HalfEdge *halfEdge = nullptr;
 };
 
 struct HalfEdge {
-    HalfEdgeVertex *vertex;
-    HalfEdge *twin;
-    HalfEdge *next;
-    Face *face;
+    HalfEdgeVertex *vertex = nullptr;
+    HalfEdge *twin = nullptr;
+    HalfEdge *next = nullptr;
+    Face *face = nullptr;
 };
 
 #endif // !HALF_EDGE_HPP

@@ -3,20 +3,31 @@
 
 #pragma once
 
+#include "half_edge.hpp"
+
 #include <array>
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <sys/types.h>
+#include <vector>
 
-struct HalfEdgeData {
+struct ControlCageHalfEdge {
     const uint16_t vertex;
     const uint16_t twin;
     const uint16_t next;
     const uint16_t face;
 };
 
+struct HalfEdgeData {
+    std::vector<Face> faces;
+    std::vector<HalfEdgeVertex> vertex;
+    std::vector<HalfEdge> halfEdge;
+};
+
 // predefined cube as guide
 struct ControlCage {
+    static HalfEdgeData halfEdgeData();
+
     struct CubeCage {
         static constexpr std::array<glm::vec3, 8> CAGE_BOUNDARY = {{{-1, -1, -1},
                                                                     {1, -1, -1},
@@ -36,7 +47,7 @@ struct ControlCage {
             {3, 7, 4, 0}, // left
         }};
 
-        static constexpr std::array<HalfEdgeData, 24> HALF_EDGES = {
+        static constexpr std::array<ControlCageHalfEdge, 24> HALF_EDGES = {
             {// front face
              {1, 12, 1, 0},
              {2, 19, 2, 0},
@@ -90,7 +101,7 @@ struct ControlCage {
             {2, 3, 1}, // base lower side
         }};
 
-        static constexpr std::array<HalfEdgeData, 18> HALF_EDGES = {{
+        static constexpr std::array<ControlCageHalfEdge, 18> HALF_EDGES = {{
             // front
             {2, 15, 2, 0},
             {1, 11, 1, 0},
