@@ -11,6 +11,8 @@
 #include <sys/types.h>
 #include <vector>
 
+enum class Cages { CUBE, PYRAMID };
+
 struct ControlCageHalfEdge {
     const uint16_t vertex;
     const uint16_t twin;
@@ -26,7 +28,7 @@ struct HalfEdgeData {
 
 // predefined cube as guide
 struct ControlCage {
-    static HalfEdgeData halfEdgeData();
+    static HalfEdgeData halfEdgeData(const Cages &cage);
 
     struct CubeCage {
         static constexpr std::array<glm::vec3, 8> CAGE_BOUNDARY = {{{-1, -1, -1},
