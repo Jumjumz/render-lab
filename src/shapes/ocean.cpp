@@ -1,44 +1,18 @@
 #include "ocean.hpp"
-#include "control_cage.hpp"
+#include "shapes/control_cage.hpp"
 #include <chrono>
 
-Ocean::Ocean(const float &size) : size(size) {};
+Ocean::Ocean(const float &size) : size(size) {
+    Ocean::halfEdgeData = ControlCage::halfEdgeData(Cages::CUBE);
+};
 
 MeshData Ocean::surface(const size_t &subdivision) const {
-    MeshData mesh;
+    auto mesh = GENERATE_SURFACE<HalfEdgeData>(Ocean::halfEdgeData, subdivision);
 
-    for (size_t i = 0; i < ControlCage::CubeCage::CAGE_FACES.size(); i++) {
-        const auto corners =
-            ControlCage::CubeCage::CAGE_FACES[3]; // only use bot face
-        const auto n = subdivision + 1;
-
-        const uint16_t faceOffset = i * (n * n);
-
-        for (size_t j = 0; j < n; j++) {
-            for (size_t k = 0; k < n; k++) {
-                auto pt = Geometry::bilinear(corners, j, k, subdivision);
-
-                pt.x *= 3; // transform to rectangle
-
-                pt = oceanWaves(pt) * this->size;
-
-                mesh.vertices.push_back({pt, Ocean::COLOR});
-
-                const auto current = faceOffset + (j * n) + k;
-
-                // connect to right
-                if (k < subdivision) {
-                    mesh.indices.push_back(current);
-                    mesh.indices.push_back(current + 1);
-                }
-
-                // connect to bottom
-                if (j < subdivision) {
-                    mesh.indices.push_back(current);
-                    mesh.indices.push_back(current + n);
-                }
-            }
-        }
+    // transform to ocean with waves
+    for (auto &v : mesh.vertices) {
+        v.pos.x *= 3;
+        v.pos = oceanWaves(v.pos) * this->size;
     }
 
     return mesh;

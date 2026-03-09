@@ -99,39 +99,39 @@ struct ControlCage {
             {0, 3, 2}, // right
             {0, 4, 3}, // back
             {0, 1, 4}, // left
-            {4, 3, 1}, // base upper side
-            {2, 3, 1}, // base lower side
+            {1, 3, 4}, // base upper side
+            {1, 2, 3}, // base lower side
         }};
 
         static constexpr std::array<ControlCageHalfEdge, 18> HALF_EDGES = {{
             // front
-            {2, 15, 2, 0},
-            {1, 11, 1, 0},
-            {0, 3, 0, 0},
+            {2, 5, 1, 0},
+            {1, 15, 2, 0},
+            {0, 9, 0, 0},
 
             // right
-            {3, 16, 5, 1},
-            {2, 2, 4, 1},
-            {0, 6, 3, 1},
+            {3, 8, 4, 1},
+            {2, 16, 5, 1},
+            {0, 0, 3, 1},
 
             // back
-            {4, 13, 8, 2},
-            {3, 5, 7, 2},
-            {0, 9, 6, 2},
+            {4, 11, 7, 2},
+            {3, 13, 8, 2},
+            {0, 3, 6, 2},
 
             // left
-            {1, 14, 11, 3},
-            {4, 8, 10, 3},
-            {0, 0, 9, 3},
+            {1, 2, 10, 3},
+            {4, 14, 11, 3},
+            {0, 6, 9, 3},
 
             // base upper
-            {4, 7, 14, 4},
-            {3, 17, 13, 4},
+            {4, 17, 13, 4},
+            {3, 7, 14, 4},
             {1, 10, 12, 4},
 
             // base lower
-            {3, 4, 17, 5},
-            {2, 1, 16, 5},
+            {3, 1, 16, 5},
+            {2, 4, 17, 5},
             {1, 12, 15, 5},
         }};
 
@@ -142,34 +142,35 @@ struct ControlCage {
 
 struct Geometry {
     // for quads
-    static glm::vec3 bilinear(const std::array<uint16_t, 4> &corners,
+    static glm::vec3 bilinear(const std::vector<glm::vec3> &corners,
                               const size_t &column, const size_t &row,
                               const size_t &subdivision) {
         float u = (float)column / subdivision;
         float v = (float)row / subdivision;
 
-        auto apex = ControlCage::CubeCage::CAGE_BOUNDARY[corners[0]];
-        auto c1 = ControlCage::CubeCage::CAGE_BOUNDARY[corners[1]];
-        auto c2 = ControlCage::CubeCage::CAGE_BOUNDARY[corners[2]];
-        auto p3 = ControlCage::CubeCage::CAGE_BOUNDARY[corners[3]];
+        auto c1 = corners[0];
+        auto c2 = corners[1];
+        auto c3 = corners[2];
+        auto c4 = corners[3];
 
         // Bilinear interpolation
-        return (1 - u) * (1 - v) * apex + u * (1 - v) * c1 + u * v * c2 +
-               (1 - u) * v * p3;
+        return (1 - u) * (1 - v) * c1 + u * (1 - v) * c2 + u * v * c3 +
+               (1 - u) * v * c4;
     };
 
     // for triangles
-    static glm::vec3 barycentric(const std::array<uint16_t, 3> &corners,
+    static glm::vec3 barycentric(const std::vector<glm::vec3> &corners,
                                  const size_t &column, const size_t &row,
                                  const size_t &subdivision) {
         float u = (float)column / subdivision;
         float v = (float)row / subdivision;
 
-        auto apex = ControlCage::PyramidCage::CAGE_BOUNDARY[corners[0]];
-        auto c1 = ControlCage::PyramidCage::CAGE_BOUNDARY[corners[1]];
-        auto c2 = ControlCage::PyramidCage::CAGE_BOUNDARY[corners[2]];
+        auto apex = corners[0];
+        auto c1 = corners[1];
+        auto c2 = corners[2];
 
-        return (1.0f - u - v) * apex + (u * c1) + (v * c2);
+        // Barycentric interpolation
+        return (1 - u - v) * apex + (u * c1) + (v * c2);
     };
 };
 

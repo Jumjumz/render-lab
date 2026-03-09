@@ -1,49 +1,21 @@
 #include "cylinder.hpp"
-#include "control_cage.hpp"
 
-Cylinder::Cylinder(const float &radius) : radius(radius) {};
+Cylinder::Cylinder(const float &radius) : radius(radius) {
+    Cylinder::halfEdgeData = ControlCage::halfEdgeData(Cages::CUBE);
+};
 
 MeshData Cylinder::surface(const size_t &subdivision) const {
-    MeshData mesh;
+    auto mesh =
+        GENERATE_SURFACE<HalfEdgeData>(Cylinder::halfEdgeData, subdivision);
 
-    for (size_t i = 0; i < ControlCage::CubeCage::CAGE_FACES.size(); i++) {
-        const std::array<uint16_t, 4> corners =
-            ControlCage::CubeCage::CAGE_FACES[i];
-        const auto n = subdivision + 1;
-        // get surface grids
-        const uint16_t faceOffset = i * (n * n);
+    // transform to cylinder
+    for (auto &v : mesh.vertices) {
+        const float d = glm::length(glm::vec2(v.pos.x, v.pos.z));
 
-        // interpolate and get grid connection
-        for (size_t j = 0; j < n; j++) {
-            for (size_t k = 0; k < n; k++) {
-                auto pt = Geometry::bilinear(corners, j, k, subdivision);
-
-                // transform to cylinder
-                const float d = glm::length(glm::vec2(pt.x, pt.z));
-
-                // calculate for x and z
-                pt.x = (pt.x / d) * this->radius;
-                pt.y *= this->radius;
-                pt.z = (pt.z / d) * this->radius;
-
-                mesh.vertices.push_back({pt, Cylinder::COLOR});
-
-                // find and connect grid
-                const auto current = faceOffset + (j * n) + k;
-
-                // connect to right
-                if (k < subdivision) {
-                    mesh.indices.push_back(current);
-                    mesh.indices.push_back(current + 1);
-                }
-
-                // connect to bottom
-                if (j < subdivision) {
-                    mesh.indices.push_back(current);
-                    mesh.indices.push_back(current + n);
-                }
-            }
-        }
+        // calculate x and z
+        v.pos.x = (v.pos.x / d) * this->radius;
+        v.pos.y *= this->radius;
+        v.pos.z = (v.pos.z / d) * this->radius;
     }
 
     return mesh;

@@ -5,6 +5,7 @@
 
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
+#include <vector>
 
 struct HalfEdge;
 
@@ -15,6 +16,7 @@ struct HalfEdgeVertex {
 
 struct Face {
     HalfEdge *halfEdge = nullptr;
+    std::vector<glm::vec3> vertices;
 };
 
 struct HalfEdge {

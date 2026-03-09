@@ -5,8 +5,8 @@ HalfEdgeData ControlCage::halfEdgeData(const Cages &cage) {
 
     switch (cage) {
     case Cages::CUBE: {
-        for (const auto &v : ControlCage::CubeCage::CAGE_BOUNDARY) {
-            mesh.vertex.push_back({.position = v});
+        for (const auto &vertex : ControlCage::CubeCage::CAGE_BOUNDARY) {
+            mesh.vertex.push_back({.position = vertex});
         }
 
         // build half edge of cube
@@ -17,55 +17,51 @@ HalfEdgeData ControlCage::halfEdgeData(const Cages &cage) {
 
         // connect pointers
         for (size_t i = 0; i < mesh.halfEdge.size(); i++) {
-            auto &data = ControlCage::CubeCage::HALF_EDGES[i];
+            const auto &data = ControlCage::CubeCage::HALF_EDGES[i];
             mesh.halfEdge[i].vertex = &mesh.vertex[data.vertex];
             mesh.halfEdge[i].twin = &mesh.halfEdge[data.twin];
             mesh.halfEdge[i].next = &mesh.halfEdge[data.next];
             mesh.halfEdge[i].face = &mesh.faces[data.face];
+
+            // connect vertex entry points
+            mesh.halfEdge[i].vertex->outEdge = &mesh.halfEdge[i];
         }
 
-        // connect face entry pointes
+        // connect face entry points
         for (size_t i = 0; i < mesh.faces.size(); i++) {
             mesh.faces[i].halfEdge =
                 &mesh.halfEdge[ControlCage::CubeCage::FACE_START[i]];
         }
 
-        // connect vertex entry points
-        for (size_t i = 0; i < mesh.halfEdge.size(); i++) {
-            mesh.halfEdge[i].vertex->outEdge = &mesh.halfEdge[i];
-        }
-
         break;
     }
     case Cages::PYRAMID: {
-        for (const auto &v : ControlCage::PyramidCage::CAGE_BOUNDARY) {
-            mesh.vertex.push_back({.position = v});
+        for (const auto &vertex : ControlCage::PyramidCage::CAGE_BOUNDARY) {
+            mesh.vertex.push_back({.position = vertex});
         }
 
-        // build half edge of cube
+        // build half edge of pyramid
         mesh.halfEdge.resize(ControlCage::PyramidCage::HALF_EDGES.size());
 
-        // build faces of cube
+        // build faces of pyramid
         mesh.faces.resize(ControlCage::PyramidCage::FACE_START.size());
 
         // connect pointers
         for (size_t i = 0; i < mesh.halfEdge.size(); i++) {
-            auto &data = ControlCage::PyramidCage::HALF_EDGES[i];
+            const auto &data = ControlCage::PyramidCage::HALF_EDGES[i];
             mesh.halfEdge[i].vertex = &mesh.vertex[data.vertex];
             mesh.halfEdge[i].twin = &mesh.halfEdge[data.twin];
             mesh.halfEdge[i].next = &mesh.halfEdge[data.next];
             mesh.halfEdge[i].face = &mesh.faces[data.face];
+
+            // connect vertex entry points
+            mesh.halfEdge[i].vertex->outEdge = &mesh.halfEdge[i];
         }
 
-        // connect face entry pointes
+        // connect face entry points
         for (size_t i = 0; i < mesh.faces.size(); i++) {
             mesh.faces[i].halfEdge =
                 &mesh.halfEdge[ControlCage::PyramidCage::FACE_START[i]];
-        }
-
-        // connect vertex entry points
-        for (size_t i = 0; i < mesh.halfEdge.size(); i++) {
-            mesh.halfEdge[i].vertex->outEdge = &mesh.halfEdge[i];
         }
 
         break;
