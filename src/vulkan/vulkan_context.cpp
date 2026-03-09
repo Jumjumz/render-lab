@@ -1,4 +1,4 @@
-#include "vulkan/vulkan_context.hpp"
+#include "vulkan_context.hpp"
 #include "ndebug.hpp"
 
 #include <SDL_stdinc.h>

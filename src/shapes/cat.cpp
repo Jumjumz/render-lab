@@ -15,3 +15,5 @@ MeshData Cat::surface(const size_t &subdivision) const {
 
     return mesh;
 };
+
+// TODO:: complete the cat render
