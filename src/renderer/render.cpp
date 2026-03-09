@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "shapes/cat.hpp"
 #include "shapes/cube.hpp"
 #include "shapes/cylinder.hpp"
 #include "shapes/ocean.hpp"
@@ -49,6 +50,16 @@ RenderData Render::renderShape(const Shapes &render) const {
 
     case Shapes::OCEAN: {
         auto shape = std::make_unique<Ocean>(Render::SIZE);
+
+        return RenderData{
+            shape->surface(Render::SUBDIVISION).vertices,
+            shape->surface(Render::SUBDIVISION).indices,
+            true,
+        };
+    }
+
+    case Shapes::CAT: {
+        auto shape = std::make_unique<Cat>(Render::SIZE);
 
         return RenderData{
             shape->surface(Render::SUBDIVISION).vertices,

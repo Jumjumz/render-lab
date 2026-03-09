@@ -12,6 +12,8 @@ src/renderer/render.cpp
 src/renderer/render_lab.hpp
 src/renderer/render_lab.cpp
 src/renderer/vertex.hpp
+src/shapes/cat.hpp
+src/shapes/cat.cpp
 src/shapes/control_cage.hpp
 src/shapes/control_cage.cpp
 src/shapes/mesh.hpp

@@ -27,8 +27,9 @@ void RenderLab::setup() {
 
     // rotation and camera perspective
     UniformBufferObject ubo{
-        .model = glm::rotate(glm::mat4(1.0f), deltaTime * glm::radians(20.0f),
-                             glm::vec3(0.0f, 1.0f, 0.0f)),
+        .model = glm::rotate(
+            glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)),
+            deltaTime * glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
         .view = glm::lookAt(Render::CAMERA, glm::vec3(0.0f, 0.0f, 0.0f),
                             glm::vec3(0.0f, 1.0f, 0.0f)),
         .proj = glm::perspective(glm::radians(45.0f), this->window.aspect_ratio,
@@ -287,6 +288,15 @@ void RenderLab::loop() {
 
                     this->shape.renderData =
                         this->shape.renderShape(Shapes::OCEAN);
+
+                    this->resources.createVertexBuffer();
+                    this->resources.createIndexBuffer();
+                }
+
+                if (this->window.event.key.keysym.sym == SDLK_q) {
+                    this->ctx.device.waitIdle();
+
+                    this->shape.renderData = this->shape.renderShape(Shapes::CAT);
 
                     this->resources.createVertexBuffer();
                     this->resources.createIndexBuffer();
